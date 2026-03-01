@@ -162,16 +162,10 @@ function showWeightTrendChart() {
     var vehicleId = GetVehicleId().vehicleId;
     $.get('/Vehicle/GetWeightTrendChartPartialView?vehicleId=' + vehicleId, function (data) {
         if (data) {
-            // prefer page-level weight modal if present (registered in Index.cshtml)
-            var $modal = $('#weightTrendModal');
-            if ($modal.length) {
-                $('#weightTrendModalContent').html(data);
-                $modal.modal('show');
-            } else {
-                // fallback: use the modal defined inside the health tab partial
-                $('#weightTrendModalContent').html(data);
-                $('#weightTrendModal').modal('show');
-            }
+            // Phase 3: weightTrendModal is registered at page level in Index.cshtml.
+            // The old fallback to a tab-level duplicate was removed to prevent ID collisions.
+            $('#weightTrendModalContent').html(data);
+            $('#weightTrendModal').modal('show');
         }
     });
 }

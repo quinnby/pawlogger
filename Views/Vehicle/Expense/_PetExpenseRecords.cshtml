@@ -1,36 +1,48 @@
 @using CarCareTracker.Helper
 @inject IConfigHelper config
-@model List<VaccinationRecord>
+@model List<PetExpenseRecord>
 @{
     var userConfig = config.GetUserConfig(User);
     var recordTags = Model.SelectMany(x => x.Tags).Distinct();
+}
+@functions {
+    // Phase 6 – display label for PetExpenseCategory enum
+    static string ExpenseCategoryLabel(PetExpenseCategory cat) => cat switch
+    {
+        PetExpenseCategory.Vet           => "Vet",
+        PetExpenseCategory.Medication    => "Medication",
+        PetExpenseCategory.Vaccination   => "Vaccination",
+        PetExpenseCategory.Grooming      => "Grooming",
+        PetExpenseCategory.Food          => "Food",
+        PetExpenseCategory.Supplies      => "Supplies",
+        PetExpenseCategory.Licensing     => "Licensing",
+        PetExpenseCategory.Insurance     => "Insurance",
+        PetExpenseCategory.BoardingDaycare => "Boarding / Daycare",
+        PetExpenseCategory.Training      => "Training",
+        PetExpenseCategory.PreventiveCare => "Preventive Care",
+        _                                => "Other"
+    };
 }
 <div class="d-flex flex-column vehicleTabPane">
 <div class="row">
     <div class="d-flex justify-content-between">
         <div class="d-flex align-items-center flex-wrap gap-2">
-            <span class="badge bg-success" data-aggregate-type="count">@($"# of Vaccinations: {Model.Count()}")</span>
+            <span class="badge bg-success" data-aggregate-type="count">@($"# of Expenses: {Model.Count()}")</span>
             <span class="badge bg-primary" data-aggregate-type="sum">@($"Total: {Model.Sum(x => x.Cost).ToString("C")}")</span>
             @foreach (string recordTag in recordTags)
             {
-                <span onclick="filterTable('vaccination-tab-pane', this)" class="user-select-none rounded-pill badge bg-secondary tagfilter" style="cursor:pointer;">@recordTag</span>
+                <span onclick="filterTable('expense-tab-pane', this)" class="user-select-none rounded-pill badge bg-secondary tagfilter" style="cursor:pointer;">@recordTag</span>
             }
-            <datalist id="vaccinationTagList">
-                @foreach (string recordTag in recordTags)
-                {
-                    <!option value="@recordTag"></!option>
-                }
-            </datalist>
         </div>
         <div class="lubelogger-record-add">
             <div class="btn-group">
-                <button onclick="showAddVaccinationRecordModal()" class="btn btn-primary btn-md mt-1 mb-1"><i class="bi bi-shield-plus me-2"></i>Add Vaccination</button>
+                <button onclick="showAddPetExpenseRecordModal()" class="btn btn-primary btn-md mt-1 mb-1"><i class="bi bi-receipt me-2"></i>Add Expense</button>
                 <button type="button" class="btn btn-md btn-primary btn-md mt-1 mb-1 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                     <span class="visually-hidden">Toggle Dropdown</span>
                 </button>
                 <ul class="dropdown-menu record-dropdown">
                     <li><a class="dropdown-item" href="#" onclick="printTab()">Print</a></li>
-                    <li><a class="dropdown-item" href="#" onclick="searchTableRows('vaccination-tab-pane')">Search</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="searchTableRows('expense-tab-pane')">Search</a></li>
                 </ul>
             </div>
         </div>
@@ -44,23 +56,26 @@
             <thead class="sticky-top">
                 <tr class="d-flex">
                     <th scope="col" class="col-2 flex-grow-1 text-truncate">Date</th>
-                    <th scope="col" class="col-3 text-truncate">Vaccine</th>
-                    <th scope="col" class="col-2 text-truncate d-none d-md-table-cell">Clinic</th>
-                    <th scope="col" class="col-2 text-truncate d-none d-md-table-cell">Next Due</th>
-                    <th scope="col" class="col-1 text-truncate d-none d-sm-table-cell">Cost</th>
-                    <th scope="col" class="col-1 text-truncate d-none d-lg-table-cell">Reminder</th>
+                    <th scope="col" class="col-2 text-truncate">Category</th>
+                    <th scope="col" class="col-3 text-truncate">Description</th>
+                    <th scope="col" class="col-2 text-truncate d-none d-md-table-cell">Vendor</th>
+                    <th scope="col" class="col-1 text-truncate d-none d-sm-table-cell">Amount</th>
+                    <th scope="col" class="col-1 text-truncate d-none d-lg-table-cell">Recurring</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (VaccinationRecord record in Model)
+                @foreach (PetExpenseRecord record in Model)
                 {
                     <tr class="d-flex user-select-none" style="cursor:pointer;"
                         data-rowId="@record.Id"
                         data-tags='@string.Join(" ", record.Tags)'
-                        onclick="handleTableRowClick(this, showEditVaccinationRecordModal, @record.Id)">
+                        onclick="handleTableRowClick(this, showEditPetExpenseRecordModal, @record.Id)">
                         <td class="col-2 flex-grow-1 text-truncate">@record.Date.ToShortDateString()</td>
+                        <td class="col-2 text-truncate">
+                            <span class="badge bg-secondary">@ExpenseCategoryLabel(record.Category)</span>
+                        </td>
                         <td class="col-3 text-truncate">
-                            @record.VaccineName
+                            @record.Description
                             @if (!string.IsNullOrWhiteSpace(record.Notes))
                             {
                                 <i class="bi bi-chat-text ms-1 text-muted" title="Has notes"></i>
@@ -71,25 +86,15 @@
                             }
                             @if (record.LinkedHealthRecordId > 0)
                             {
-                                <i class="bi bi-link-45deg ms-1 text-success" title="Linked to Health Record timeline"></i>
+                                <i class="bi bi-link-45deg ms-1 text-success" title="Linked to Health Record"></i>
                             }
                         </td>
-                        <td class="col-2 text-truncate d-none d-md-table-cell">@record.Clinic</td>
-                        <td class="col-2 text-truncate d-none d-md-table-cell">
-                            @if (!string.IsNullOrWhiteSpace(record.NextDueDate))
-                            {
-                                <span class="badge bg-warning text-dark">@record.NextDueDate</span>
-                            }
-                            else
-                            {
-                                <span class="text-muted">—</span>
-                            }
-                        </td>
+                        <td class="col-2 text-truncate d-none d-md-table-cell">@record.Vendor</td>
                         <td class="col-1 text-truncate d-none d-sm-table-cell">@(record.Cost == 0 ? "-" : record.Cost.ToString("C"))</td>
                         <td class="col-1 text-truncate d-none d-lg-table-cell">
-                            @if (record.ReminderEnabled)
+                            @if (record.IsRecurring)
                             {
-                                <i class="bi bi-bell-fill text-primary" title="Reminder enabled"></i>
+                                <i class="bi bi-arrow-repeat text-info" title="Recurring expense"></i>
                             }
                         </td>
                     </tr>
@@ -101,9 +106,9 @@
         {
             <div class="d-flex justify-content-center align-items-center mt-4">
                 <div class="text-center text-muted">
-                    <i class="bi bi-shield-plus display-4"></i>
-                    <p class="mt-2">No vaccination records yet. Add the first one!</p>
-                    <button onclick="showAddVaccinationRecordModal()" class="btn btn-outline-primary"><i class="bi bi-plus-lg me-2"></i>Add Vaccination</button>
+                    <i class="bi bi-receipt display-4"></i>
+                    <p class="mt-2">No expense records yet. Add the first one!</p>
+                    <button onclick="showAddPetExpenseRecordModal()" class="btn btn-outline-primary"><i class="bi bi-plus-lg me-2"></i>Add Expense</button>
                 </div>
             </div>
         }
@@ -111,9 +116,9 @@
 </div>
 </div>
 
-<div class="modal fade" data-bs-focus="false" id="vaccinationRecordModal" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal fade" data-bs-focus="false" id="petExpenseRecordModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content" id="vaccinationRecordModalContent">
+        <div class="modal-content" id="petExpenseRecordModalContent">
         </div>
     </div>
 </div>

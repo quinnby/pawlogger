@@ -95,17 +95,17 @@
         </div>
         <div class="form-check form-switch form-check-inline">
             <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="enableAutoOdometerInsert" checked="@Model.UserConfig.EnableAutoOdometerInsert">
-            <label class="form-check-label" for="enableAutoOdometerInsert">@translator.Translate(userLanguage, "Auto Insert Odometer Records")<span class="ms-2 settingsToolTip" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="@translator.Translate(userLanguage, "Only when Adding Service/Repair/Upgrade/Fuel Record or Completing a Plan")"><i class="bi bi-question-circle"></i></span></label>
+            <label class="form-check-label" for="enableAutoOdometerInsert">@translator.Translate(userLanguage, "Auto Insert Odometer Records") <small class="text-muted">(Legacy)</small><span class="ms-2 settingsToolTip" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="@translator.Translate(userLanguage, "Only when Adding Service/Repair/Upgrade/Fuel Record or Completing a Plan")"><i class="bi bi-question-circle"></i></span></label>
         </div>
         <div class="form-check form-switch form-check-inline">
             <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="enableAutoFillOdometer" checked="@Model.UserConfig.EnableAutoFillOdometer">
-            <label class="form-check-label" for="enableAutoFillOdometer">@translator.Translate(userLanguage, "Auto Fill Odometer Input")<span class="ms-2 settingsToolTip" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="@translator.Translate(userLanguage, "Only when Adding Service/Repair/Upgrade/Fuel Record or Completing a Plan")"><i class="bi bi-question-circle"></i></span></label>
+            <label class="form-check-label" for="enableAutoFillOdometer">@translator.Translate(userLanguage, "Auto Fill Odometer Input") <small class="text-muted">(Legacy)</small><span class="ms-2 settingsToolTip" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="@translator.Translate(userLanguage, "Only when Adding Service/Repair/Upgrade/Fuel Record or Completing a Plan")"><i class="bi bi-question-circle"></i></span></label>
         </div>
         <hr />
         <div>
             <div class="form-check form-switch form-check-inline">
                 <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="hideSoldVehicles" checked="@Model.UserConfig.HideSoldVehicles">
-                <label class="form-check-label" for="hideSoldVehicles">@translator.Translate(userLanguage, "Hide Sold Vehicles")</label>
+                <label class="form-check-label" for="hideSoldVehicles">@translator.Translate(userLanguage, "Hide Inactive Pets")</label>
             </div>
             <div class="form-check form-switch form-check-inline @(User.IsInRole(nameof(UserData.IsRootUser)) ? "" : "d-none")">
                 <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="enableShopSupplies" checked="@Model.UserConfig.EnableShopSupplies">
@@ -153,15 +153,15 @@
                     </li>
                     <li class="list-group-item">
                         <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="UpgradeRecord" id="upgradeRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.UpgradeRecord) ? "checked" : "")>
-                        <label class="form-check-label stretched-link" for="upgradeRecordTab">@translator.Translate(userLanguage, "Upgrades")</label>
+                        <label class="form-check-label stretched-link" for="upgradeRecordTab">@translator.Translate(userLanguage, "Upgrades") <small class="text-muted">(Legacy)</small></label>
                     </li>
                     <li class="list-group-item">
                         <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="GasRecord" id="gasRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.GasRecord) ? "checked" : "")>
-                        <label class="form-check-label stretched-link" for="gasRecordTab">@translator.Translate(userLanguage, "Fuel")</label>
+                        <label class="form-check-label stretched-link" for="gasRecordTab">@translator.Translate(userLanguage, "Fuel") <small class="text-muted">(Legacy)</small></label>
                     </li>
                     <li class="list-group-item">
                         <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="OdometerRecord" id="odometerRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.OdometerRecord) ? "checked" : "")>
-                        <label class="form-check-label stretched-link" for="odometerRecordTab">@translator.Translate(userLanguage, "Odometer")</label>
+                        <label class="form-check-label stretched-link" for="odometerRecordTab">@translator.Translate(userLanguage, "Odometer") <small class="text-muted">(Legacy)</small></label>
                     </li>
                     <li class="list-group-item">
                         <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="EquipmentRecord" id="equipmentRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.EquipmentRecord) ? "checked" : "")>
@@ -205,14 +205,14 @@
                     <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.Dashboard)) value="Dashboard">@translator.Translate(userLanguage, "Dashboard")</!option>
                     <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.ServiceRecord)) value="ServiceRecord">@translator.Translate(userLanguage, "Service Record")</!option>
                     <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.RepairRecord)) value="RepairRecord">@translator.Translate(userLanguage, "Repairs")</!option>
-                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.UpgradeRecord)) value="UpgradeRecord">@translator.Translate(userLanguage, "Upgrades")</!option>
-                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.GasRecord)) value="GasRecord">@translator.Translate(userLanguage, "Fuel")</!option>
+                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.UpgradeRecord)) value="UpgradeRecord">@translator.Translate(userLanguage, "Upgrades (Legacy)")</!option>
+                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.GasRecord)) value="GasRecord">@translator.Translate(userLanguage, "Fuel (Legacy)")</!option>
                     <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.TaxRecord)) value="TaxRecord">@translator.Translate(userLanguage, "Tax")</!option>
                     <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.NoteRecord)) value="NoteRecord">@translator.Translate(userLanguage, "Notes")</!option>
                     <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.ReminderRecord)) value="ReminderRecord">@translator.Translate(userLanguage, "Reminders")</!option>
                     <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.SupplyRecord)) value="SupplyRecord">@translator.Translate(userLanguage, "Supplies")</!option>
                     <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.PlanRecord)) value="PlanRecord">@translator.Translate(userLanguage, "Planner")</!option>
-                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.OdometerRecord)) value="OdometerRecord">@translator.Translate(userLanguage, "Odometer")</!option>
+                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.OdometerRecord)) value="OdometerRecord">@translator.Translate(userLanguage, "Odometer (Legacy)")</!option>
                     <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.InspectionRecord)) value="InspectionRecord">@translator.Translate(userLanguage, "Inspections")</!option>
                     <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.EquipmentRecord)) value="EquipmentRecord">@translator.Translate(userLanguage, "Equipment")</!option>
                 </select>

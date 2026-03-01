@@ -9,6 +9,18 @@ namespace CarCareTracker.Models
     /// </summary>
     public class HealthRecord : GenericRecord
     {
+        // ---------------------------------------------------------------
+        // Phase 3 – VehicleId compatibility shim
+        // VehicleId is the underlying DB column (from GenericRecord) and
+        // must NOT be renamed in this pass to avoid schema migrations.
+        // PetId is the semantic alias for all new HealthRecord-domain code.
+        // Use PetId in Phase 4+ read-path code; assign via VehicleId until
+        // the full rename + migration is done.
+        // PetId is read-only so LiteDB/Postgres do not map it as a separate column.
+        // ---------------------------------------------------------------
+        [JsonIgnore]
+        public int PetId => VehicleId;
+
         /// <summary>Short name of the health event (e.g. "Annual Wellness Exam").</summary>
         public string Title { get; set; } = string.Empty;
 
@@ -48,5 +60,20 @@ namespace CarCareTracker.Models
         /// <summary>Date when next preventive care is due (optional).</summary>
         [JsonConverter(typeof(FromDateOptional))]
         public string ReminderDueDate { get; set; } = string.Empty;
+
+        // Phase 4 integration – specialized record link
+        /// <summary>
+        /// Id of the specialized record (VaccinationRecord, MedicationRecord, VetVisitRecord,
+        /// LicensingRecord) that generated this HealthRecord entry.
+        /// 0 means this is a standalone HealthRecord (not backed by a specialized record).
+        /// </summary>
+        public int LinkedSpecializedRecordId { get; set; } = 0;
+
+        /// <summary>
+        /// Discriminator for LinkedSpecializedRecordId.
+        /// Values: "Vaccination" | "Medication" | "VetVisit" | "Licensing" | "" (standalone).
+        /// Used by the UI to show the linked-record indicator badge.
+        /// </summary>
+        public string LinkedSpecializedRecordType { get; set; } = string.Empty;
     }
 }

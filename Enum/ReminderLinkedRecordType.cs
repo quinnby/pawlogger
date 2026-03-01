@@ -11,6 +11,8 @@ namespace CarCareTracker.Models
         Medication = 2,
         Licensing = 3,
         /// <summary>Phase 7 – Linked to a generic HealthRecord (e.g. PreventiveCare).</summary>
-        HealthRecord = 4
+        HealthRecord = 4,
+        /// <summary>Phase 5.1 – Linked to a VetVisitRecord follow-up date.</summary>
+        VetVisit = 5
     }
 }

@@ -69,7 +69,7 @@
                         <label class="form-check-label" for="inputEstimatedAge">@translator.Translate(userLanguage, "Age is Estimated")</label>
                     </div>
 
-                    <label for="inputCurrentWeight" class="mt-1">@translator.Translate(userLanguage, "Current Weight")</label>
+                    <label for="inputCurrentWeight" class="mt-1">@translator.Translate(userLanguage, "Current Weight") <small class="text-muted">(@translator.Translate(userLanguage, "manual — use Weight Check records for history"))</small></label>
                     <input type="text" id="inputCurrentWeight" class="form-control" placeholder="@translator.Translate(userLanguage, "e.g. 12.5 lbs(optional)")" value="@Model.CurrentWeight">
 
                     <label for="inputPetStatus" class="mt-1">@translator.Translate(userLanguage, "Status")</label>

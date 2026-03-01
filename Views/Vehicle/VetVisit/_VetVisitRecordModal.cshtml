@@ -73,6 +73,17 @@
                         </div>
                     </div>
 
+                    @* Phase 5.1: Reminder checkbox shown only when Follow-Up is enabled *@
+                    <div id="vetVisitReminderEnabledRow" @(Model.FollowUpNeeded ? "" : "style=\"display:none;\"")>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="vetVisitReminderEnabled" @(Model.ReminderEnabled ? "checked" : "")>
+                            <label class="form-check-label" for="vetVisitReminderEnabled">
+                                Set Follow-up Reminder
+                                <small class="text-muted d-block">Creates a date-based reminder when a Follow-Up Date is set.</small>
+                            </label>
+                        </div>
+                    </div>
+
                     <label for="vetVisitNotes" class="mt-2">Notes (optional)<a class="link-underline link-underline-opacity-0" onclick="showLinks(this)"><i class="bi bi-markdown ms-2"></i></a></label>
                     <textarea id="vetVisitNotes" class="form-control" rows="4">@Model.Notes</textarea>
 
@@ -110,9 +121,11 @@
     function toggleVetVisitFollowUpDate(checkbox) {
         if (checkbox.checked) {
             $("#vetVisitFollowUpDateRow").show();
+            $("#vetVisitReminderEnabledRow").show();
             initDatePicker($('#vetVisitFollowUpDate'));
         } else {
             $("#vetVisitFollowUpDateRow").hide();
+            $("#vetVisitReminderEnabledRow").hide();
         }
     }
 </script>

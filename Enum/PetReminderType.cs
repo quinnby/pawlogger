@@ -17,6 +17,8 @@ namespace CarCareTracker.Models
         Deworming = 8,
         Grooming = 9,
         DentalCleaning = 10,
-        WeightCheck = 11
+        WeightCheck = 11,
+        /// <summary>Phase 5.1 – Reminder linked to a HealthRecord or VetVisit follow-up date.</summary>
+        FollowUpReminder = 12
     }
 }

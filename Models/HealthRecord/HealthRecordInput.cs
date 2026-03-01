@@ -3,6 +3,10 @@ namespace CarCareTracker.Models
     public class HealthRecordInput
     {
         public int Id { get; set; }
+        // Phase 3 – VehicleId compatibility shim.
+        // In the pet health domain VehicleId IS the PetId.
+        // This field name is retained to match the DB column via GenericRecord.
+        // New health-domain code may read/write HealthRecord.PetId instead.
         public int VehicleId { get; set; }
         public string Date { get; set; } = DateTime.Now.ToShortDateString();
         public HealthRecordCategory Category { get; set; } = HealthRecordCategory.MiscellaneousCare;

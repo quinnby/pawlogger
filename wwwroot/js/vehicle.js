@@ -23,6 +23,10 @@
             case "licensing-tab":
                 getVehicleLicensingRecords(vehicleId);
                 break;
+            // Phase 6 – centralized pet expense tracking
+            case "expense-tab":
+                getVehiclePetExpenseRecords(vehicleId);
+                break;
             case "notes-tab":
                 getVehicleNotes(vehicleId);
                 break;
@@ -82,6 +86,10 @@
                     break;
                 case "licensing-tab":
                     $("#licensing-tab-pane").html("");
+                    break;
+                // Phase 6 – centralized pet expense tracking
+                case "expense-tab":
+                    $("#expense-tab-pane").html("");
                     break;
                 case "gas-tab":
                     $("#gas-tab-pane").html("");
@@ -151,6 +159,10 @@ function getVehicleServiceRecords(vehicleId) {
     });
 }
 function getVehicleHealthRecords(vehicleId) {
+    // Phase 3: HealthRecords are loaded on-demand here via their own dedicated endpoint,
+    // NOT bundled into the VehicleRecords aggregate model. This is intentional for now:
+    // the aggregate model is vehicle-centric and should not be burdened with pet-health
+    // data structures. This loading path may be revisited and consolidated in a later phase.
     $.get(`/Vehicle/GetHealthRecordsByVehicleId?vehicleId=${vehicleId}`, function (data) {
         if (data) {
             $("#healthrecord-tab-pane").html(data);
@@ -187,6 +199,15 @@ function getVehicleLicensingRecords(vehicleId) {
     $.get(`/Vehicle/GetLicensingRecordsByVehicleId?vehicleId=${vehicleId}`, function (data) {
         if (data) {
             $("#licensing-tab-pane").html(data);
+            restoreScrollPosition();
+        }
+    });
+}
+// Phase 6 – centralized pet expense tracking
+function getVehiclePetExpenseRecords(vehicleId) {
+    $.get(`/Vehicle/GetPetExpenseRecordsByVehicleId?vehicleId=${vehicleId}`, function (data) {
+        if (data) {
+            $("#expense-tab-pane").html(data);
             restoreScrollPosition();
         }
     });

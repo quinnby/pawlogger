@@ -76,6 +76,37 @@ namespace CarCareTracker.Controllers
             var result = _licensingRecordDataAccess.SaveLicensingRecord(convertedRecord);
             if (result)
             {
+                // Phase 4 – Create or update the linked HealthRecord timeline entry.
+                int priorLinkedHealthId = licensingRecord.LinkedHealthRecordId;
+                var licenseTitle = !string.IsNullOrWhiteSpace(licensingRecord.LicenseNumber)
+                    ? $"License: {licensingRecord.LicenseNumber}"
+                    : "License / Registration";
+                var noteParts = new[]
+                {
+                    string.IsNullOrWhiteSpace(licensingRecord.ExpiryDate) ? null : $"Expires: {licensingRecord.ExpiryDate}",
+                    licensingRecord.Notes
+                }.Where(s => !string.IsNullOrWhiteSpace(s));
+                var projectedHealthRecord = new HealthRecord
+                {
+                    VehicleId = convertedRecord.VehicleId,
+                    Date = convertedRecord.Date,
+                    Category = HealthRecordCategory.Licensing,
+                    Title = licenseTitle,
+                    Provider = licensingRecord.Issuer,
+                    Notes = string.Join("\n", noteParts),
+                    Cost = licensingRecord.Cost,
+                    Status = HealthRecordStatus.Completed,
+                    FollowUpRequired = !string.IsNullOrWhiteSpace(licensingRecord.ExpiryDate),
+                    FollowUpDate = licensingRecord.ExpiryDate
+                };
+                int linkedHealthId = SyncLinkedHealthRecord(
+                    projectedHealthRecord, priorLinkedHealthId, "Licensing", convertedRecord.Id);
+                if (linkedHealthId > 0 && linkedHealthId != priorLinkedHealthId)
+                {
+                    convertedRecord.LinkedHealthRecordId = linkedHealthId;
+                    _licensingRecordDataAccess.SaveLicensingRecord(convertedRecord);
+                }
+
                 // Phase 5 – Sync reminder when ExpiryDate is set and RenewalReminderEnabled is toggled
                 var reminderDescription = !string.IsNullOrWhiteSpace(licensingRecord.LicenseNumber)
                     ? $"License Renewal: {licensingRecord.LicenseNumber}"
@@ -99,6 +130,18 @@ namespace CarCareTracker.Controllers
             if (!_userLogic.UserCanEditVehicle(GetUserID(), existingRecord.VehicleId, HouseholdPermission.Delete))
             {
                 return Json(OperationResponse.Failed("Access Denied"));
+            }
+            // Phase 5.1 – Clean up the Licensing's linked reminder before deleting the record,
+            // and clean up any reminders linked to the projected HealthRecord entry.
+            DeleteAllLinkedReminders(existingRecord.VehicleId, ReminderLinkedRecordType.Licensing, existingRecord.Id);
+            // Phase 4.2 – Cascade-delete the auto-projected HealthRecord timeline entry.
+            // The linked HealthRecord exists solely as a projection of this specialized record
+            // and has no independent meaning without it. Delete it here so it does not become
+            // an unmanaged orphan on the timeline.
+            if (existingRecord.LinkedHealthRecordId > 0)
+            {
+                DeleteAllLinkedReminders(existingRecord.VehicleId, ReminderLinkedRecordType.HealthRecord, existingRecord.LinkedHealthRecordId);
+                _healthRecordDataAccess.DeleteHealthRecordById(existingRecord.LinkedHealthRecordId);
             }
             var result = _licensingRecordDataAccess.DeleteLicensingRecordById(existingRecord.Id);
             return Json(OperationResponse.Conditional(result, string.Empty, StaticHelper.GenericErrorMessage));

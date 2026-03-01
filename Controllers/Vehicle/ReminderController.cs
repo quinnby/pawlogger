@@ -197,6 +197,13 @@ namespace CarCareTracker.Controllers
         // Phase 5 – Sync a reminder from a linked pet-health record (vaccination, medication, or licensing).
         // Called after a save when the source record has ReminderEnabled / RenewalReminderEnabled = true.
         // If reminderEnabled is false, any previously linked reminder is deleted.
+        //
+        // Phase 5.1 discriminator: the search now also matches petReminderType so that a single source
+        // record (e.g. a HealthRecord) can hold two distinct reminders (PreventiveCare + FollowUp)
+        // without one overwriting the other.  If a user manually changes the PetReminderType on an
+        // auto-generated reminder it will no longer match the sync lookup; the next save of the source
+        // record will create a fresh auto-generated reminder and the manually-edited one becomes
+        // standalone.  This is the intentional, documented behaviour for this phase.
         private void SyncReminderFromLinkedRecord(
             int petId,
             bool reminderEnabled,
@@ -206,13 +213,14 @@ namespace CarCareTracker.Controllers
             ReminderLinkedRecordType linkedRecordType,
             int linkedRecordId)
         {
-            // Find any existing reminder linked to this source record
+            // Find any existing reminder linked to this source record AND of the same type
             var existing = _reminderRecordDataAccess
                 .GetReminderRecordsByVehicleId(petId)
                 .FirstOrDefault(r =>
                     r.LinkedRecordType == linkedRecordType &&
                     r.LinkedRecordId == linkedRecordId &&
-                    r.LinkedRecordId != 0);
+                    r.LinkedRecordId != 0 &&
+                    r.PetReminderType == petReminderType);
 
             if (!reminderEnabled)
             {
@@ -249,6 +257,24 @@ namespace CarCareTracker.Controllers
                 };
                 _reminderRecordDataAccess.SaveReminderRecordToVehicle(newReminder);
             }
+        }
+
+        // Phase 5.1 – Delete every reminder that was auto-linked to the given source record.
+        // Used before deleting a source record to prevent orphaned reminders.
+        // Matching is intentionally broad (no PetReminderType filter) so that ALL auto-generated
+        // reminders for this record are removed, even if the user manually changed their type.
+        private void DeleteAllLinkedReminders(int petId, ReminderLinkedRecordType linkedRecordType, int linkedRecordId)
+        {
+            if (linkedRecordId <= 0) return;
+            var linked = _reminderRecordDataAccess
+                .GetReminderRecordsByVehicleId(petId)
+                .Where(r =>
+                    r.LinkedRecordType == linkedRecordType &&
+                    r.LinkedRecordId == linkedRecordId &&
+                    r.LinkedRecordId != 0)
+                .ToList();
+            foreach (var r in linked)
+                _reminderRecordDataAccess.DeleteReminderRecordById(r.Id);
         }
     }
 }

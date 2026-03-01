@@ -14,6 +14,8 @@ namespace CarCareTracker.Models
         public bool FollowUpNeeded { get; set; } = false;
         public string FollowUpDate { get; set; } = string.Empty;
         public int LinkedHealthRecordId { get; set; } = 0;
+        // Phase 5.1 – Follow-up reminder
+        public bool ReminderEnabled { get; set; } = false;
         public decimal Cost { get; set; }
         public string Notes { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
@@ -37,6 +39,7 @@ namespace CarCareTracker.Models
                 FollowUpNeeded = FollowUpNeeded,
                 FollowUpDate = FollowUpDate,
                 LinkedHealthRecordId = LinkedHealthRecordId,
+                ReminderEnabled = ReminderEnabled,
                 Cost = Cost,
                 Notes = Notes,
                 Description = Description,

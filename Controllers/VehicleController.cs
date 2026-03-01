@@ -48,6 +48,8 @@ namespace CarCareTracker.Controllers
         private readonly IMedicationRecordDataAccess _medicationRecordDataAccess;
         private readonly IVetVisitRecordDataAccess _vetVisitRecordDataAccess;
         private readonly ILicensingRecordDataAccess _licensingRecordDataAccess;
+        // Phase 6 – centralized pet expense tracking
+        private readonly IPetExpenseRecordDataAccess _petExpenseRecordDataAccess;
 
         public VehicleController(ILogger<VehicleController> logger,
             IFileHelper fileHelper,
@@ -82,7 +84,9 @@ namespace CarCareTracker.Controllers
             IVaccinationRecordDataAccess vaccinationRecordDataAccess,
             IMedicationRecordDataAccess medicationRecordDataAccess,
             IVetVisitRecordDataAccess vetVisitRecordDataAccess,
-            ILicensingRecordDataAccess licensingRecordDataAccess)
+            ILicensingRecordDataAccess licensingRecordDataAccess,
+            // Phase 6 – centralized pet expense tracking
+            IPetExpenseRecordDataAccess petExpenseRecordDataAccess)
         {
             _logger = logger;
             _dataAccess = dataAccess;
@@ -118,6 +122,8 @@ namespace CarCareTracker.Controllers
             _medicationRecordDataAccess = medicationRecordDataAccess;
             _vetVisitRecordDataAccess = vetVisitRecordDataAccess;
             _licensingRecordDataAccess = licensingRecordDataAccess;
+            // Phase 6 – centralized pet expense tracking
+            _petExpenseRecordDataAccess = petExpenseRecordDataAccess;
         }
         private int GetUserID()
         {
@@ -182,7 +188,9 @@ namespace CarCareTracker.Controllers
         [TypeFilter(typeof(StrictCollaboratorFilter), Arguments = new object[] { false, true })]
         public IActionResult DeleteVehicle(int vehicleId)
         {
-            //Delete all service records, gas records, notes, etc.
+            //Delete all service records, gas records, health records, notes, etc.
+            // Phase 3: health record cascade is intentional — _healthRecordDataAccess.DeleteAllHealthRecordsByVehicleId
+            // is included below. Any new record type added in Phase 4+ must be added here too.
             var result = _gasRecordDataAccess.DeleteAllGasRecordsByVehicleId(vehicleId) &&
                 _serviceRecordDataAccess.DeleteAllServiceRecordsByVehicleId(vehicleId) &&
                 _collisionRecordDataAccess.DeleteAllCollisionRecordsByVehicleId(vehicleId) &&
@@ -213,7 +221,8 @@ namespace CarCareTracker.Controllers
             List<bool> results = new List<bool>();
             foreach (int vehicleId in vehicleIds)
             {
-                //Delete all service records, gas records, notes, etc.
+                //Delete all service records, gas records, health records, notes, etc.
+                // Phase 3: health record cascade is intentional — see DeleteVehicle for the same pattern.
                 var result = _gasRecordDataAccess.DeleteAllGasRecordsByVehicleId(vehicleId) &&
                     _serviceRecordDataAccess.DeleteAllServiceRecordsByVehicleId(vehicleId) &&
                     _collisionRecordDataAccess.DeleteAllCollisionRecordsByVehicleId(vehicleId) &&

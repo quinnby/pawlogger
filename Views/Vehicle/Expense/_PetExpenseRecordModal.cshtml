@@ -1,0 +1,120 @@
+@using CarCareTracker.Helper
+@inject IConfigHelper config
+@model PetExpenseRecordInput
+@{
+    var isNew = Model.Id == 0;
+    var userConfig = config.GetUserConfig(User);
+}
+<div class="modal-header">
+    <h5 class="modal-title">@(isNew ? "Add Pet Expense" : "Edit Pet Expense")</h5>
+    <button type="button" class="btn-close" onclick="hideAddPetExpenseRecordModal()" aria-label="Close"></button>
+</div>
+<div class="modal-body" onkeydown="handleEnter(this)">
+    <form>
+        <div class="form-group">
+            <div class="row">
+                <!-- LEFT COLUMN -->
+                <div class="col-md-6 col-12">
+                    <input type="text" id="workAroundInput" style="height:0px; width:0px; display:none;">
+
+                    <label for="expenseDate">Date</label>
+                    <div class="input-group">
+                        <input type="text" id="expenseDate" class="form-control" placeholder="Date of expense" value="@Model.Date">
+                        <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                    </div>
+
+                    <label for="expenseCategory" class="mt-2">Category</label>
+                    <select id="expenseCategory" class="form-select">
+                        <!option value="0" @(Model.Category == PetExpenseCategory.Vet ? "selected" : "")>Vet</!option>
+                        <!option value="1" @(Model.Category == PetExpenseCategory.Medication ? "selected" : "")>Medication</!option>
+                        <!option value="2" @(Model.Category == PetExpenseCategory.Vaccination ? "selected" : "")>Vaccination</!option>
+                        <!option value="3" @(Model.Category == PetExpenseCategory.Grooming ? "selected" : "")>Grooming</!option>
+                        <!option value="4" @(Model.Category == PetExpenseCategory.Food ? "selected" : "")>Food</!option>
+                        <!option value="5" @(Model.Category == PetExpenseCategory.Supplies ? "selected" : "")>Supplies</!option>
+                        <!option value="6" @(Model.Category == PetExpenseCategory.Licensing ? "selected" : "")>Licensing</!option>
+                        <!option value="7" @(Model.Category == PetExpenseCategory.Insurance ? "selected" : "")>Insurance</!option>
+                        <!option value="8" @(Model.Category == PetExpenseCategory.BoardingDaycare ? "selected" : "")>Boarding / Daycare</!option>
+                        <!option value="9" @(Model.Category == PetExpenseCategory.Training ? "selected" : "")>Training</!option>
+                        <!option value="10" @(Model.Category == PetExpenseCategory.PreventiveCare ? "selected" : "")>Preventive Care</!option>
+                        <!option value="11" @(Model.Category == PetExpenseCategory.Other ? "selected" : "")>Other</!option>
+                    </select>
+
+                    <label for="expenseDescription" class="mt-2">Description</label>
+                    <input type="text" id="expenseDescription" class="form-control" placeholder="Brief description of the expense" value="@Model.Description">
+
+                    <label for="expenseVendor" class="mt-2">Vendor / Provider (optional)</label>
+                    <input type="text" id="expenseVendor" class="form-control" placeholder="e.g. Happy Paws Clinic, PetSmart" value="@Model.Vendor">
+
+                    <label for="expenseCost" class="mt-2">Amount</label>
+                    <input type="text" inputmode="decimal" onkeydown="interceptDecimalKeys(event)" onkeyup="fixDecimalInput(this, 2)"
+                           id="expenseCost" class="form-control" placeholder="0.00" value="@(isNew ? "" : Model.Cost)">
+
+                    <label for="expenseTag" class="mt-2">Tags (optional)</label>
+                    <select multiple class="form-select" id="expenseTag">
+                        @foreach (string tag in Model.Tags)
+                        {
+                            <option value="@tag">@tag</option>
+                        }
+                    </select>
+
+                    @await Html.PartialAsync("_ExtraField", Model.ExtraFields)
+                </div>
+
+                <!-- RIGHT COLUMN -->
+                <div class="col-md-6 col-12">
+                    <div class="form-check mt-2 mt-md-4">
+                        <input class="form-check-input" type="checkbox" id="expenseIsRecurring" @(Model.IsRecurring ? "checked" : "")>
+                        <label class="form-check-label" for="expenseIsRecurring">
+                            Recurring Expense
+                            <small class="text-muted d-block">e.g. monthly insurance, recurring prescription</small>
+                        </label>
+                    </div>
+
+                    <label for="expenseLinkedHealthRecordId" class="mt-3">Linked Health Record (optional)</label>
+                    <div class="input-group">
+                        <select id="expenseLinkedHealthRecordSelector" class="form-select"
+                                onchange="document.getElementById('expenseLinkedHealthRecordId').value = this.value;">
+                            <option value="0">Loading health records…</option>
+                        </select>
+                        <span class="input-group-text"><i class="bi bi-heart-pulse"></i></span>
+                    </div>
+                    <!-- Phase 7: hidden field preserves the existing JS read pattern (parseInt($('#expenseLinkedHealthRecordId').val())) -->
+                    <input type="hidden" id="expenseLinkedHealthRecordId"
+                           value="@(Model.LinkedHealthRecordId == 0 ? "0" : Model.LinkedHealthRecordId.ToString())">
+                    <small class="text-muted">Loosely associate this expense with a health timeline entry. Deleting this expense will <strong>not</strong> delete the linked Health Record.</small>
+
+                    <label for="expenseNotes" class="mt-3">Notes (optional)<a class="link-underline link-underline-opacity-0" onclick="showLinks(this)"><i class="bi bi-markdown ms-2"></i></a></label>
+                    <textarea id="expenseNotes" class="form-control" rows="5">@Model.Notes</textarea>
+
+                    <div class="mt-2">
+                        @await Html.PartialAsync("_UploadedFiles", Model.Files)
+                        @await Html.PartialAsync("_FileUploader", Model.Files.Any())
+                    </div>
+                    <div id="filesPendingUpload"></div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    @if (!isNew)
+    {
+        <div class="btn-group" style="margin-right:auto;">
+            <button type="button" class="btn btn-md mt-1 mb-1 btn-danger" onclick="deletePetExpenseRecord(@Model.Id)">Delete</button>
+        </div>
+    }
+    <button type="button" class="btn btn-secondary" onclick="hideAddPetExpenseRecordModal()">Cancel</button>
+    @if (isNew)
+    {
+        <button type="button" class="btn btn-primary" onclick="savePetExpenseRecordToVehicle()">Add Expense</button>
+    }
+    else
+    {
+        <button type="button" class="btn btn-primary" onclick="savePetExpenseRecordToVehicle(true)">Save Expense</button>
+    }
+</div>
+<script>
+    function getPetExpenseRecordModelData() {
+        return { id: @Model.Id, vehicleId: @Model.VehicleId };
+    }
+</script>

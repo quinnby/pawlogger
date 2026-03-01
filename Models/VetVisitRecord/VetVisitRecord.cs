@@ -38,5 +38,9 @@ namespace CarCareTracker.Models
         /// 0 means no linked record.
         /// </summary>
         public int LinkedHealthRecordId { get; set; } = 0;
+
+        // Phase 5.1 – Follow-up reminder
+        /// <summary>When true and FollowUpDate is set, creates/updates a date-based reminder for this visit's follow-up.</summary>
+        public bool ReminderEnabled { get; set; } = false;
     }
 }

@@ -63,6 +63,10 @@
                             {
                                 <i class="bi bi-paperclip ms-1 text-muted" title="Has attachments"></i>
                             }
+                            @if (record.LinkedHealthRecordId > 0)
+                            {
+                                <i class="bi bi-link-45deg ms-1 text-success" title="Linked to Health Record timeline"></i>
+                            }
                         </td>
                         <td class="col-2 text-truncate d-none d-md-table-cell">@record.Issuer</td>
                         <td class="col-2 text-truncate d-none d-md-table-cell">

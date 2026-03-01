@@ -82,6 +82,8 @@ function getAndValidateVetVisitRecordValues() {
     var treatment        = $("#vetVisitTreatment").val();
     var followUpNeeded   = $("#vetVisitFollowUpNeeded").is(":checked");
     var followUpDate     = followUpNeeded ? $("#vetVisitFollowUpDate").val() : "";
+    // Phase 5.1 – only collect reminder flag when follow-up is enabled
+    var reminderEnabled  = followUpNeeded && $("#vetVisitReminderEnabled").is(":checked");
     var cost             = $("#vetVisitCost").val();
     var notes            = $("#vetVisitNotes").val();
     var tags             = $("#vetVisitTag").val();
@@ -124,6 +126,7 @@ function getAndValidateVetVisitRecordValues() {
         treatmentProvided: treatment,
         followUpNeeded: followUpNeeded,
         followUpDate: followUpDate,
+        reminderEnabled: reminderEnabled,
         cost: cost == '' ? 0 : cost,
         notes: notes,
         tags: tags,

@@ -77,6 +77,37 @@ namespace CarCareTracker.Controllers
             var result = _vaccinationRecordDataAccess.SaveVaccinationRecord(convertedRecord);
             if (result)
             {
+                // Phase 4 – Create or update the linked HealthRecord timeline entry.
+                int priorLinkedHealthId = vaccinationRecord.LinkedHealthRecordId;
+                var projectedHealthRecord = new HealthRecord
+                {
+                    VehicleId = convertedRecord.VehicleId,
+                    Date = convertedRecord.Date,
+                    Category = HealthRecordCategory.Vaccination,
+                    Title = !string.IsNullOrWhiteSpace(vaccinationRecord.VaccineName)
+                        ? vaccinationRecord.VaccineName
+                        : "Vaccination",
+                    Provider = !string.IsNullOrWhiteSpace(vaccinationRecord.Clinic)
+                        ? vaccinationRecord.Clinic
+                        : vaccinationRecord.AdministeredBy,
+                    Notes = string.Join("\n", new[]
+                    {
+                        vaccinationRecord.Notes,
+                        string.IsNullOrWhiteSpace(vaccinationRecord.LotNumber) ? null : $"Lot: {vaccinationRecord.LotNumber}"
+                    }.Where(s => !string.IsNullOrWhiteSpace(s))),
+                    Cost = vaccinationRecord.Cost,
+                    Status = HealthRecordStatus.Completed,
+                    FollowUpRequired = !string.IsNullOrWhiteSpace(vaccinationRecord.NextDueDate),
+                    FollowUpDate = vaccinationRecord.NextDueDate
+                };
+                int linkedHealthId = SyncLinkedHealthRecord(
+                    projectedHealthRecord, priorLinkedHealthId, "Vaccination", convertedRecord.Id);
+                if (linkedHealthId > 0 && linkedHealthId != priorLinkedHealthId)
+                {
+                    convertedRecord.LinkedHealthRecordId = linkedHealthId;
+                    _vaccinationRecordDataAccess.SaveVaccinationRecord(convertedRecord);
+                }
+
                 // Phase 5 – Sync reminder when NextDueDate is set and ReminderEnabled is toggled
                 SyncReminderFromLinkedRecord(
                     petId: convertedRecord.VehicleId,
@@ -97,6 +128,18 @@ namespace CarCareTracker.Controllers
             if (!_userLogic.UserCanEditVehicle(GetUserID(), existingRecord.VehicleId, HouseholdPermission.Delete))
             {
                 return Json(OperationResponse.Failed("Access Denied"));
+            }
+            // Phase 5.1 – Clean up the Vaccination's linked reminder before deleting the record,
+            // and clean up any reminders linked to the projected HealthRecord entry.
+            DeleteAllLinkedReminders(existingRecord.VehicleId, ReminderLinkedRecordType.Vaccination, existingRecord.Id);
+            // Phase 4.2 – Cascade-delete the auto-projected HealthRecord timeline entry.
+            // The linked HealthRecord exists solely as a projection of this specialized record
+            // and has no independent meaning without it. Delete it here so it does not become
+            // an unmanaged orphan on the timeline.
+            if (existingRecord.LinkedHealthRecordId > 0)
+            {
+                DeleteAllLinkedReminders(existingRecord.VehicleId, ReminderLinkedRecordType.HealthRecord, existingRecord.LinkedHealthRecordId);
+                _healthRecordDataAccess.DeleteHealthRecordById(existingRecord.LinkedHealthRecordId);
             }
             var result = _vaccinationRecordDataAccess.DeleteVaccinationRecordById(existingRecord.Id);
             return Json(OperationResponse.Conditional(result, string.Empty, StaticHelper.GenericErrorMessage));

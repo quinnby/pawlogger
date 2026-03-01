@@ -49,6 +49,14 @@
         HealthRecordStatus.Informational => "bg-info text-dark",
         _                                => "bg-secondary"
     };
+
+    // Phase 7 – category counts for at-a-glance timeline polish
+    var vetVisitCount      = Model.Count(x => x.Category == HealthRecordCategory.VetVisit);
+    var vaccinationCount   = Model.Count(x => x.Category == HealthRecordCategory.Vaccination);
+    var medicationCount    = Model.Count(x => x.Category == HealthRecordCategory.Medication);
+    var allergyCount       = Model.Count(x => x.Category == HealthRecordCategory.AllergyReaction);
+    var weightCheckCount   = Model.Count(x => x.Category == HealthRecordCategory.WeightCheck);
+    var followUpOpenCount  = Model.Count(x => x.FollowUpRequired && x.Status != HealthRecordStatus.Completed);
 }
 <div class="d-flex flex-column vehicleTabPane">
 <div class="row">
@@ -56,6 +64,12 @@
         <div class="d-flex align-items-center flex-wrap gap-2">
             <span class="badge bg-success" data-aggregate-type="count">@($"# of Health Records: {Model.Count()}")</span>
             <span class="badge bg-primary" data-aggregate-type="sum">@($"Total: {Model.Sum(x => x.Cost).ToString("C")}")</span>
+            @if (vetVisitCount > 0)    { <span class="badge bg-danger"       title="Vet Visit records">@vetVisitCount Vet Visit@(vetVisitCount > 1 ? "s" : "")</span> }
+            @if (vaccinationCount > 0) { <span class="badge bg-primary"      title="Vaccination records">@vaccinationCount Vaccination@(vaccinationCount > 1 ? "s" : "")</span> }
+            @if (medicationCount > 0)  { <span class="badge bg-secondary"    title="Medication records">@medicationCount Medication@(medicationCount > 1 ? "s" : "")</span> }
+            @if (allergyCount > 0)     { <span class="badge bg-warning text-dark" title="Allergy / Reaction records">@allergyCount Allerg@(allergyCount > 1 ? "ies" : "y")</span> }
+            @if (weightCheckCount > 0) { <span class="badge bg-secondary"    title="Weight check records">@weightCheckCount Weight Check@(weightCheckCount > 1 ? "s" : "")</span> }
+            @if (followUpOpenCount > 0){ <span class="badge bg-warning text-dark" title="Records with open follow-up"><i class="bi bi-exclamation-circle me-1"></i>@followUpOpenCount Follow-up@(followUpOpenCount > 1 ? "s" : "") Open</span> }
             @foreach (string recordTag in recordTags)
             {
                 <span onclick="filterTable('healthrecord-tab-pane', this)" class="user-select-none rounded-pill badge bg-secondary tagfilter" style="cursor:pointer;">@recordTag</span>
@@ -79,6 +93,7 @@
                     {
                         <li><a class="dropdown-item" href="#" onclick="showWeightTrendChart()"><i class="bi bi-graph-up me-2"></i>Weight Trend Chart</a></li>
                     }
+                    <li><a class="dropdown-item" href="#" onclick="showPetSummaryModal()"><i class="bi bi-file-earmark-medical me-2"></i>Pet Health Summary</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="#" onclick="printTab()">Print</a></li>
                     <li><a class="dropdown-item" href="#" onclick="searchTableRows('healthrecord-tab-pane')">Search</a></li>
@@ -147,6 +162,11 @@
                             {
                                 <i class="bi bi-paperclip ms-1 text-muted" title="Has attachments"></i>
                             }
+                            @if (!string.IsNullOrWhiteSpace(record.LinkedSpecializedRecordType))
+                            {
+                                <i class="bi bi-link-45deg ms-1 text-primary"
+                                   title="Linked @record.LinkedSpecializedRecordType record"></i>
+                            }
                         </td>
                         <td class="col-2 text-truncate d-none d-md-table-cell">@record.Provider</td>
                         <td class="col-1 text-truncate d-none d-sm-table-cell">@(record.Cost == 0 ? "-" : record.Cost.ToString("C"))</td>
@@ -180,6 +200,11 @@
 </div>
 </div>
 
+@* Phase 3 – healthRecordModal is registered here (tied to the tab content lifecycle).
+   weightTrendModal and quickHealthNoteModal are intentionally NOT registered here;
+   they are registered at page level in Views/Vehicle/Index.cshtml to avoid
+   duplicate ID conflicts when this partial is injected into the DOM.
+   Do not add weightTrendModal or quickHealthNoteModal back here. *@
 <div class="modal fade" data-bs-focus="false" id="healthRecordModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" id="healthRecordModalContent">
@@ -187,18 +212,3 @@
     </div>
 </div>
 
-<!-- Phase 7: Weight trend chart modal -->
-<div class="modal fade" data-bs-focus="false" id="weightTrendModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content" id="weightTrendModalContent">
-        </div>
-    </div>
-</div>
-
-<!-- Phase 7: Quick health note modal -->
-<div class="modal fade" data-bs-focus="false" id="quickHealthNoteModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-md" role="document">
-        <div class="modal-content" id="quickHealthNoteModalContent">
-        </div>
-    </div>
-</div>

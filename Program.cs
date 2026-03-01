@@ -69,6 +69,8 @@ if (!string.IsNullOrWhiteSpace(builder.Configuration["POSTGRES_CONNECTION"])){
     builder.Services.AddSingleton<IMedicationRecordDataAccess, PGMedicationRecordDataAccess>();
     builder.Services.AddSingleton<IVetVisitRecordDataAccess, PGVetVisitRecordDataAccess>();
     builder.Services.AddSingleton<ILicensingRecordDataAccess, PGLicensingRecordDataAccess>();
+    // Phase 6 – centralized pet expense tracking
+    builder.Services.AddSingleton<IPetExpenseRecordDataAccess, PGPetExpenseRecordDataAccess>();
 }
 else
 {
@@ -100,6 +102,8 @@ else
     builder.Services.AddSingleton<IMedicationRecordDataAccess, MedicationRecordDataAccess>();
     builder.Services.AddSingleton<IVetVisitRecordDataAccess, VetVisitRecordDataAccess>();
     builder.Services.AddSingleton<ILicensingRecordDataAccess, LicensingRecordDataAccess>();
+    // Phase 6 – centralized pet expense tracking
+    builder.Services.AddSingleton<IPetExpenseRecordDataAccess, PetExpenseRecordDataAccess>();
 }
 
 //configure helpers

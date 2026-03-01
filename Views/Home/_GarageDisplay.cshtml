@@ -9,6 +9,13 @@
     var tagsExist = recordTags.Any();
     var searchExist = userConfig.ShowSearch && Model.Count() > 1;
     var renderTopRow = tagsExist || searchExist;
+
+    // Phase 7 – multi-pet summary counts
+    var activePetCount    = Model.Count(x => x.PetStatus == PetStatus.Active);
+    var archivedPetCount  = Model.Count(x => x.PetStatus == PetStatus.Archived);
+    var rehcmedPetCount   = Model.Count(x => x.PetStatus == PetStatus.Rehomed);
+    var deceasedPetCount  = Model.Count(x => x.PetStatus == PetStatus.Deceased);
+    var hasInactivePets   = Model.Any(x => x.PetStatus != PetStatus.Active);
 }
 <div id="garageContainer">
 @if (renderTopRow)
@@ -42,6 +49,29 @@
 }
     @if (Model.Any())
     {
+    @* Phase 7 – multi-pet count summary bar (only meaningful with 2+ pets) *@
+    @if (Model.Count() > 1)
+    {
+        <div class="d-flex align-items-center flex-wrap gap-2 mb-2 mt-1">
+            <span class="badge bg-success"><i class="bi bi-heart-pulse me-1"></i>@activePetCount Active</span>
+            @if (archivedPetCount > 0)
+            {
+                <span class="badge bg-secondary">@archivedPetCount Archived</span>
+            }
+            @if (rehcmedPetCount > 0)
+            {
+                <span class="badge bg-info text-dark">@rehcmedPetCount Rehomed</span>
+            }
+            @if (deceasedPetCount > 0)
+            {
+                <span class="badge bg-dark">@deceasedPetCount Deceased</span>
+            }
+            @if (hasInactivePets && userConfig.HideSoldVehicles)
+            {
+                <small class="text-muted ms-1"><i class="bi bi-eye-slash me-1"></i>Inactive pets hidden (see Settings to show)</small>
+            }
+        </div>
+    }
     <div class="row gy-3 align-items-stretch vehiclesContainer pb-2 @(renderTopRow ? "" : "mt-2")">
         @foreach (VehicleViewModel vehicle in Model)
         {
@@ -122,7 +152,7 @@
                 <li><a class="context-menu-active-single dropdown-item @StaticHelper.DefaultActiveTab(userConfig, ImportMode.PlanRecord)" href="#" onclick="viewVehicleWithTab(selectedVehicles, 'plan')"><div class="d-flex justify-content-between"><span class="me-5">@translator.Translate(userLanguage, "Planner")</span><i class="bi bi-bar-chart-steps"></i></div></a></li>
                 break;
             case ImportMode.OdometerRecord:
-                <li><a class="context-menu-active-single dropdown-item @StaticHelper.DefaultActiveTab(userConfig, ImportMode.OdometerRecord)" href="#" onclick="viewVehicleWithTab(selectedVehicles, 'odometer')"><div class="d-flex justify-content-between"><span class="me-5">@translator.Translate(userLanguage, "Odometer")</span><i class="bi bi-speedometer"></i></div></a></li>
+                <li><a class="context-menu-active-single dropdown-item text-muted @StaticHelper.DefaultActiveTab(userConfig, ImportMode.OdometerRecord)" href="#" onclick="viewVehicleWithTab(selectedVehicles, 'odometer')"><div class="d-flex justify-content-between"><span class="me-5">@translator.Translate(userLanguage, "Odometer") <small>(Legacy)</small></span><i class="bi bi-speedometer"></i></div></a></li>
                 break;
             case ImportMode.ServiceRecord:
                 <li><a class="context-menu-active-single dropdown-item @StaticHelper.DefaultActiveTab(userConfig, ImportMode.ServiceRecord)" href="#" onclick="viewVehicleWithTab(selectedVehicles, 'servicerecord')"><div class="d-flex justify-content-between"><span class="me-5">@translator.Translate(userLanguage, "Service Records")</span><i class="bi bi-card-checklist"></i></div></a></li>
@@ -131,10 +161,10 @@
                 <li><a class="context-menu-active-single dropdown-item @StaticHelper.DefaultActiveTab(userConfig, ImportMode.RepairRecord)" href="#" onclick="viewVehicleWithTab(selectedVehicles, 'accident')"><div class="d-flex justify-content-between"><span class="me-5">@translator.Translate(userLanguage, "Repairs")</span><i class="bi bi-exclamation-octagon"></i></div></a></li>
                 break;
             case ImportMode.UpgradeRecord:
-                <li><a class="context-menu-active-single dropdown-item @StaticHelper.DefaultActiveTab(userConfig, ImportMode.UpgradeRecord)" href="#" onclick="viewVehicleWithTab(selectedVehicles, 'upgrade')"><div class="d-flex justify-content-between"><span class="me-5">@translator.Translate(userLanguage, "Upgrades")</span><i class="bi bi-wrench-adjustable"></i></div></a></li>
+                <li><a class="context-menu-active-single dropdown-item text-muted @StaticHelper.DefaultActiveTab(userConfig, ImportMode.UpgradeRecord)" href="#" onclick="viewVehicleWithTab(selectedVehicles, 'upgrade')"><div class="d-flex justify-content-between"><span class="me-5">@translator.Translate(userLanguage, "Upgrades") <small>(Legacy)</small></span><i class="bi bi-wrench-adjustable"></i></div></a></li>
                 break;
             case ImportMode.GasRecord:
-                <li><a class="context-menu-active-single dropdown-item @StaticHelper.DefaultActiveTab(userConfig, ImportMode.GasRecord)" href="#" onclick="viewVehicleWithTab(selectedVehicles, 'gas')"><div class="d-flex justify-content-between"><span class="me-5">@translator.Translate(userLanguage, "Fuel")</span><i class="bi bi-fuel-pump"></i></div></a></li>
+                <li><a class="context-menu-active-single dropdown-item text-muted @StaticHelper.DefaultActiveTab(userConfig, ImportMode.GasRecord)" href="#" onclick="viewVehicleWithTab(selectedVehicles, 'gas')"><div class="d-flex justify-content-between"><span class="me-5">@translator.Translate(userLanguage, "Fuel") <small>(Legacy)</small></span><i class="bi bi-fuel-pump"></i></div></a></li>
                 break;
             case ImportMode.SupplyRecord:
                 <li><a class="context-menu-active-single dropdown-item @StaticHelper.DefaultActiveTab(userConfig, ImportMode.SupplyRecord)" href="#" onclick="viewVehicleWithTab(selectedVehicles, 'supply')"><div class="d-flex justify-content-between"><span class="me-5">@translator.Translate(userLanguage, "Supplies")</span><i class="bi bi-shop"></i></div></a></li>

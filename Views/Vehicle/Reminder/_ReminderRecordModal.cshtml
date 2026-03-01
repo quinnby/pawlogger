@@ -32,6 +32,7 @@
                         <!option value="Grooming" @(Model.PetReminderType == PetReminderType.Grooming ? "selected" : "")>@translator.Translate(userLanguage, "Grooming")</!option>
                         <!option value="DentalCleaning" @(Model.PetReminderType == PetReminderType.DentalCleaning ? "selected" : "")>@translator.Translate(userLanguage, "Dental Cleaning")</!option>
                         <!option value="WeightCheck" @(Model.PetReminderType == PetReminderType.WeightCheck ? "selected" : "")>@translator.Translate(userLanguage, "Weight Check")</!option>
+                        <!option value="FollowUpReminder" @(Model.PetReminderType == PetReminderType.FollowUpReminder ? "selected" : "")>@translator.Translate(userLanguage, "Follow-up Reminder")</!option>
                     </select>
                     <label for="reminderDescription">@translator.Translate(userLanguage,"Description")</label>
                     <input type="text" id="reminderDescription" class="form-control" placeholder="@translator.Translate(userLanguage,"Reminder Description")" value="@Model.Description">
@@ -44,10 +45,13 @@
                         <input type="text" id="reminderDate" class="form-control" placeholder="@translator.Translate(userLanguage,"Future Date")" value="@Model.Date">
                         <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
                     </div>
-                    <div class="form-check form-check-inline">                        
+                    <div class="form-check">
                         <input class="form-check-input" onclick="enableRecurring()" type="radio" name="reminderMetricOptions" id="reminderMetricOdometer" value="@(ReminderMetric.Odometer)" checked="@(Model.Metric == ReminderMetric.Odometer)">
-                        <label class="form-check-label" for="reminderMetricOdometer">@translator.Translate(userLanguage,"Odometer")</label>
-                    </div>     
+                        <label class="form-check-label text-muted" for="reminderMetricOdometer">
+                            @translator.Translate(userLanguage,"Odometer")
+                            <small class="d-block text-muted fst-italic" style="font-size:0.78em;">Legacy distance tracking &mdash; not used for pet care</small>
+                        </label>
+                    </div>
                     <div class="input-group">
                         <input type="number" inputmode="numeric" id="reminderMileage" class="form-control" placeholder="@translator.Translate(userLanguage,"Future Odometer Reading")" value="@(isNew ? "" : Model.Mileage)">
                         @if (isNew)
@@ -127,9 +131,9 @@
                             <input type="text" id="reminderUrgentDays" class="form-control" placeholder="@translator.Translate(userLanguage, "Urgent")" value="@Model.CustomThresholds.UrgentDays">
                             <label for="reminderVeryUrgentDays">@translator.Translate(userLanguage, "Very Urgent(Days)")</label>
                             <input type="text" id="reminderVeryUrgentDays" class="form-control" placeholder="@translator.Translate(userLanguage, "Very Urgent")" value="@Model.CustomThresholds.VeryUrgentDays">
-                            <label for="reminderUrgentDistance">@translator.Translate(userLanguage, "Urgent(Distance)")</label>
+                            <label for="reminderUrgentDistance">@translator.Translate(userLanguage, "Urgent (Odometer / Distance)") <small class="text-muted fst-italic">(Legacy)</small></label>
                             <input type="text" id="reminderUrgentDistance" class="form-control" placeholder="@translator.Translate(userLanguage, "Urgent")" value="@Model.CustomThresholds.UrgentDistance">
-                            <label for="reminderVeryUrgentDistance">@translator.Translate(userLanguage, "Very Urgent(Distance)")</label>
+                            <label for="reminderVeryUrgentDistance">@translator.Translate(userLanguage, "Very Urgent (Odometer / Distance)") <small class="text-muted fst-italic">(Legacy)</small></label>
                             <input type="text" id="reminderVeryUrgentDistance" class="form-control" placeholder="@translator.Translate(userLanguage, "Very Urgent")" value="@Model.CustomThresholds.VeryUrgentDistance">
                         </div>
                     </div>
