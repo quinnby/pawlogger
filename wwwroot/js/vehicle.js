@@ -7,6 +7,9 @@
             case "servicerecord-tab":
                 getVehicleServiceRecords(vehicleId);
                 break;
+            case "healthrecord-tab":
+                getVehicleHealthRecords(vehicleId);
+                break;
             case "notes-tab":
                 getVehicleNotes(vehicleId);
                 break;
@@ -50,6 +53,9 @@
             switch (e.relatedTarget.id) { //clear out previous tabs with grids in them to help with performance
                 case "servicerecord-tab":
                     $("#servicerecord-tab-pane").html("");
+                    break;
+                case "healthrecord-tab":
+                    $("#healthrecord-tab-pane").html("");
                     break;
                 case "gas-tab":
                     $("#gas-tab-pane").html("");
@@ -115,6 +121,14 @@ function getVehicleServiceRecords(vehicleId) {
             $("#servicerecord-tab-pane").html(data);
             restoreScrollPosition();
             getVehicleHaveImportantReminders(vehicleId);
+        }
+    });
+}
+function getVehicleHealthRecords(vehicleId) {
+    $.get(`/Vehicle/GetHealthRecordsByVehicleId?vehicleId=${vehicleId}`, function (data) {
+        if (data) {
+            $("#healthrecord-tab-pane").html(data);
+            restoreScrollPosition();
         }
     });
 }
@@ -221,8 +235,8 @@ function editVehicle(vehicleId) {
         if (data) {
             $("#editVehicleModalContent").html(data);
             initTagSelector($("#inputTag"), true);
-            initDatePicker($('#inputPurchaseDate'));
-            initDatePicker($('#inputSoldDate'));
+            initDatePicker($('#inputDateOfBirth'));
+            initDatePicker($('#inputAdoptionDate'));
             $('#editVehicleModal').modal('show');
         }
     });
@@ -231,7 +245,7 @@ function hideEditVehicleModal() {
     $('#editVehicleModal').modal('hide');
 }
 function deleteVehicle(vehicleId) {
-    confirmDelete("This will also delete all data tied to this vehicle. Deleted Vehicles and their associated data cannot be restored.", (result) => {
+    confirmDelete("This will also delete all data tied to this pet. Deleted Pets and their associated data cannot be restored.", (result) => {
         if (result.isConfirmed) {
             $.post('/Vehicle/DeleteVehicle', { vehicleId: vehicleId }, function (data) {
                 if (data.success) {

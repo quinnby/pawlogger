@@ -39,5 +39,29 @@ namespace CarCareTracker.Models
         /// Determines what is displayed in place of the license plate.
         /// </summary>
         public string VehicleIdentifier { get; set; } = "LicensePlate";
+
+        // Phase 2 - Pet profile fields
+        public string PetName { get; set; } = string.Empty;
+        public string Species { get; set; } = string.Empty;
+        public string Breed { get; set; } = string.Empty;
+        /// <summary>Male, Female, or Unknown</summary>
+        public string PetSex { get; set; } = string.Empty;
+        [JsonConverter(typeof(FromDateOptional))]
+        public string DateOfBirth { get; set; } = string.Empty;
+        public bool IsEstimatedAge { get; set; } = false;
+        /// <summary>Free-form string so units (lbs/kg) can be included.</summary>
+        public string CurrentWeight { get; set; } = string.Empty;
+        public string Color { get; set; } = string.Empty;
+        public string MicrochipNumber { get; set; } = string.Empty;
+        public bool IsSpayedNeutered { get; set; } = false;
+        public PetStatus PetStatus { get; set; } = PetStatus.Active;
+
+        // Phase 2 - Optional pet profile fields
+        [JsonConverter(typeof(FromDateOptional))]
+        public string AdoptionDate { get; set; } = string.Empty;
+        public string Source { get; set; } = string.Empty;
+        public string PrimaryVet { get; set; } = string.Empty;
+        public string EmergencyContact { get; set; } = string.Empty;
+        public string LicenseNumber { get; set; } = string.Empty;
     }
 }

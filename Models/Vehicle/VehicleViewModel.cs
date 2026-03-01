@@ -23,5 +23,13 @@
         public decimal CostPerMile { get; set; }
         public decimal TotalCost { get; set; }
         public string DistanceUnit { get; set; } = string.Empty;
+
+        // Phase 2 - Pet display fields
+        public string PetName { get; set; } = string.Empty;
+        public string Species { get; set; } = string.Empty;
+        public string Breed { get; set; } = string.Empty;
+        public string MicrochipNumber { get; set; } = string.Empty;
+        public string LicenseNumber { get; set; } = string.Empty;
+        public PetStatus PetStatus { get; set; } = PetStatus.Active;
     }
 }

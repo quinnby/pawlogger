@@ -84,152 +84,82 @@ function viewVehicle(vehicleId) {
 }
 function saveVehicle(isEdit) {
     var vehicleId = getVehicleModelData().id;
-    var vehicleYear = $("#inputYear").val();
-    var vehicleMake = $("#inputMake").val();
-    var vehicleModel = $("#inputModel").val();
-    var vehicleTags = $("#inputTag").val();
-    var vehiclePurchaseDate = $("#inputPurchaseDate").val();
-    var vehicleSoldDate = $("#inputSoldDate").val();
-    var vehicleLicensePlate = $("#inputLicensePlate").val();
-    var vehicleIsElectric = $("#inputFuelType").val() == 'Electric';
-    var vehicleIsDiesel = $("#inputFuelType").val() == 'Diesel';
-    var vehicleUseHours = $("#inputUseHours").is(":checked");
-    var vehicleOdometerOptional = $("#inputOdometerOptional").is(":checked");
-    var vehicleHasOdometerAdjustment = $("#inputHasOdometerAdjustment").is(':checked');
-    var vehicleOdometerMultiplier = $("#inputOdometerMultiplier").val();
-    var vehicleOdometerDifference = parseInt(globalParseFloat($("#inputOdometerDifference").val())).toString();
-    var vehiclePurchasePrice = $("#inputPurchasePrice").val();
-    var vehicleSoldPrice = $("#inputSoldPrice").val();
-    var vehicleIdentifier = $("#inputIdentifier").val();
-    var vehicleDashboardMetrics = $("#collapseMetricInfo :checked").map(function () {
-        return this.value;
-    }).toArray();
-    var extraFields = getAndValidateExtraFields();
-    //validate
+    // Phase 2 - Pet fields
+    var petName          = $("#inputPetName").val();
+    var species          = $("#inputSpecies").val();
+    var breed            = $("#inputBreed").val();
+    var color            = $("#inputColor").val();
+    var microchipNumber  = $("#inputMicrochipNumber").val();
+    var petSex           = $("#inputSex").val();
+    var isSpayedNeutered = $("#inputSpayedNeutered").is(":checked");
+    var dateOfBirth      = $("#inputDateOfBirth").val();
+    var isEstimatedAge   = $("#inputEstimatedAge").is(":checked");
+    var currentWeight    = $("#inputCurrentWeight").val();
+    var petStatus        = parseInt($("#inputPetStatus").val());
+    // Optional profile fields
+    var adoptionDate     = $("#inputAdoptionDate").val();
+    var source           = $("#inputSource").val();
+    var primaryVet       = $("#inputPrimaryVet").val();
+    var emergencyContact = $("#inputEmergencyContact").val();
+    var licenseNumber    = $("#inputLicenseNumber").val();
+    // Shared fields
+    var tags             = $("#inputTag").val();
+    var dashboardMetrics = $("#collapseMetricInfo :checked").map(function () { return this.value; }).toArray();
+    var extraFields      = getAndValidateExtraFields();
+
+    // Validation
     var hasError = false;
     if (extraFields.hasError) {
         hasError = true;
     }
-    if (vehicleYear.trim() == '' || parseInt(vehicleYear) < 1900) {
+    if (petName.trim() == '') {
         hasError = true;
-        $("#inputYear").addClass("is-invalid");
+        $("#inputPetName").addClass("is-invalid");
     } else {
-        $("#inputYear").removeClass("is-invalid");
+        $("#inputPetName").removeClass("is-invalid");
     }
-    if (vehicleMake.trim() == '') {
+    if (species.trim() == '') {
         hasError = true;
-        $("#inputMake").addClass("is-invalid");
+        $("#inputSpecies").addClass("is-invalid");
     } else {
-        $("#inputMake").removeClass("is-invalid");
+        $("#inputSpecies").removeClass("is-invalid");
     }
-    if (vehicleModel.trim() == '') {
-        hasError = true;
-        $("#inputModel").addClass("is-invalid");
-    } else {
-        $("#inputModel").removeClass("is-invalid");
-    }
-    if (vehicleIdentifier == "LicensePlate") {
-        if (vehicleLicensePlate.trim() == '') {
-            hasError = true;
-            $("#inputLicensePlate").addClass("is-invalid");
-        } else {
-            $("#inputLicensePlate").removeClass("is-invalid");
-        }
-    } else {
-        $("#inputLicensePlate").removeClass("is-invalid");
-        //check if extra fields have value.
-        var vehicleIdentifierExtraField = extraFields.extraFields.filter(x => x.name == vehicleIdentifier);
-        //check if extra field exists.
-        if (vehicleIdentifierExtraField.length == 0) {
-            $(".modal.fade.show").find(`.extra-field [placeholder='${vehicleIdentifier}']`).addClass("is-invalid");
-            hasError = true;
-        } else {
-            $(".modal.fade.show").find(`.extra-field [placeholder='${vehicleIdentifier}']`).removeClass("is-invalid");
-        }
-    }
-    
-    if (vehicleHasOdometerAdjustment) {
-        //validate odometer adjustments
-        //validate multiplier
-        if (vehicleOdometerMultiplier.trim() == '' || !isValidMoney(vehicleOdometerMultiplier)) {
-            hasError = true;
-            $("#inputOdometerMultiplier").addClass("is-invalid");
-        } else {
-            $("#inputOdometerMultiplier").removeClass("is-invalid");
-        }
-        //validate difference
-        if (vehicleOdometerDifference.trim() == '' || isNaN(vehicleOdometerDifference)) {
-            hasError = true;
-            $("#inputOdometerDifference").addClass("is-invalid");
-        } else {
-            $("#inputOdometerDifference").removeClass("is-invalid");
-        }
-    }
-    if (vehiclePurchasePrice.trim() != '' && !isValidMoney(vehiclePurchasePrice)) {
-        hasError = true;
-        $("#inputPurchasePrice").addClass("is-invalid");
-        $("#collapsePurchaseInfo").collapse('show');
-    } else {
-        $("#inputPurchasePrice").removeClass("is-invalid");
-    }
-    if (vehicleSoldPrice.trim() != '' && !isValidMoney(vehicleSoldPrice)) {
-        hasError = true;
-        $("#inputSoldPrice").addClass("is-invalid");
-        $("#collapsePurchaseInfo").collapse('show');
-    } else {
-        $("#inputSoldPrice").removeClass("is-invalid");
-    }
-    if (vehiclePurchaseDate.trim() != '' && vehicleSoldDate.trim() != '') {
-        let purchaseTicks = $("#inputPurchaseDate").datepicker('getDate')?.getTime();
-        let soldTicks = $("#inputSoldDate").datepicker('getDate')?.getTime();
-        if (!purchaseTicks || !soldTicks || purchaseTicks > soldTicks) {
-            hasError = true;
-            $("#inputPurchaseDate").addClass("is-invalid");
-            $("#inputSoldDate").addClass("is-invalid");
-            $("#collapsePurchaseInfo").collapse('show');
-        } else {
-            $("#inputPurchaseDate").removeClass("is-invalid");
-            $("#inputSoldDate").removeClass("is-invalid");
-        }
-    } else {
-        $("#inputPurchaseDate").removeClass("is-invalid");
-        $("#inputSoldDate").removeClass("is-invalid");
+    if (isNaN(petStatus)) {
+        petStatus = 0; // default to Active
     }
     if (hasError) {
         return;
     }
     $.post('/Vehicle/SaveVehicle', {
-        id: vehicleId,
-        imageLocation: uploadedFile,
-        mapLocation: uploadedMap,
-        year: vehicleYear,
-        make: vehicleMake,
-        model: vehicleModel,
-        licensePlate: vehicleLicensePlate,
-        isElectric: vehicleIsElectric,
-        isDiesel: vehicleIsDiesel,
-        tags: vehicleTags,
-        useHours: vehicleUseHours,
-        extraFields: extraFields.extraFields,
-        purchaseDate: vehiclePurchaseDate,
-        soldDate: vehicleSoldDate,
-        odometerOptional: vehicleOdometerOptional,
-        hasOdometerAdjustment: vehicleHasOdometerAdjustment,
-        odometerMultiplier: vehicleOdometerMultiplier,
-        odometerDifference: vehicleOdometerDifference,
-        purchasePrice: vehiclePurchasePrice,
-        soldPrice: vehicleSoldPrice,
-        dashboardMetrics: vehicleDashboardMetrics,
-        vehicleIdentifier: vehicleIdentifier
+        id:              vehicleId,
+        imageLocation:   uploadedFile,
+        petName:         petName,
+        species:         species,
+        breed:           breed,
+        color:           color,
+        microchipNumber: microchipNumber,
+        petSex:          petSex,
+        isSpayedNeutered: isSpayedNeutered,
+        dateOfBirth:     dateOfBirth,
+        isEstimatedAge:  isEstimatedAge,
+        currentWeight:   currentWeight,
+        petStatus:       petStatus,
+        adoptionDate:    adoptionDate,
+        source:          source,
+        primaryVet:      primaryVet,
+        emergencyContact: emergencyContact,
+        licenseNumber:   licenseNumber,
+        tags:            tags,
+        extraFields:     extraFields.extraFields,
+        dashboardMetrics: dashboardMetrics
     }, function (data) {
         if (data.success) {
             if (!isEdit) {
-                successToast("Vehicle Added");
+                successToast("Pet Added");
                 hideAddVehicleModal();
                 loadGarage();
-            }
-            else {
-                successToast("Vehicle Updated");
+            } else {
+                successToast("Pet Updated");
                 hideEditVehicleModal();
                 viewVehicle(vehicleId);
             }

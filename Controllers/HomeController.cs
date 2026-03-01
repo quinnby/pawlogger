@@ -88,7 +88,14 @@ namespace CarCareTracker.Controllers
                     ExtraFields = x.ExtraFields,
                     Tags = x.Tags,
                     DashboardMetrics = x.DashboardMetrics,
-                    VehicleIdentifier = x.VehicleIdentifier
+                    VehicleIdentifier = x.VehicleIdentifier,
+                    // Phase 2 - Pet fields
+                    PetName = x.PetName,
+                    Species = x.Species,
+                    Breed = x.Breed,
+                    MicrochipNumber = x.MicrochipNumber,
+                    LicenseNumber = x.LicenseNumber,
+                    PetStatus = x.PetStatus
                 };
                 //dashboard metrics
                 if (x.DashboardMetrics.Any())

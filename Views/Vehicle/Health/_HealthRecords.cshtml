@@ -1,0 +1,159 @@
+@using CarCareTracker.Helper
+@inject IConfigHelper config
+@inject ITranslationHelper translator
+@model List<HealthRecord>
+@{
+    var userConfig = config.GetUserConfig(User);
+    var userLanguage = userConfig.UserLanguage;
+    var recordTags = Model.SelectMany(x => x.Tags).Distinct();
+
+    // Category display helpers
+    string CategoryLabel(HealthRecordCategory c) => c switch
+    {
+        HealthRecordCategory.VetVisit        => "Vet Visit",
+        HealthRecordCategory.Vaccination     => "Vaccination",
+        HealthRecordCategory.Medication      => "Medication",
+        HealthRecordCategory.IllnessSymptom  => "Illness / Symptom",
+        HealthRecordCategory.ProcedureSurgery=> "Procedure / Surgery",
+        HealthRecordCategory.Dental          => "Dental",
+        HealthRecordCategory.Grooming        => "Grooming",
+        HealthRecordCategory.WeightCheck     => "Weight Check",
+        HealthRecordCategory.AllergyReaction => "Allergy / Reaction",
+        HealthRecordCategory.LabResult       => "Lab Result",
+        HealthRecordCategory.Licensing       => "Licensing",
+        HealthRecordCategory.PreventiveCare  => "Preventive Care",
+        HealthRecordCategory.BehavioralNote  => "Behavioral Note",
+        _                                    => "Misc. Care"
+    };
+    string CategoryBadge(HealthRecordCategory c) => c switch
+    {
+        HealthRecordCategory.VetVisit        => "bg-danger",
+        HealthRecordCategory.Vaccination     => "bg-primary",
+        HealthRecordCategory.Medication      => "bg-secondary",
+        HealthRecordCategory.IllnessSymptom  => "bg-warning text-dark",
+        HealthRecordCategory.ProcedureSurgery=> "bg-danger",
+        HealthRecordCategory.Dental          => "bg-info text-dark",
+        HealthRecordCategory.Grooming        => "bg-success",
+        HealthRecordCategory.WeightCheck     => "bg-secondary",
+        HealthRecordCategory.AllergyReaction => "bg-warning text-dark",
+        HealthRecordCategory.LabResult       => "bg-info text-dark",
+        HealthRecordCategory.Licensing       => "bg-secondary",
+        HealthRecordCategory.PreventiveCare  => "bg-success",
+        HealthRecordCategory.BehavioralNote  => "bg-secondary",
+        _                                    => "bg-secondary"
+    };
+    string StatusBadge(HealthRecordStatus s) => s switch
+    {
+        HealthRecordStatus.Open          => "bg-warning text-dark",
+        HealthRecordStatus.Completed     => "bg-success",
+        HealthRecordStatus.Informational => "bg-info text-dark",
+        _                                => "bg-secondary"
+    };
+}
+<div class="d-flex flex-column vehicleTabPane">
+<div class="row">
+    <div class="d-flex justify-content-between">
+        <div class="d-flex align-items-center flex-wrap gap-2">
+            <span class="badge bg-success" data-aggregate-type="count">@($"# of Health Records: {Model.Count()}")</span>
+            <span class="badge bg-primary" data-aggregate-type="sum">@($"Total: {Model.Sum(x => x.Cost).ToString("C")}")</span>
+            @foreach (string recordTag in recordTags)
+            {
+                <span onclick="filterTable('healthrecord-tab-pane', this)" class="user-select-none rounded-pill badge bg-secondary tagfilter" style="cursor:pointer;">@recordTag</span>
+            }
+            <datalist id="tagList">
+                @foreach (string recordTag in recordTags)
+                {
+                    <!option value="@recordTag"></!option>
+                }
+            </datalist>
+        </div>
+        <div class="lubelogger-record-add">
+            <div class="btn-group">
+                <button onclick="showAddHealthRecordModal()" class="btn btn-primary btn-md mt-1 mb-1"><i class="bi bi-heart-pulse me-2"></i>Add Health Record</button>
+                <button type="button" class="btn btn-md btn-primary btn-md mt-1 mb-1 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu record-dropdown">
+                    <li><a class="dropdown-item" href="#" onclick="printTab()">Print</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="searchTableRows('healthrecord-tab-pane')">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row vehicleDetailTabContainer flex-grow-1">
+    <div class="col-12">
+        @if (Model.Any())
+        {
+        <table class="table table-hover">
+            <thead class="sticky-top">
+                <tr class="d-flex">
+                    <th scope="col" class="col-2 col-xl-1 flex-grow-1 text-truncate">Date</th>
+                    <th scope="col" class="col-2 col-xl-2 text-truncate">Category</th>
+                    <th scope="col" class="col-3 text-truncate">Title</th>
+                    <th scope="col" class="col-2 text-truncate d-none d-md-table-cell">Provider</th>
+                    <th scope="col" class="col-1 text-truncate d-none d-sm-table-cell">Cost</th>
+                    <th scope="col" class="col-1 text-truncate d-none d-lg-table-cell">Status</th>
+                    <th scope="col" class="col-1 text-truncate d-none d-lg-table-cell">Follow-Up</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (HealthRecord record in Model)
+                {
+                    <tr class="d-flex user-select-none" style="cursor:pointer;"
+                        data-rowId="@record.Id"
+                        data-tags='@string.Join(" ", record.Tags)'
+                        onclick="handleTableRowClick(this, showEditHealthRecordModal, @record.Id)">
+                        <td class="col-2 col-xl-1 flex-grow-1 text-truncate">@record.Date.ToShortDateString()</td>
+                        <td class="col-2 col-xl-2 text-truncate">
+                            <span class="badge @CategoryBadge(record.Category)">@CategoryLabel(record.Category)</span>
+                        </td>
+                        <td class="col-3 text-truncate">
+                            @record.Title
+                            @if (!string.IsNullOrWhiteSpace(record.Notes))
+                            {
+                                <i class="bi bi-chat-text ms-1 text-muted" title="Has notes"></i>
+                            }
+                            @if (record.Files.Any())
+                            {
+                                <i class="bi bi-paperclip ms-1 text-muted" title="Has attachments"></i>
+                            }
+                        </td>
+                        <td class="col-2 text-truncate d-none d-md-table-cell">@record.Provider</td>
+                        <td class="col-1 text-truncate d-none d-sm-table-cell">@(record.Cost == 0 ? "-" : record.Cost.ToString("C"))</td>
+                        <td class="col-1 text-truncate d-none d-lg-table-cell">
+                            <span class="badge @StatusBadge(record.Status)">@record.Status.ToString()</span>
+                        </td>
+                        <td class="col-1 text-truncate d-none d-lg-table-cell">
+                            @if (record.FollowUpRequired && !string.IsNullOrWhiteSpace(record.FollowUpDate))
+                            {
+                                <span class="badge bg-warning text-dark">@record.FollowUpDate</span>
+                            }
+                            else if (record.FollowUpRequired)
+                            {
+                                <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle"></i></span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        } else {
+            <div class="d-flex justify-content-center align-items-center mt-4">
+                <div class="text-center text-muted">
+                    <i class="bi bi-heart-pulse display-4"></i>
+                    <p class="mt-2">No health records yet. Add the first one!</p>
+                    <button onclick="showAddHealthRecordModal()" class="btn btn-outline-primary"><i class="bi bi-plus-lg me-2"></i>Add Health Record</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+</div>
+
+<div class="modal fade" data-bs-focus="false" id="healthRecordModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" id="healthRecordModalContent">
+        </div>
+    </div>
+</div>

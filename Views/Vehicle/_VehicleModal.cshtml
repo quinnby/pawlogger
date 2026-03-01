@@ -12,137 +12,135 @@
     }
 }
 <div class="modal-header">
-    <h5 class="modal-title" id="addVehicleModalLabel">@(isNew ? translator.Translate(userLanguage, "Add New Vehicle") : translator.Translate(userLanguage, "Edit Vehicle"))</h5>
+    <h5 class="modal-title" id="addVehicleModalLabel">@(isNew ? translator.Translate(userLanguage, "Add New Pet") : translator.Translate(userLanguage, "Edit Pet"))</h5>
     @if (isNew)
     {
         <button type="button" class="btn-close" onclick="hideAddVehicleModal()" aria-label="Close"></button>
     }
-    else if (!isNew)
+    else
     {
         <button type="button" class="btn-close" onclick="hideEditVehicleModal()" aria-label="Close"></button>
     }
-    
 </div>
 <div class="modal-body" onkeydown="handleEnter(this)">
     <form class="form-inline">
         <div class="form-group">
             <div class="row">
+                <!-- Left column: identity fields -->
                 <div class="col-12 col-md-6">
-                    <label for="inputYear">@translator.Translate(userLanguage, "Year")</label>
-                    <input type="number" inputmode="numeric" id="inputYear" class="form-control" placeholder="@translator.Translate(userLanguage, "Year(must be after 1900)")" value="@(isNew ? "" : Model.Year)">
-                    <label for="inputMake">@translator.Translate(userLanguage, "Make")</label>
-                    <input type="text" id="inputMake" class="form-control" placeholder="@translator.Translate(userLanguage, "Make")" value="@Model.Make">
-                    <label for="inputModel">@translator.Translate(userLanguage, "Model")</label>
-                    <input type="text" id="inputModel" class="form-control" placeholder="@translator.Translate(userLanguage, "Model")" value="@Model.Model">
-                    <label for="inputLicensePlate">@translator.Translate(userLanguage, "License Plate")</label>
-                    <input type="text" id="inputLicensePlate" class="form-control" placeholder="@translator.Translate(userLanguage, "License Plate")" value="@Model.LicensePlate">
+                    <label for="inputPetName">@translator.Translate(userLanguage, "Name")</label>
+                    <input type="text" id="inputPetName" class="form-control" placeholder="@translator.Translate(userLanguage, "Name")" value="@Model.PetName">
+
+                    <label for="inputSpecies">@translator.Translate(userLanguage, "Species")</label>
+                    <input type="text" id="inputSpecies" class="form-control" placeholder="@translator.Translate(userLanguage, "e.g. Dog, Cat, Rabbit")" value="@Model.Species">
+
+                    <label for="inputBreed">@translator.Translate(userLanguage, "Breed")</label>
+                    <input type="text" id="inputBreed" class="form-control" placeholder="@translator.Translate(userLanguage, "Breed(optional)")" value="@Model.Breed">
+
+                    <label for="inputColor">@translator.Translate(userLanguage, "Color / Markings")</label>
+                    <input type="text" id="inputColor" class="form-control" placeholder="@translator.Translate(userLanguage, "Color / Markings(optional)")" value="@Model.Color">
+
+                    <label for="inputMicrochipNumber">@translator.Translate(userLanguage, "Microchip Number")</label>
+                    <input type="text" id="inputMicrochipNumber" class="form-control" placeholder="@translator.Translate(userLanguage, "Microchip Number(optional)")" value="@Model.MicrochipNumber">
+
                     @await Html.PartialAsync("_ExtraField", Model.ExtraFields)
-                    <label for="inputIdentifier" class="@(!Model.ExtraFields.Any() ? "d-none" : "")">@translator.Translate(userLanguage, "Identifier")</label>
-                    <select class="form-select @(!Model.ExtraFields.Any() ? "d-none" : "")" id="inputIdentifier" )>
-                        <!option value="LicensePlate" @(Model.VehicleIdentifier == "LicensePlate" ? "selected" : "")>@translator.Translate(userLanguage, "License Plate")</!option>
-                        @foreach(ExtraField field in Model.ExtraFields)
-                        {
-                            <!option value="@field.Name" @(Model.VehicleIdentifier == field.Name ? "selected" : "")>@field.Name</!option>
-                        }
-                    </select>
                 </div>
+                <!-- Right column: profile fields -->
                 <div class="col-12 col-md-6">
-                    <label for="inputFuelType">@translator.Translate(userLanguage, "Fuel Type")</label>
-                    <select class="form-select" id="inputFuelType")>
-                        <!option value="Gasoline" @(!Model.IsDiesel && !Model.IsElectric ? "selected" : "")>@translator.Translate(userLanguage, "Gasoline")</!option>
-                        <!option value="Diesel" @(Model.IsDiesel ? "selected" : "")>@translator.Translate(userLanguage, "Diesel")</!option>
-                        <!option value="Electric" @(Model.IsElectric ? "selected" : "")>@translator.Translate(userLanguage, "Electric")</!option>
+                    <label for="inputSex">@translator.Translate(userLanguage, "Sex")</label>
+                    <select class="form-select" id="inputSex">
+                        <!option value="Unknown" @(Model.PetSex == "Unknown" || string.IsNullOrWhiteSpace(Model.PetSex) ? "selected" : "")>@translator.Translate(userLanguage, "Unknown")</!option>
+                        <!option value="Male"    @(Model.PetSex == "Male"    ? "selected" : "")>@translator.Translate(userLanguage, "Male")</!option>
+                        <!option value="Female"  @(Model.PetSex == "Female"  ? "selected" : "")>@translator.Translate(userLanguage, "Female")</!option>
                     </select>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" id="inputUseHours" checked="@Model.UseHours">
-                        <label class="form-check-label" for="inputUseHours">@translator.Translate(userLanguage, "Use Engine Hours")</label>
+
+                    <div class="form-check form-switch mt-1">
+                        <input class="form-check-input" type="checkbox" role="switch" id="inputSpayedNeutered" checked="@Model.IsSpayedNeutered">
+                        <label class="form-check-label" for="inputSpayedNeutered">@translator.Translate(userLanguage, "Spayed / Neutered")</label>
                     </div>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" id="inputHasVehicleMap" onchange="handleVehicleMapCheckChanged()" checked="@(!string.IsNullOrWhiteSpace(Model.MapLocation))">
-                        <label class="form-check-label" for="inputHasVehicleMap">@translator.Translate(userLanguage, "Vehicle Map")</label>
+
+                    <label for="inputDateOfBirth" class="mt-1">@translator.Translate(userLanguage, "Date of Birth")</label>
+                    <div class="input-group">
+                        <input type="text" id="inputDateOfBirth" class="form-control" placeholder="@translator.Translate(userLanguage, "Date of Birth(optional)")" value="@Model.DateOfBirth">
+                        <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
                     </div>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" id="inputOdometerOptional" checked="@Model.OdometerOptional">
-                        <label class="form-check-label" for="inputOdometerOptional">@translator.Translate(userLanguage, "Odometer Optional")</label>
+                    <div class="form-check form-switch mt-1">
+                        <input class="form-check-input" type="checkbox" role="switch" id="inputEstimatedAge" checked="@Model.IsEstimatedAge">
+                        <label class="form-check-label" for="inputEstimatedAge">@translator.Translate(userLanguage, "Age is Estimated")</label>
                     </div>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" onchange="toggleOdometerAdjustment()" id="inputHasOdometerAdjustment" checked="@Model.HasOdometerAdjustment">
-                        <label class="form-check-label" for="inputHasOdometerAdjustment">@translator.Translate(userLanguage, "Odometer Adjustments")</label>
-                    </div>
-                    <div class="collapse @(Model.HasOdometerAdjustment ? "show" : "")" id="odometerAdjustments">
-                        <div>
-                            <label for="inputOdometerMultiplier">@translator.Translate(userLanguage, "Odometer Multiplier")</label>
-                            <input type="text" id="inputOdometerMultiplier" class="form-control" placeholder="@translator.Translate(userLanguage, "Odometer Multiplier")" value="@Model.OdometerMultiplier">
-                            <label for="inputOdometerDifference">@translator.Translate(userLanguage, "Odometer Difference")</label>
-                            <input type="text" id="inputOdometerDifference" class="form-control" placeholder="@translator.Translate(userLanguage, "Odometer Difference")" value="@Model.OdometerDifference">
-                        </div>
-                    </div>
-                    <div class="accordion accordion-flush" id="vehicleModalAccordion">
+
+                    <label for="inputCurrentWeight" class="mt-1">@translator.Translate(userLanguage, "Current Weight")</label>
+                    <input type="text" id="inputCurrentWeight" class="form-control" placeholder="@translator.Translate(userLanguage, "e.g. 12.5 lbs(optional)")" value="@Model.CurrentWeight">
+
+                    <label for="inputPetStatus" class="mt-1">@translator.Translate(userLanguage, "Status")</label>
+                    <select class="form-select" id="inputPetStatus">
+                        <!option value="@((int)PetStatus.Active)"   @(Model.PetStatus == PetStatus.Active   ? "selected" : "")>@translator.Translate(userLanguage, "Active")</!option>
+                        <!option value="@((int)PetStatus.Archived)" @(Model.PetStatus == PetStatus.Archived ? "selected" : "")>@translator.Translate(userLanguage, "Archived")</!option>
+                        <!option value="@((int)PetStatus.Rehomed)"  @(Model.PetStatus == PetStatus.Rehomed  ? "selected" : "")>@translator.Translate(userLanguage, "Rehomed")</!option>
+                        <!option value="@((int)PetStatus.Deceased)" @(Model.PetStatus == PetStatus.Deceased ? "selected" : "")>@translator.Translate(userLanguage, "Deceased")</!option>
+                    </select>
+
+                    <!-- Optional profile accordion -->
+                    <div class="accordion accordion-flush mt-2" id="petProfileAccordion">
                         <div class="accordion-item">
                             <div class="accordion-header">
-                                <button class="accordion-button skinny collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePurchaseInfo">
-                                    @translator.Translate(userLanguage, "Purchase/Sold Information(optional)")
+                                <button class="accordion-button skinny collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProfileInfo">
+                                    @translator.Translate(userLanguage, "Adoption / Profile Info(optional)")
                                 </button>
                             </div>
-                            <div id="collapsePurchaseInfo" class="accordion-collapse collapse" data-bs-parent="#vehicleModalAccordion">
-                                <label for="inputPurchaseDate">@translator.Translate(userLanguage, "Purchased Date(optional)")</label>
+                            <div id="collapseProfileInfo" class="accordion-collapse collapse" data-bs-parent="#petProfileAccordion">
+                                <label for="inputAdoptionDate">@translator.Translate(userLanguage, "Adoption Date")</label>
                                 <div class="input-group">
-                                    <input type="text" id="inputPurchaseDate" class="form-control" placeholder="@translator.Translate(userLanguage, "Purchased Date")" value="@Model.PurchaseDate">
+                                    <input type="text" id="inputAdoptionDate" class="form-control" placeholder="@translator.Translate(userLanguage, "Adoption Date")" value="@Model.AdoptionDate">
                                     <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
                                 </div>
-                                <label for="inputSoldDate">@translator.Translate(userLanguage, "Sold Date(optional)")</label>
-                                <div class="input-group">
-                                    <input type="text" id="inputSoldDate" class="form-control" placeholder="@translator.Translate(userLanguage, "Sold Date")" value="@Model.SoldDate">
-                                    <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
-                                </div>
-                                <label for="inputPurchasePrice">@translator.Translate(userLanguage, "Purchased Price(optional)")</label>
-                                <input type="text" inputmode="decimal" onkeydown="interceptDecimalKeys(event)" onkeyup="fixDecimalInput(this, 2)" id="inputPurchasePrice" class="form-control" placeholder="@translator.Translate(userLanguage, "Purchased Price")" value="@(Model.PurchasePrice == default ? "" : Model.PurchasePrice)">
-                                <label for="inputSoldPrice">@translator.Translate(userLanguage, "Sold Price(optional)")</label>
-                                <input type="text" inputmode="decimal" onkeydown="interceptDecimalKeys(event)" onkeyup="fixDecimalInput(this, 2)" id="inputSoldPrice" class="form-control" placeholder="@translator.Translate(userLanguage, "Sold Price")" value="@(Model.SoldPrice == default ? "" : Model.SoldPrice)">
+                                <label for="inputSource">@translator.Translate(userLanguage, "Source / Breeder / Shelter")</label>
+                                <input type="text" id="inputSource" class="form-control" placeholder="@translator.Translate(userLanguage, "Source(optional)")" value="@Model.Source">
+                                <label for="inputPrimaryVet">@translator.Translate(userLanguage, "Primary Vet / Clinic")</label>
+                                <input type="text" id="inputPrimaryVet" class="form-control" placeholder="@translator.Translate(userLanguage, "Vet name or clinic(optional)")" value="@Model.PrimaryVet">
+                                <label for="inputEmergencyContact">@translator.Translate(userLanguage, "Emergency Contact")</label>
+                                <input type="text" id="inputEmergencyContact" class="form-control" placeholder="@translator.Translate(userLanguage, "Emergency contact(optional)")" value="@Model.EmergencyContact">
+                                <label for="inputLicenseNumber">@translator.Translate(userLanguage, "License / Tag Number")</label>
+                                <input type="text" id="inputLicenseNumber" class="form-control" placeholder="@translator.Translate(userLanguage, "License number(optional)")" value="@Model.LicenseNumber">
                             </div>
                         </div>
                     </div>
-                    <div class="accordion accordion-flush" id="vehicleModalMetricAccordion">
+
+                    <!-- Dashboard metrics: only TotalCost is pet-relevant in Phase 2 -->
+                    <div class="accordion accordion-flush mt-2" id="petMetricAccordion">
                         <div class="accordion-item">
                             <div class="accordion-header">
                                 <button class="accordion-button skinny collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMetricInfo">
                                     @translator.Translate(userLanguage, "Dashboard Metrics")
                                 </button>
                             </div>
-                            <div id="collapseMetricInfo" class="accordion-collapse collapse" data-bs-parent="#vehicleModalMetricAccordion">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch" id="inputMetricDefault" value="@DashboardMetric.Default" checked="@Model.DashboardMetrics.Contains(DashboardMetric.Default)">
-                                    <label class="form-check-label" for="inputMetricDefault">@translator.Translate(userLanguage, "Last Odometer")</label>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch" id="inputMetricCostPerMile" value="@DashboardMetric.CostPerMile" checked="@Model.DashboardMetrics.Contains(DashboardMetric.CostPerMile)">
-                                    <label class="form-check-label" for="inputMetricCostPerMile">@translator.Translate(userLanguage, "Total Cost / Total Distance Driven")</label>
-                                </div>
+                            <div id="collapseMetricInfo" class="accordion-collapse collapse" data-bs-parent="#petMetricAccordion">
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" role="switch" id="inputMetricTotalCost" value="@DashboardMetric.TotalCost" checked="@Model.DashboardMetrics.Contains(DashboardMetric.TotalCost)">
-                                    <label class="form-check-label" for="inputMetricTotalCost">@translator.Translate(userLanguage, "Total Cost")</label>
+                                    <label class="form-check-label" for="inputMetricTotalCost">@translator.Translate(userLanguage, "Total Care Costs")</label>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <label for="inputTag">@translator.Translate(userLanguage, "Tags(optional)")</label>
+
+                    <label for="inputTag" class="mt-2">@translator.Translate(userLanguage, "Tags(optional)")</label>
                     <select multiple class="form-select" id="inputTag">
                         @foreach (string tag in Model.Tags)
                         {
                             <!option value="@tag">@tag</!option>
                         }
                     </select>
+
                     @if (!string.IsNullOrWhiteSpace(Model.ImageLocation))
                     {
-                        <label for="inputImage">@translator.Translate(userLanguage, "Replace picture(optional)")</label>
+                        <label for="inputImage" class="mt-1">@translator.Translate(userLanguage, "Replace picture(optional)")</label>
                         <input onChange="uploadThumbnail(this)" type="file" accept=".png,.jpg,.jpeg" class="form-control-file" id="inputImage">
                     }
                     else
                     {
-                        <label for="inputImage">@translator.Translate(userLanguage, "Upload a picture(optional)")</label>
+                        <label for="inputImage" class="mt-1">@translator.Translate(userLanguage, "Upload a picture(optional)")</label>
                         <input onChange="uploadThumbnail(this)" type="file" accept=".png,.jpg,.jpeg" class="form-control-file" id="inputImage">
                     }
-                    <input style="display:none;" onChange="uploadMap(this)" type="file" accept=".json" class="form-control-file" id="inputMap">
                 </div>
             </div>
         </div>
@@ -152,18 +150,19 @@
     @if (isNew)
     {
         <button type="button" class="btn btn-secondary" onclick="hideAddVehicleModal()">@translator.Translate(userLanguage, "Cancel")</button>
-        <button type="button" onclick="saveVehicle(false)" class="btn btn-primary">@translator.Translate(userLanguage, "Add New Vehicle")</button>
-    } else if (!isNew)
+        <button type="button" onclick="saveVehicle(false)" class="btn btn-primary">@translator.Translate(userLanguage, "Add Pet")</button>
+    }
+    else
     {
-        <button type="button" class="btn btn-danger me-auto" onclick="deleteVehicle(@Model.Id)">@translator.Translate(userLanguage, "Delete Vehicle")</button>
+        <button type="button" class="btn btn-danger me-auto" onclick="deleteVehicle(@Model.Id)">@translator.Translate(userLanguage, "Delete Pet")</button>
         <button type="button" class="btn btn-secondary" onclick="hideEditVehicleModal()">@translator.Translate(userLanguage, "Cancel")</button>
-        <button type="button" onclick="saveVehicle(true)" class="btn btn-primary">@translator.Translate(userLanguage, "Save Vehicle")</button>
+        <button type="button" onclick="saveVehicle(true)" class="btn btn-primary">@translator.Translate(userLanguage, "Save Pet")</button>
     }
 </div>
 <script>
     var uploadedFile = "@Model.ImageLocation";
     var uploadedMap = "@Model.MapLocation";
     function getVehicleModelData() {
-        return { id: @Model.Id}
+        return { id: @Model.Id }
     }
 </script>

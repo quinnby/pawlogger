@@ -45,16 +45,16 @@
     <div class="row gy-3 align-items-stretch vehiclesContainer pb-2 @(renderTopRow ? "" : "mt-2")">
         @foreach (VehicleViewModel vehicle in Model)
         {
-            @if (!(userConfig.HideSoldVehicles && !string.IsNullOrWhiteSpace(vehicle.SoldDate)))
+            @if (!(userConfig.HideSoldVehicles && vehicle.PetStatus != PetStatus.Active))
             {
                 <div class="col-lg-4 col-md-6 col-12 garage-item user-select-none" onclick="handleGarageItemClick(this, @vehicle.Id)" oncontextmenu="showGarageContextMenu(this)" data-tags='@string.Join(" ", vehicle.Tags)' data-rowId="@vehicle.Id" id="gridVehicle_@vehicle.Id" data-extra-fields="@await Html.PartialAsync("_VehicleExtraFields", vehicle.ExtraFields)" onmousemove="garageRangeMouseMove(this)" ontouchstart="detectGarageLongTouch(this)" ontouchend="detectGarageTouchEndPremature(this)">
                     <div class="card">
-                        <img src="@vehicle.ImageLocation" style="height:145px; object-fit:cover; pointer-events:none; @(string.IsNullOrWhiteSpace(vehicle.SoldDate) ? "" : "filter: grayscale(100%);")" />
-                        @if (!string.IsNullOrWhiteSpace(vehicle.SoldDate))
+                        <img src="@vehicle.ImageLocation" style="height:145px; object-fit:cover; pointer-events:none; @(vehicle.PetStatus == PetStatus.Active ? "" : "filter: grayscale(100%);")" />
+                        @if (vehicle.PetStatus != PetStatus.Active)
                         {
                             <div class="vehicle-sold-banner">
                                 <p class='display-6 mb-0'></p>
-                                <span class="badge garage-metric-badge">@($"{translator.Translate(userLanguage, "SOLD")} {vehicle.SoldDate}")</span>
+                                <span class="badge garage-metric-badge">@vehicle.PetStatus.ToString().ToUpper()</span>
                             </div>
                         } else if (vehicle.DashboardMetrics.Any())
                         {
@@ -78,9 +78,8 @@
                             </div>
                         }
                         <div class="card-body">
-                            <small class="garage-item-attribute card-title text-truncate garage-item-year" data-unit="@vehicle.Year">@($"{vehicle.Year}")</small>
-                            <h5 class="garage-item-attribute card-title text-truncate">@($"{vehicle.Make}")</h5>
-                            <h5 class="garage-item-attribute card-title text-truncate">@($"{vehicle.Model}")</h5>
+                            <h5 class="garage-item-attribute card-title text-truncate">@(!string.IsNullOrWhiteSpace(vehicle.PetName) ? vehicle.PetName : $"{vehicle.Year} {vehicle.Make} {vehicle.Model}")</h5>
+                            <small class="garage-item-attribute card-text text-truncate">@vehicle.Species@(!string.IsNullOrWhiteSpace(vehicle.Breed) ? $" · {vehicle.Breed}" : "")</small>
                             <small class="garage-item-attribute card-text text-truncate">@StaticHelper.GetVehicleIdentifier(vehicle)</small>
                         </div>
                     </div>

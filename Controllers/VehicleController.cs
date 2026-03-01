@@ -42,6 +42,7 @@ namespace CarCareTracker.Controllers
         private readonly IVehicleLogic _vehicleLogic;
         private readonly IEventLogic _eventLogic;
         private readonly IExtraFieldDataAccess _extraFieldDataAccess;
+        private readonly IHealthRecordDataAccess _healthRecordDataAccess;
 
         public VehicleController(ILogger<VehicleController> logger,
             IFileHelper fileHelper,
@@ -70,7 +71,8 @@ namespace CarCareTracker.Controllers
             IConfigHelper config,
             IInspectionRecordDataAccess inspectionRecordDataAccess,
             IInspectionRecordTemplateDataAccess inspectionRecordTemplateDataAccess,
-            IEquipmentRecordDataAccess equipmentRecordDataAccess)
+            IEquipmentRecordDataAccess equipmentRecordDataAccess,
+            IHealthRecordDataAccess healthRecordDataAccess)
         {
             _logger = logger;
             _dataAccess = dataAccess;
@@ -99,7 +101,8 @@ namespace CarCareTracker.Controllers
             _vehicleLogic = vehicleLogic;
             _eventLogic = eventLogic;
             _webEnv = webEnv;
-            _config = config; 
+            _config = config;
+            _healthRecordDataAccess = healthRecordDataAccess;
         }
         private int GetUserID()
         {
@@ -179,6 +182,7 @@ namespace CarCareTracker.Controllers
                 _equipmentRecordDataAccess.DeleteAllEquipmentRecordsByVehicleId(vehicleId) &&
                 _supplyRecordDataAccess.DeleteAllSupplyRecordsByVehicleId(vehicleId) &&
                 _odometerRecordDataAccess.DeleteAllOdometerRecordsByVehicleId(vehicleId) &&
+                _healthRecordDataAccess.DeleteAllHealthRecordsByVehicleId(vehicleId) &&
                 _userLogic.DeleteAllAccessToVehicle(vehicleId) &&
                 _dataAccess.DeleteVehicle(vehicleId);
             if (result)
@@ -209,6 +213,7 @@ namespace CarCareTracker.Controllers
                     _equipmentRecordDataAccess.DeleteAllEquipmentRecordsByVehicleId(vehicleId) &&
                     _supplyRecordDataAccess.DeleteAllSupplyRecordsByVehicleId(vehicleId) &&
                     _odometerRecordDataAccess.DeleteAllOdometerRecordsByVehicleId(vehicleId) &&
+                    _healthRecordDataAccess.DeleteAllHealthRecordsByVehicleId(vehicleId) &&
                     _userLogic.DeleteAllAccessToVehicle(vehicleId) &&
                     _dataAccess.DeleteVehicle(vehicleId);
                 if (result)

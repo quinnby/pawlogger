@@ -1,0 +1,148 @@
+@using CarCareTracker.Helper
+@inject IConfigHelper config
+@inject ITranslationHelper translator
+@model HealthRecordInput
+@{
+    var isNew = Model.Id == 0;
+    var userConfig = config.GetUserConfig(User);
+    var userLanguage = userConfig.UserLanguage;
+}
+<div class="modal-header">
+    <h5 class="modal-title">@(isNew ? "Add New Health Record" : "Edit Health Record")</h5>
+    <button type="button" class="btn-close" onclick="hideAddHealthRecordModal()" aria-label="Close"></button>
+</div>
+<div class="modal-body" onkeydown="handleEnter(this)">
+    <form>
+        <div class="form-group">
+            <div class="row">
+                <!-- LEFT COLUMN -->
+                <div class="col-md-6 col-12">
+                    <input type="text" id="workAroundInput" style="height:0px; width:0px; display:none;">
+
+                    <label for="healthRecordDate">Date</label>
+                    <div class="input-group">
+                        <input type="text" id="healthRecordDate" class="form-control" placeholder="Date of health event" value="@Model.Date">
+                        <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                    </div>
+
+                    <label for="healthRecordCategory" class="mt-2">Category</label>
+                    <select id="healthRecordCategory" class="form-select">
+                        @foreach (HealthRecordCategory category in Enum.GetValues(typeof(HealthRecordCategory)))
+                        {
+                            string label = category switch
+                            {
+                                HealthRecordCategory.VetVisit         => "Vet Visit",
+                                HealthRecordCategory.Vaccination      => "Vaccination",
+                                HealthRecordCategory.Medication       => "Medication",
+                                HealthRecordCategory.IllnessSymptom   => "Illness / Symptom",
+                                HealthRecordCategory.ProcedureSurgery => "Procedure / Surgery",
+                                HealthRecordCategory.Dental           => "Dental",
+                                HealthRecordCategory.Grooming         => "Grooming",
+                                HealthRecordCategory.WeightCheck      => "Weight Check",
+                                HealthRecordCategory.AllergyReaction  => "Allergy / Reaction",
+                                HealthRecordCategory.LabResult        => "Lab Result",
+                                HealthRecordCategory.Licensing        => "Licensing",
+                                HealthRecordCategory.PreventiveCare   => "Preventive Care",
+                                HealthRecordCategory.BehavioralNote   => "Behavioral Note",
+                                _                                     => "Miscellaneous Care"
+                            };
+                            <!option value="@((int)category)" @(Model.Category == category ? "selected" : "")>@label</!option>
+                        }
+                    </select>
+
+                    <label for="healthRecordTitle" class="mt-2">Title</label>
+                    <input type="text" id="healthRecordTitle" class="form-control" placeholder="e.g. Annual Wellness Exam" value="@Model.Title">
+
+                    <label for="healthRecordDescription" class="mt-2">Details (optional)</label>
+                    <input type="text" id="healthRecordDescription" class="form-control" placeholder="Additional clinical details" value="@Model.Description">
+
+                    <label for="healthRecordCost" class="mt-2">Cost (optional)</label>
+                    <input type="text" inputmode="decimal" onkeydown="interceptDecimalKeys(event)" onkeyup="fixDecimalInput(this, 2)"
+                           id="healthRecordCost" class="form-control" placeholder="0.00" value="@(isNew ? "" : Model.Cost)">
+
+                    <label for="healthRecordProvider" class="mt-2">Provider / Clinic (optional)</label>
+                    <input type="text" id="healthRecordProvider" class="form-control" placeholder="Vet, groomer, clinic name" value="@Model.Provider">
+
+                    <label for="healthRecordTag" class="mt-2">Tags (optional)</label>
+                    <select multiple class="form-select" id="healthRecordTag">
+                        @foreach (string tag in Model.Tags)
+                        {
+                            <option value="@tag">@tag</option>
+                        }
+                    </select>
+
+                    @await Html.PartialAsync("_ExtraField", Model.ExtraFields)
+                </div>
+
+                <!-- RIGHT COLUMN -->
+                <div class="col-md-6 col-12">
+                    <label for="healthRecordStatus" class="mt-2 mt-md-0">Status</label>
+                    <select id="healthRecordStatus" class="form-select">
+                        <!option value="0" @(Model.Status == HealthRecordStatus.Open ? "selected" : "")>Open</!option>
+                        <!option value="1" @(Model.Status == HealthRecordStatus.Completed ? "selected" : "")>Completed</!option>
+                        <!option value="2" @(Model.Status == HealthRecordStatus.Informational ? "selected" : "")>Informational</!option>
+                    </select>
+
+                    <label for="healthRecordNotes" class="mt-2">Notes (optional)<a class="link-underline link-underline-opacity-0" onclick="showLinks(this)"><i class="bi bi-markdown ms-2"></i></a></label>
+                    <textarea id="healthRecordNotes" class="form-control" rows="4">@Model.Notes</textarea>
+
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" id="healthRecordFollowUpRequired" @(Model.FollowUpRequired ? "checked" : "")
+                               onchange="toggleHealthFollowUpDate(this)">
+                        <label class="form-check-label" for="healthRecordFollowUpRequired">
+                            Follow-up Required
+                        </label>
+                    </div>
+
+                    <div id="healthFollowUpDateRow" @(Model.FollowUpRequired ? "" : "style=\"display:none;\"")>
+                        <label for="healthRecordFollowUpDate" class="mt-2">Follow-up Date</label>
+                        <div class="input-group">
+                            <input type="text" id="healthRecordFollowUpDate" class="form-control" placeholder="Date of follow-up" value="@Model.FollowUpDate">
+                            <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="mt-2">
+                        @await Html.PartialAsync("_UploadedFiles", Model.Files)
+                        @await Html.PartialAsync("_FileUploader", Model.Files.Any())
+                    </div>
+                    <div id="filesPendingUpload"></div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    @if (!isNew)
+    {
+        <div class="btn-group" style="margin-right:auto;">
+            <button type="button" class="btn btn-md mt-1 mb-1 btn-danger" onclick="deleteHealthRecord(@Model.Id)">Delete</button>
+        </div>
+    }
+    <button type="button" class="btn btn-secondary" onclick="hideAddHealthRecordModal()">Cancel</button>
+    @if (isNew)
+    {
+        <button type="button" class="btn btn-primary" onclick="saveHealthRecordToVehicle()">Add Health Record</button>
+    }
+    else
+    {
+        <button type="button" class="btn btn-primary" onclick="saveHealthRecordToVehicle(true)">Save Health Record</button>
+    }
+</div>
+<script>
+    function getHealthRecordModelData() {
+        return { id: @Model.Id, vehicleId: @Model.VehicleId };
+    }
+    function toggleHealthFollowUpDate(checkbox) {
+        if (checkbox.checked) {
+            $("#healthFollowUpDateRow").show();
+            initDatePicker($('#healthRecordFollowUpDate'));
+        } else {
+            $("#healthFollowUpDateRow").hide();
+        }
+    }
+</script>
+@if (!isNew && userConfig.EnableAutoFillOdometer == false)
+{
+    // no odometer auto-fill needed for health records
+}
