@@ -13,8 +13,10 @@ services:
       - /etc/localtime:/etc/localtime:ro
 
   app:
-    image: ghcr.io/hargata/lubelogger:latest
+    build: .
     restart: unless-stopped
+    depends_on:
+      - postgres
     environment:
       POSTGRES_CONNECTION: "Host=postgres:5432;Username=lubelogger;Password=lubepass;Database=lubelogger;"
     # volumes used to keep data persistent

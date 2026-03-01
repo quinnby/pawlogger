@@ -1,0 +1,40 @@
+---
+
+services:
+  postgres:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: "pawlog"
+      POSTGRES_PASSWORD: "pawlog_dev"
+      POSTGRES_DB: "pawlog"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pawlog -d pawlog"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - pawlog_dev_postgres:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: pawlog-dev:local
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      POSTGRES_CONNECTION: "Host=postgres:5432;Username=pawlog;Password=pawlog_dev;Database=pawlog;"
+    ports:
+      - "8080:8080"
+    volumes:
+      - pawlog_dev_data:/App/data
+      - pawlog_dev_keys:/root/.aspnet/DataProtection-Keys
+
+volumes:
+  pawlog_dev_data:
+  pawlog_dev_keys:
+  pawlog_dev_postgres:
