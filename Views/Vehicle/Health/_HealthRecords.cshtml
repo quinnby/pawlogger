@@ -55,7 +55,9 @@
     var vaccinationCount   = Model.Count(x => x.Category == HealthRecordCategory.Vaccination);
     var medicationCount    = Model.Count(x => x.Category == HealthRecordCategory.Medication);
     var allergyCount       = Model.Count(x => x.Category == HealthRecordCategory.AllergyReaction);
-    var weightCheckCount   = Model.Count(x => x.Category == HealthRecordCategory.WeightCheck);
+    // Authoritative weight rule: Category == WeightCheck AND WeightValue > 0.
+    // Requires WeightValue > 0 to match weight history, chart, summary, and CurrentWeight sync logic.
+    var weightCheckCount   = Model.Count(x => x.Category == HealthRecordCategory.WeightCheck && x.WeightValue > 0);
     var followUpOpenCount  = Model.Count(x => x.FollowUpRequired && x.Status != HealthRecordStatus.Completed);
 }
 <div class="d-flex flex-column vehicleTabPane">
@@ -88,11 +90,13 @@
                     <span class="visually-hidden">Toggle Dropdown</span>
                 </button>
                 <ul class="dropdown-menu record-dropdown">
-                    <li><a class="dropdown-item" href="#" onclick="showAddQuickHealthNoteModal()"><i class="bi bi-lightning me-2"></i>Quick Observation</a></li>
+                    <li><a class="dropdown-item fw-semibold" href="#" onclick="showAddWeightCheckModal()"><i class="bi bi-speedometer2 me-2"></i>Log Weight Check</a></li>
                     @if (Model.Any(x => x.Category == HealthRecordCategory.WeightCheck && x.WeightValue > 0))
                     {
                         <li><a class="dropdown-item" href="#" onclick="showWeightTrendChart()"><i class="bi bi-graph-up me-2"></i>Weight Trend Chart</a></li>
                     }
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" onclick="showAddQuickHealthNoteModal()"><i class="bi bi-lightning me-2"></i>Quick Observation</a></li>
                     <li><a class="dropdown-item" href="#" onclick="showPetSummaryModal()"><i class="bi bi-file-earmark-medical me-2"></i>Pet Health Summary</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="#" onclick="printTab()">Print</a></li>

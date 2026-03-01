@@ -498,8 +498,10 @@ namespace CarCareTracker.Controllers
                     nameof(GenericReportModel.Date),
                     nameof(GenericReportModel.Odometer),
                     nameof(GenericReportModel.Description),
+                    nameof(GenericReportModel.Provider),
                     nameof(GenericReportModel.Cost),
-                    nameof(GenericReportModel.Notes) 
+                    nameof(GenericReportModel.Notes),
+                    nameof(GenericReportModel.WeightValue)
                 }
             };
             //get all extra fields from service records, repairs, upgrades, and tax records.
@@ -697,7 +699,12 @@ namespace CarCareTracker.Controllers
                 Notes = x.Notes,
                 Cost = x.Cost,
                 DataType = ImportMode.HealthRecord,
-                ExtraFields = x.ExtraFields
+                ExtraFields = x.ExtraFields,
+                // Pet-specific fields restored for report/print output
+                WeightValue = x.WeightValue,
+                WeightUnit = x.WeightUnit,
+                Provider = x.Provider,
+                Category = System.Text.RegularExpressions.Regex.Replace(x.Category.ToString(), "(?<=[a-z])([A-Z])", " $1")
             }));
             vehicleHistory.VehicleHistory = reportData.OrderBy(x => x.Date).ThenBy(x => x.Odometer).ToList();
             return PartialView("Report/_VehicleHistory", vehicleHistory);

@@ -13,7 +13,15 @@
         {
             <li class="list-group-item text-start">
                 <input class="form-check-input column-default" type="checkbox" value="@column" id="visibleColumn_@column" checked>
-                <label class="form-check-label stretched-link" for="visibleColumn_@column">@(translator.Translate(userLanguage, column == nameof(GenericReportModel.DataType) ? "Type" : column))</label>
+                @{
+                    string columnDisplayLabel = column switch {
+                        var c when c == nameof(GenericReportModel.DataType)   => "Type",
+                        var c when c == nameof(GenericReportModel.WeightValue) => "Weight",
+                        var c when c == nameof(GenericReportModel.Provider)   => "Provider",
+                        _ => column
+                    };
+                }
+                <label class="form-check-label stretched-link" for="visibleColumn_@column">@translator.Translate(userLanguage, columnDisplayLabel)</label>
             </li>
         }
         @foreach (string extraField in Model.ExtraFields)

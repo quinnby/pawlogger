@@ -19,12 +19,15 @@
         </div>
 
         <label for="quickNoteCategory" class="mt-2">Type</label>
+        @* Weight Check is intentionally omitted from this quick-entry form.
+           This form has no weight-value field, so selecting it would create an empty
+           WeightCheck record (WeightValue=0) that bypasses CurrentWeight sync.
+           Use the "Log Weight Check" shortcut in the Health Records tab dropdown instead. *@
         <select id="quickNoteCategory" class="form-select">
             <option value="3"  selected>Illness / Symptom</option>
             <option value="12">Behavioral Note</option>
             <option value="13">Misc. Observation</option>
             <option value="6" >Grooming</option>
-            <option value="7" >Weight Check</option>
         </select>
 
         <label for="quickNoteTitle" class="mt-2">Observation <span class="text-danger">*</span></label>

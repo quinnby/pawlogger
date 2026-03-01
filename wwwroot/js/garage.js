@@ -335,7 +335,8 @@ function viewVehicleWithTab(vehicleIds, tab) {
         return;
     }
     let vehicleId = vehicleIds[0];
-    window.location.href = `/Vehicle/Index?vehicleId=${vehicleId}&tab=${tab}`;
+    // Prefer /animals route prefix for user-facing pet profile URLs
+    window.location.href = `/animals/Index?vehicleId=${vehicleId}&tab=${tab}`;
 }
 function handleGarageItemClick(e, vehicleId) {
     if (!(event.ctrlKey || event.metaKey)) {

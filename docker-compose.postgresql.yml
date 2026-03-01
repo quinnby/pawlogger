@@ -5,9 +5,9 @@ services:
     image: postgres:18
     restart: unless-stopped
     environment:
-      POSTGRES_USER: "lubelogger"
-      POSTGRES_PASSWORD: "lubepass"
-      POSTGRES_DB: "lubelogger"
+      POSTGRES_USER: "pawlog"
+      POSTGRES_PASSWORD: "pawlog_dev"
+      POSTGRES_DB: "pawlog"
     volumes:
       - postgres:/var/lib/postgresql/
       - /etc/localtime:/etc/localtime:ro
@@ -18,7 +18,7 @@ services:
     depends_on:
       - postgres
     environment:
-      POSTGRES_CONNECTION: "Host=postgres:5432;Username=lubelogger;Password=lubepass;Database=lubelogger;"
+      POSTGRES_CONNECTION: "Host=postgres:5432;Username=pawlog;Password=pawlog_dev;Database=pawlog;"
     # volumes used to keep data persistent
     volumes:
       - data:/App/data

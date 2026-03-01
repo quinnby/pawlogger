@@ -33,9 +33,17 @@ namespace CarCareTracker.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAddHealthRecordPartialView()
+        public IActionResult GetAddHealthRecordPartialView(int category = -1)
         {
-            return PartialView("Health/_HealthRecordModal", new HealthRecordInput());
+            var input = new HealthRecordInput();
+            // Allow callers to pre-seed a specific category (e.g. category=7 for WeightCheck).
+            // This lets the "Log Weight Check" shortcut open the modal with the correct
+            // category + weight fields already visible, without a separate action.
+            if (category >= 0 && Enum.IsDefined(typeof(HealthRecordCategory), category))
+            {
+                input.Category = (HealthRecordCategory)category;
+            }
+            return PartialView("Health/_HealthRecordModal", input);
         }
 
         [HttpGet]

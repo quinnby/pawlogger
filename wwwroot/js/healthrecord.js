@@ -9,6 +9,21 @@ function showAddHealthRecordModal() {
     });
 }
 
+// Phase 7 – Opens the health record modal pre-seeded with WeightCheck category.
+// This ensures the weight measurement fields (healthWeightValue / healthWeightUnit)
+// are visible from the moment the modal opens, preventing accidental saves under
+// the wrong category (e.g. MiscellaneousCare) that would bypass the CurrentWeight sync.
+function showAddWeightCheckModal() {
+    $.get('/Vehicle/GetAddHealthRecordPartialView?category=7', function (data) {
+        if (data) {
+            $("#healthRecordModalContent").html(data);
+            initDatePicker($('#healthRecordDate'));
+            initTagSelector($("#healthRecordTag"));
+            $('#healthRecordModal').modal('show');
+        }
+    });
+}
+
 function showEditHealthRecordModal(healthRecordId, nocache) {
     if (!nocache) {
         var existingContent = $("#healthRecordModalContent").html();

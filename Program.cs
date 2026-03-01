@@ -225,6 +225,13 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+// /animals is the preferred user-facing route prefix for pet profiles.
+// It maps to VehicleController so that /Vehicle routes continue to work unchanged.
+app.MapControllerRoute(
+    name: "animals",
+    pattern: "animals/{action=Index}/{id?}",
+    defaults: new { controller = "Vehicle" });
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

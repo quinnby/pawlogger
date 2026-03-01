@@ -114,7 +114,7 @@
                 @if (Model.HasVehicleImageMap)
                 {
                     <div class="d-grid">
-                        <button onclick="loadVehicleImageMap()" class="btn btn-secondary btn-md mt-1 mb-1">@translator.Translate(userLanguage, "Vehicle Map")<i class="bi ms-2 bi-box-arrow-in-up-right"></i></button>
+                        <button onclick="loadVehicleImageMap()" class="btn btn-secondary btn-md mt-1 mb-1">@translator.Translate(userLanguage, "Body Map")<i class="bi ms-2 bi-box-arrow-in-up-right"></i></button>
                     </div>
                 }
                 @if (Model.CustomWidgetsConfigured)
@@ -172,7 +172,7 @@
                     }
                     @if (Model.HasVehicleImageMap)
                     {
-                        <li><a class="dropdown-item" href="#" onclick="loadVehicleImageMap()">@translator.Translate(userLanguage, "Vehicle Map")</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="loadVehicleImageMap()">@translator.Translate(userLanguage, "Body Map")</a></li>
                     }
                     @if (Model.CustomWidgetsConfigured)
                     {

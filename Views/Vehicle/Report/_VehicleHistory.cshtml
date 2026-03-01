@@ -145,6 +145,8 @@
                         <th scope="col" class="col-3 text-truncate flex-grow-1 flex-shrink-1 @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.Description)) ? "" : "d-none")">@translator.Translate(userLanguage, "Description")</th>
                         <th scope="col" class="col-2 text-truncate flex-grow-1 flex-shrink-1 @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.Cost)) ? "" : "d-none")">@translator.Translate(userLanguage, "Cost")</th>
                         <th scope="col" class="col-4 text-truncate flex-grow-1 flex-shrink-1 @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.Notes)) ? "" : "d-none")">@translator.Translate(userLanguage, "Notes")</th>
+                        <th scope="col" class="col-2 text-truncate flex-grow-1 flex-shrink-1 @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.Provider)) ? "" : "d-none")">@translator.Translate(userLanguage, "Provider")</th>
+                        <th scope="col" class="col-2 text-truncate flex-grow-1 flex-shrink-1 @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.WeightValue)) ? "" : "d-none")">@translator.Translate(userLanguage, "Weight")</th>
                         @foreach(string extraField in extraFields)
                         {
                             <th scope="col" class="col-2 text-truncate flex-grow-1 flex-shrink-1">@extraField</th>
@@ -175,6 +177,10 @@
                                 else if (reportData.DataType == ImportMode.HealthRecord)
                                 {
                                     <span><i class="bi bi-heart-pulse me-2"></i>Health</span>
+                                    @if (!string.IsNullOrWhiteSpace(reportData.Category))
+                                    {
+                                        <br/><small class="text-muted">@reportData.Category</small>
+                                    }
                                 }
                             </td>
                             <td class="col-2 text-truncate flex-grow-1 flex-shrink-1 @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.Date)) ? "" : "d-none")">@reportData.Date.ToShortDateString()</td>
@@ -182,6 +188,8 @@
                             <td class="col-3 text-truncate flex-grow-1 flex-shrink-1 @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.Description)) ? "" : "d-none")">@reportData.Description</td>
                             <td class="col-2 text-truncate flex-grow-1 flex-shrink-1 @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.Cost)) ? "" : "d-none")">@(StaticHelper.HideZeroCost(reportData.Cost, hideZero))</td>
                             <td class="col-4 flex-grow-1 flex-shrink-1 text-wrap text-break @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.Notes)) ? "" : "d-none")">@StaticHelper.TruncateStrings(reportData.Notes, 100)</td>
+                            <td class="col-2 text-truncate flex-grow-1 flex-shrink-1 @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.Provider)) ? "" : "d-none")">@(string.IsNullOrWhiteSpace(reportData.Provider) ? "---" : reportData.Provider)</td>
+                            <td class="col-2 text-truncate flex-grow-1 flex-shrink-1 @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.WeightValue)) ? "" : "d-none")">@(reportData.WeightValue > 0 ? $"{reportData.WeightValue:G29} {reportData.WeightUnit}".Trim() : "---")</td>
                             @foreach(string extraField in extraFields)
                             {
                                 <td class="col-2 text-truncate flex-grow-1 flex-shrink-1">@(reportData.ExtraFields.Where(x => x.Name == extraField)?.FirstOrDefault()?.Value ?? "")</td>
@@ -261,6 +269,35 @@
                                 <li class="list-group-item">
                                     @($"{translator.Translate(userLanguage, "Cost")}: {genericRecord.Cost.ToString("C")}")
                                 </li>
+                                break;
+                            case ImportMode.HealthRecord:
+                                <li class="list-group-item">
+                                    @($"{translator.Translate(userLanguage, "Date")}: {genericRecord.Date.ToShortDateString()}")
+                                </li>
+                                @if (!string.IsNullOrWhiteSpace(genericRecord.Category))
+                                {
+                                    <li class="list-group-item">
+                                        @($"{translator.Translate(userLanguage, "Type")}: {genericRecord.Category}")
+                                    </li>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(genericRecord.Provider))
+                                {
+                                    <li class="list-group-item">
+                                        @($"{translator.Translate(userLanguage, "Provider")}: {genericRecord.Provider}")
+                                    </li>
+                                }
+                                @if (genericRecord.WeightValue > 0)
+                                {
+                                    <li class="list-group-item">
+                                        @($"{translator.Translate(userLanguage, "Weight")}: {genericRecord.WeightValue:G29} {genericRecord.WeightUnit}".Trim())
+                                    </li>
+                                }
+                                @if (genericRecord.Cost > 0)
+                                {
+                                    <li class="list-group-item">
+                                        @($"{translator.Translate(userLanguage, "Cost")}: {genericRecord.Cost.ToString("C")}")
+                                    </li>
+                                }
                                 break;
                         }
                         @foreach (ExtraField extraField in genericRecord.ExtraFields)

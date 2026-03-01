@@ -52,6 +52,12 @@
 
                     <label for="healthRecordTitle" class="mt-2">Title</label>
                     <input type="text" id="healthRecordTitle" class="form-control" placeholder="e.g. Annual Wellness Exam" value="@Model.Title">
+                    <div id="healthWeightCategoryHint" class="alert alert-warning py-1 px-2 mt-1 mb-0 small" style="display:none;">
+                        <i class="bi bi-speedometer2 me-1"></i>
+                        Looks like you're logging a weight measurement. Use
+                        <a href="#" class="alert-link" onclick="hideAddHealthRecordModal(); showAddWeightCheckModal(); return false;">Log Weight Check</a>
+                        to record it as a structured weight entry (tracked in history &amp; charts).
+                    </div>
 
                     <label for="healthRecordDescription" class="mt-2">Details (optional)</label>
                     <input type="text" id="healthRecordDescription" class="form-control" placeholder="Additional clinical details" value="@Model.Description">
@@ -220,9 +226,26 @@
         if (cat === 11 && $("#healthReminderEnabled").is(":checked")) {
             initDatePicker($('#healthReminderDueDate'));
         }
+        // Refresh the weight-category hint whenever category changes.
+        updateWeightCategoryHint();
+    }
+    // Non-blocking hint: shown when title text suggests weight logging
+    // but the selected category is not WeightCheck (7).
+    // Guides the user toward the dedicated "Log Weight Check" structured path
+    // without blocking normal generic health record creation.
+    function updateWeightCategoryHint() {
+        var title = $("#healthRecordTitle").val() || "";
+        var cat   = parseInt($("#healthRecordCategory").val());
+        var titleSuggestsWeight = /weight/i.test(title);
+        var isWeightCategory    = (cat === 7);
+        $("#healthWeightCategoryHint").toggle(titleSuggestsWeight && !isWeightCategory);
     }
     // wire category change on load
     $("#healthRecordCategory").on("change", function() { onHealthCategoryChange(this); });
+    // wire title change to hint logic
+    $("#healthRecordTitle").on("input", function() { updateWeightCategoryHint(); });
+    // run once on load in case modal was pre-populated (e.g. edit mode)
+    updateWeightCategoryHint();
 </script>
 @if (!isNew && userConfig.EnableAutoFillOdometer == false)
 {

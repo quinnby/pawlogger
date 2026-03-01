@@ -15,7 +15,7 @@
         </div>
         <div>
             <select class="form-select kiosk-reminder-selector" onchange="filterKioskReminder(this)">
-                <!option value="0" selected>@translator.Translate(userLanguage, "All Vehicles")</!option>
+                <!option value="0" selected>@translator.Translate(userLanguage, "All Pets")</!option>
                 @foreach (Vehicle vehicle in vehicles)
                 {
                     <!option value="@vehicle.Id">@($"{vehicle.Year} {vehicle.Make} {vehicle.Model} #{StaticHelper.GetVehicleIdentifier(vehicle)}")</!option>
