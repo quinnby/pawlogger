@@ -12,5 +12,7 @@
         public bool CustomWidgetsConfigured { get; set; } = false;
         public List<ImportMode> AvailableMetrics { get; set; } = new List<ImportMode>();
         public bool HasVehicleImageMap { get; set; } = false;
+        /// <summary>Phase 9: True if this is a pet profile (has PetName), used to customize UI for pet workflows.</summary>
+        public bool IsPetProfile { get; set; } = false;
     }
 }

@@ -27,8 +27,8 @@
 <div class="modal-header d-print-none">
     <h5 class="modal-title"><i class="bi bi-file-earmark-medical me-2"></i>Pet Health Summary</h5>
     <div class="ms-auto d-flex gap-2">
-        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.print()">
-            <i class="bi bi-printer me-1"></i>Print
+        <button type="button" class="btn btn-sm btn-primary" onclick="exportPetSummaryPdf()">
+            <i class="bi bi-file-earmark-pdf me-1"></i>Export PDF
         </button>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
@@ -192,11 +192,11 @@
         <hr />
     }
 
-    <!-- ===== Recent Health History (last 12 months) ===== -->
+    <!-- ===== Health History ===== -->
     @if (Model.RecentHealthRecords.Any())
     {
         <div class="mb-3">
-            <h6><i class="bi bi-heart-pulse me-1 text-danger"></i>Recent Health History (Last 12 Months)</h6>
+            <h6><i class="bi bi-heart-pulse me-1 text-danger"></i>Health History</h6>
             <table class="table table-sm">
                 <thead>
                     <tr>
@@ -233,3 +233,158 @@
     }
 
 </div>
+
+<style>
+    @@media print {
+        /* Optimize page layout for printing - maximize information density */
+        body {
+            margin: 0;
+            padding: 0;
+            font-size: 10pt;
+            line-height: 1.35;
+        }
+
+        .modal-body {
+            padding: 0.5rem;
+        }
+
+        /* Compact section spacing - efficient use of space */
+        .modal-body > div {
+            margin-bottom: 0.6rem;
+        }
+
+        .modal-body hr {
+            margin: 0.4rem 0;
+            border: none;
+            border-top: 0.5px solid #ccc;
+        }
+
+        h6 {
+            margin-bottom: 0.25rem;
+            margin-top: 0;
+            font-size: 9.5pt;
+            font-weight: 700;
+        }
+
+        /* Pet profile section - compact */
+        .modal-body .row {
+            margin-bottom: 0.3rem;
+        }
+
+        .modal-body .row p {
+            margin-bottom: 0.1rem;
+            font-size: 9pt;
+        }
+
+        .modal-body .row li {
+            margin-bottom: 0.1rem;
+            font-size: 9pt;
+        }
+
+        .modal-body .row small {
+            font-size: 8.5pt;
+        }
+
+        /* Optimize tables for dense print */
+        table {
+            font-size: 8.5pt;
+            border-collapse: collapse;
+            width: 100%;
+            margin: 0.3rem 0;
+        }
+
+        table thead {
+            background-color: #f5f5f5 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            font-weight: 700;
+        }
+
+        table th {
+            padding: 0.2rem 0.3rem;
+            border: 0.5px solid #ddd;
+            font-size: 8.5pt;
+            text-align: left;
+        }
+
+        table td {
+            padding: 0.2rem 0.3rem;
+            border: 0.5px solid #ddd;
+        }
+
+        table tbody tr:nth-child(odd) {
+            background-color: #fafafa;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* List group items (reminders) - compact */
+        .list-group-item {
+            padding: 0.25rem 0.4rem !important;
+            border: none;
+            border-bottom: 0.5px solid #e0e0e0;
+            font-size: 8.5pt;
+        }
+
+        .list-group-item-warning {
+            background-color: #ffd700 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* Compact image sizing */
+        img {
+            max-height: 80px;
+        }
+
+        /* Badge styling - compact */
+        .badge {
+            padding: 0.2rem 0.35rem;
+            font-size: 8pt;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* Severity badges in allergies */
+        .table-danger {
+            background-color: #f8d7da !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* Table danger text for overdue vaccines */
+        .text-danger {
+            color: #dc3545 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* Tight icon spacing */
+        i {
+            margin-right: 0.25rem;
+        }
+
+        /* Smart page breaks - allow larger sections to break naturally */
+        .modal-body > hr {
+            page-break-inside: avoid;
+        }
+
+        /* Allow health history table to span multiple pages */
+        .modal-body > div:has(table) {
+            page-break-inside: auto;
+        }
+
+        .modal-body > div:has(table) table {
+            page-break-inside: auto;
+        }
+
+        .modal-body > div:has(table) tbody tr {
+            page-break-inside: avoid;
+        }
+
+        /* Avoid orphaning headers */
+        h6 {
+            page-break-after: avoid;
+        }
+    }
+</style>

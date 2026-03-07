@@ -264,3 +264,11 @@ function showPetSummaryModal() {
     });
 }
 
+// ============================================================
+// Phase 7 – PDF Export
+// ============================================================
+function exportPetSummaryPdf() {
+    var vehicleId = GetVehicleId().vehicleId;
+    window.location.href = '/Vehicle/ExportPetSummaryPdf?vehicleId=' + vehicleId;
+}
+

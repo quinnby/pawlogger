@@ -102,9 +102,13 @@
                 <div class="d-grid">
                     <button onclick="showGlobalSearch()" class="btn btn-secondary btn-md mt-1 mb-1">@translator.Translate(userLanguage, "Search")<i class="bi ms-2 bi-search"></i></button>
                 </div>
-                <div class="d-grid">
-                    <button onclick="generateCareHistoryReport()" class="btn btn-secondary btn-md mt-1 mb-1">@translator.Translate(userLanguage, "Care History Report")<i class="bi ms-2 bi-box-arrow-in-up-right"></i></button>
-                </div>
+                @* Phase 9: Hide Care History from pet workflows; Pet Health Summary is the primary pet printable report *@
+                @if (!Model.IsPetProfile)
+                {
+                    <div class="d-grid">
+                        <button onclick="generateCareHistoryReport()" class="btn btn-secondary btn-md mt-1 mb-1">@translator.Translate(userLanguage, "Care History Report")<i class="bi ms-2 bi-box-arrow-in-up-right"></i></button>
+                    </div>
+                }
                 <div class="d-grid">
                     <button onclick="showPetSummaryModal()" class="btn btn-outline-success btn-md mt-1 mb-1"><i class="bi bi-file-earmark-medical me-2"></i>Pet Health Summary</button>
                 </div>

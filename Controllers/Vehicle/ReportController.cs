@@ -24,6 +24,8 @@ namespace CarCareTracker.Controllers
             var odometerRecords = vehicleRecords.OdometerRecords;
             var userConfig = _config.GetUserConfig(User);
             var viewModel = new ReportViewModel() { ReportHeaderForVehicle = new ReportHeader() };
+            //Phase 9: Identify pet profiles to customize UI for pet workflows
+            viewModel.IsPetProfile = !string.IsNullOrWhiteSpace(vehicleData.PetName);
             //check if vehicle map exists
             viewModel.HasVehicleImageMap = !string.IsNullOrWhiteSpace(vehicleData.MapLocation);
             //check if custom widgets are configured
@@ -739,8 +741,36 @@ namespace CarCareTracker.Controllers
         [HttpGet]
         public IActionResult GetPetSummaryData(int vehicleId)
         {
+            var viewModel = BuildPetSummaryViewModel(vehicleId);
+            return PartialView("Report/_PetSummary", viewModel);
+        }
+
+        /// <summary>
+        /// Phase 7 PDF Export – Generates and downloads a PDF of the Pet Health Summary.
+        /// </summary>
+        [TypeFilter(typeof(CollaboratorFilter))]
+        [HttpGet]
+        public IActionResult ExportPetSummaryPdf(int vehicleId)
+        {
+            var viewModel = BuildPetSummaryViewModel(vehicleId);
+            var pdfBytes = PetSummaryPdfHelper.GeneratePetSummaryPdf(viewModel, _fileHelper);
+
+            var petName = !string.IsNullOrWhiteSpace(viewModel.PetData.PetName)
+                ? viewModel.PetData.PetName.Replace(" ", "_")
+                : $"{viewModel.PetData.Year}_{viewModel.PetData.Make}_{viewModel.PetData.Model}";
+            
+            var fileName = $"Pet_Health_Summary_{petName}_{DateTime.Now:yyyyMMdd}.pdf";
+
+            return File(pdfBytes, "application/pdf", fileName);
+        }
+
+        /// <summary>
+        /// Shared helper to build PetSummaryViewModel from vehicleId.
+        /// Used by both the modal view and PDF export.
+        /// </summary>
+        private PetSummaryViewModel BuildPetSummaryViewModel(int vehicleId)
+        {
             var pet = _dataAccess.GetVehicleById(vehicleId);
-            var cutoffDate = DateTime.Now.AddYears(-1);
             var reminderCutoff = DateTime.Now.AddDays(90);
 
             var vaccinations = _vaccinationRecordDataAccess
@@ -761,13 +791,15 @@ namespace CarCareTracker.Controllers
                 .OrderByDescending(x => x.Date)
                 .ToList();
 
+            // Show full health history, excluding allergies (which have their own section)
             var recentHealthRecords = allHealthRecords
-                .Where(x => x.Date >= cutoffDate && x.Category != HealthRecordCategory.AllergyReaction)
+                .Where(x => x.Category != HealthRecordCategory.AllergyReaction)
                 .OrderByDescending(x => x.Date)
                 .ToList();
 
+            // Include ALL health records with valid weight values, regardless of category
             var weightHistory = allHealthRecords
-                .Where(x => x.Category == HealthRecordCategory.WeightCheck && x.WeightValue > 0)
+                .Where(x => x.WeightValue > 0)
                 .OrderByDescending(x => x.Date)
                 .Take(10)
                 .ToList();
@@ -778,7 +810,7 @@ namespace CarCareTracker.Controllers
                 .OrderBy(x => x.Date)
                 .ToList();
 
-            var viewModel = new PetSummaryViewModel
+            return new PetSummaryViewModel
             {
                 PetData = pet,
                 Vaccinations = vaccinations,
@@ -789,8 +821,6 @@ namespace CarCareTracker.Controllers
                 UpcomingReminders = upcomingReminders,
                 GeneratedDate = DateTime.Now.ToShortDateString()
             };
-
-            return PartialView("Report/_PetSummary", viewModel);
         }
 
         [TypeFilter(typeof(CollaboratorFilter))]

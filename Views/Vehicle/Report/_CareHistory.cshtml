@@ -180,10 +180,13 @@
                                 }
                                 else if (reportData.DataType == ImportMode.HealthRecord)
                                 {
-                                    <span><i class="bi bi-heart-pulse me-2"></i>Health</span>
                                     @if (!string.IsNullOrWhiteSpace(reportData.Category))
                                     {
-                                        <br/><small class="text-muted">@reportData.Category</small>
+                                        <span><i class="bi bi-heart-pulse me-2"></i>@reportData.Category</span>
+                                    }
+                                    else
+                                    {
+                                        <span><i class="bi bi-heart-pulse me-2"></i>Health</span>
                                     }
                                 }
                             </td>
