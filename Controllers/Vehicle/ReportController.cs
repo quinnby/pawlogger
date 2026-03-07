@@ -9,25 +9,6 @@ namespace CarCareTracker.Controllers
 {
     public partial class VehicleController
     {
-        private void ApplyUserPreferredLocaleForReportRendering()
-        {
-            var userConfig = _config.GetUserConfig(User);
-            if (string.IsNullOrWhiteSpace(userConfig.PreferredLocale))
-            {
-                return;
-            }
-
-            try
-            {
-                var userCulture = new CultureInfo(userConfig.PreferredLocale.Replace('_', '-'));
-                CultureInfo.CurrentCulture = userCulture;
-                CultureInfo.CurrentUICulture = userCulture;
-            }
-            catch
-            {
-            }
-        }
-
         [TypeFilter(typeof(CollaboratorFilter))]
         [HttpGet]
         public IActionResult GetReportPartialView(int vehicleId)
@@ -550,8 +531,6 @@ namespace CarCareTracker.Controllers
         [TypeFilter(typeof(CollaboratorFilter))]
         public IActionResult GetVehicleHistory(int vehicleId, ReportParameter reportParameter)
         {
-            ApplyUserPreferredLocaleForReportRendering();
-
             var careHistory = new CareHistoryViewModel();
             careHistory.ReportParameters = reportParameter;
             careHistory.VehicleData = _dataAccess.GetVehicleById(vehicleId);

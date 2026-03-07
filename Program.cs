@@ -1,5 +1,6 @@
 using CarCareTracker.External.Implementations;
 using CarCareTracker.External.Interfaces;
+using CarCareTracker.Filter;
 using CarCareTracker.Helper;
 using CarCareTracker.Logic;
 using CarCareTracker.Middleware;
@@ -34,7 +35,10 @@ StaticHelper.InitMessage(builder.Configuration);
 StaticHelper.CheckMigration(builder.Environment.WebRootPath, builder.Environment.ContentRootPath);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<UserPreferredLocaleFilter>();
+});
 
 //LiteDB is always injected even if user uses Postgres.
 builder.Services.AddSingleton<ILiteDBHelper, LiteDBHelper>();

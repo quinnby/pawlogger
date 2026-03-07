@@ -1,6 +1,5 @@
 ﻿@using CarCareTracker.Helper
 @using System.Globalization
-@using System.Threading
 <!DOCTYPE html>
 @inject IConfigHelper config
 @inject ITranslationHelper translator
@@ -13,23 +12,7 @@
     var useMarkDown = userConfig.UseMarkDownOnSavedNotes;
     var useThreeDecimals = userConfig.UseThreeDecimalGasCost;
     var automaticDecimalFormat = userConfig.AutomaticDecimalFormat;
-    // Use user's preferred locale if set, otherwise fall back to server default
     var userCulture = CultureInfo.CurrentCulture;
-    if (!string.IsNullOrWhiteSpace(userConfig.PreferredLocale))
-    {
-        try
-        {
-            userCulture = new CultureInfo(userConfig.PreferredLocale.Replace('_', '-'));
-        }
-        catch
-        {
-            // Fall back to CurrentCulture if preferred locale is invalid
-        }
-    }
-    // Apply the user's preferred culture to the current thread for this request
-    // This ensures all ToString() calls in views use the correct currency formatting
-    Thread.CurrentThread.CurrentCulture = userCulture;
-    Thread.CurrentThread.CurrentUICulture = userCulture;
     var shortDatePattern = userCulture.DateTimeFormat.ShortDatePattern;
     var firstDayOfWeek = (int)userCulture.DateTimeFormat.FirstDayOfWeek;
     var numberFormat = userCulture.NumberFormat;
