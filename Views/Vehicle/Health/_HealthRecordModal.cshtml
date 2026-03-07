@@ -87,10 +87,16 @@
                                    placeholder="e.g. 12.5"
                                    value="@(Model.WeightValue > 0 ? Model.WeightValue.ToString("G") : "")">
                             <select id="healthWeightUnit" class="form-select" style="max-width:90px;">
-                                <!option value="lbs" @(Model.WeightUnit == "lbs" || string.IsNullOrWhiteSpace(Model.WeightUnit) ? "selected" : "")>lbs</!option>
-                                <!option value="kg"  @(Model.WeightUnit == "kg"  ? "selected" : "")>kg</!option>
-                                <!option value="oz"  @(Model.WeightUnit == "oz"  ? "selected" : "")>oz</!option>
-                                <!option value="g"   @(Model.WeightUnit == "g"   ? "selected" : "")>g</!option>
+                                @{
+                                    var userWeightPref = userConfig.PreferredWeightUnit;
+                                    if (string.IsNullOrWhiteSpace(userWeightPref)) { userWeightPref = "lbs"; }
+                                    var modelUnit = Model.WeightUnit;
+                                    if (string.IsNullOrWhiteSpace(modelUnit)) { modelUnit = userWeightPref; }
+                                }
+                                <!option value="lbs" @(modelUnit == "lbs" ? "selected" : "")>lbs</!option>
+                                <!option value="kg"  @(modelUnit == "kg"  ? "selected" : "")>kg</!option>
+                                <!option value="oz"  @(modelUnit == "oz"  ? "selected" : "")>oz</!option>
+                                <!option value="g"   @(modelUnit == "g"   ? "selected" : "")>g</!option>
                             </select>
                         </div>
                     </div>

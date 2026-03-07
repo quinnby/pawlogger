@@ -161,7 +161,7 @@ function getAndValidateHealthRecordValues() {
         extraFields:      extraFields.extraFields,
         // Phase 7 fields
         weightValue:      globalParseFloat($("#healthWeightValue").val() || "0"),
-        weightUnit:       $("#healthWeightUnit").val() || "lbs",
+        weightUnit:       $("#healthWeightUnit").val() || (getGlobalConfig().preferredWeightUnit || "lbs"),
         allergyType:      $("#healthAllergyType").val() || "",
         trigger:          $("#healthTrigger").val() || "",
         severity:         $("#healthSeverity").val() || "",

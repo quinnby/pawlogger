@@ -13,20 +13,9 @@
     <div class="col-12 col-md-6">
         <input id="preferredGasUnit" style="display:none;" value="@Model.UserConfig.PreferredGasUnit" />
         <input id="preferredFuelMileageUnit" style="display:none;" value="@Model.UserConfig.PreferredGasMileageUnit" />
-        <div>
-            <div class="form-check form-switch form-check-inline">
-                <input class="form-check-input" onChange="updateColorModeSettings(this)" type="checkbox" role="switch" id="enableDarkMode" checked="@Model.UserConfig.UseDarkMode">
-                <label class="form-check-label" for="enableDarkMode">@translator.Translate(userLanguage, "Dark Mode")</label>
-            </div>
-            <div class="form-check form-switch form-check-inline">
-                <input class="form-check-input" onChange="updateColorModeSettings(this)" type="checkbox" role="switch" id="useSystemColorMode" checked="@Model.UserConfig.UseSystemColorMode">
-                <label class="form-check-label" for="useSystemColorMode">@translator.Translate(userLanguage, "Adaptive Color Mode")</label>
-            </div>
-            <div class="form-check form-switch form-check-inline">
-                <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="disableAutoZoom" checked="@Model.UserConfig.DisableAutoZoom">
-                <label class="form-check-label" for="disableAutoZoom">@translator.Translate(userLanguage, "Disable Zoom")</label>
-            </div>
-        </div>
+        
+        @* General Settings *@
+        <h6 class="text-muted mb-2"><i class="bi bi-gear me-2"></i>@translator.Translate(userLanguage, "General")</h6>
         <div>
             <div class="form-check form-switch form-check-inline">
                 <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="enableCsvImports" checked="@Model.UserConfig.EnableCsvImports">
@@ -47,6 +36,39 @@
                 <label class="form-check-label" for="automaticDecimalFormat">@translator.Translate(userLanguage, "Automatically Format Decimal Inputs")</label>
             </div>
         </div>
+        
+        <hr />
+        
+        @* Appearance Settings *@
+        <h6 class="text-muted mb-2"><i class="bi bi-palette me-2"></i>@translator.Translate(userLanguage, "Appearance")</h6>
+        <div>
+            <div class="form-check form-switch form-check-inline">
+                <input class="form-check-input" onChange="updateColorModeSettings(this)" type="checkbox" role="switch" id="enableDarkMode" checked="@Model.UserConfig.UseDarkMode">
+                <label class="form-check-label" for="enableDarkMode">@translator.Translate(userLanguage, "Dark Mode")</label>
+            </div>
+            <div class="form-check form-switch form-check-inline">
+                <input class="form-check-input" onChange="updateColorModeSettings(this)" type="checkbox" role="switch" id="useSystemColorMode" checked="@Model.UserConfig.UseSystemColorMode">
+                <label class="form-check-label" for="useSystemColorMode">@translator.Translate(userLanguage, "Adaptive Color Mode")</label>
+            </div>
+            <div class="form-check form-switch form-check-inline">
+                <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="disableAutoZoom" checked="@Model.UserConfig.DisableAutoZoom">
+                <label class="form-check-label" for="disableAutoZoom">@translator.Translate(userLanguage, "Disable Zoom")</label>
+            </div>
+        </div>
+        <div>
+            <div class="form-check form-switch form-check-inline">
+                <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="showVehicleThumbnail" checked="@Model.UserConfig.ShowVehicleThumbnail">
+                <label class="form-check-label" for="showVehicleThumbnail">@translator.Translate(userLanguage, "Show Pet Photo in Header")</label>
+            </div>
+            <div class="form-check form-switch form-check-inline">
+                <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="showGarageSearch" checked="@Model.UserConfig.ShowSearch">
+                <label class="form-check-label" for="showGarageSearch">@translator.Translate(userLanguage, "Show Pet Search")</label>
+            </div>
+            <div class="form-check form-switch form-check-inline">
+                <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="showCalendar" checked="@Model.UserConfig.ShowCalendar">
+                <label class="form-check-label" for="showCalendar">@translator.Translate(userLanguage, "Show Calendar")</label>
+            </div>
+        </div>
         <div>
             <div class="form-check form-switch form-check-inline">
                 <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="useMarkDownOnSavedNotes" checked="@Model.UserConfig.UseMarkDownOnSavedNotes">
@@ -57,51 +79,11 @@
                 <label class="form-check-label" for="enableExtraFieldColumns">@translator.Translate(userLanguage, "Show Extra Field Columns")</label>
             </div>
         </div>
-        <div class="form-check form-switch form-check-inline">
-            <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="showVehicleThumbnail" checked="@Model.UserConfig.ShowVehicleThumbnail">
-            <label class="form-check-label" for="showVehicleThumbnail">@translator.Translate(userLanguage, "Show Pet Photo in Header")</label>
-        </div>
-        <div class="form-check form-switch form-check-inline">
-            <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="showGarageSearch" checked="@Model.UserConfig.ShowSearch">
-            <label class="form-check-label" for="showGarageSearch">@translator.Translate(userLanguage, "Show Pet Search")</label>
-        </div>
+        
         <hr />
-        <div class="form-check form-switch">
-            <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="useMPG" checked="@Model.UserConfig.UseMPG">
-            <label class="form-check-label" for="useMPG">@translator.Translate(userLanguage, "Use Imperial Calculation for Fuel Economy Calculations(MPG)")<span class="ms-2 settingsToolTip" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="@translator.Translate(userLanguage, "This Will Also Change Units to Miles and Gallons")"><i class="bi bi-question-circle"></i></span></label>
-        </div>
-        <div class="form-check form-switch">
-            <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="useUKMPG" checked="@Model.UserConfig.UseUKMPG">
-            <label class="form-check-label" for="useUKMPG">@translator.Translate(userLanguage, "Use UK MPG Calculation")<span class="ms-2 settingsToolTip" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="@translator.Translate(userLanguage, "Input Gas Consumption in Liters, it will be converted to UK Gals for MPG Calculation")"><i class="bi bi-question-circle"></i></span></label>
-        </div>
-        <div>
-            <div class="form-check form-switch form-check-inline">
-                <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="useThreeDecimal" checked="@Model.UserConfig.UseThreeDecimalGasCost">
-                <label class="form-check-label" for="useThreeDecimal">@translator.Translate(userLanguage, "Use Three Decimals For Fuel Cost")</label>
-            </div>
-            <div class="form-check form-switch form-check-inline">
-                <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="useUnitForFuelCost" checked="@Model.UserConfig.UseUnitForFuelCost">
-                <label class="form-check-label" for="useUnitForFuelCost">@translator.Translate(userLanguage, "Default to Fuel Unit Cost")</label>
-            </div>
-        </div>
-        <div class="form-check form-switch">
-            <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="useThreeDecimalGasConsumption" checked="@Model.UserConfig.UseThreeDecimalGasConsumption">
-            <label class="form-check-label" for="useThreeDecimalGasConsumption">@translator.Translate(userLanguage, "Use Three Decimals For Fuel Consumption")</label>
-        </div>
-        <hr />
-        <div class="form-check form-switch form-check-inline">
-            <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="enableAutoReminderRefresh" checked="@Model.UserConfig.EnableAutoReminderRefresh">
-            <label class="form-check-label" for="enableAutoReminderRefresh">@translator.Translate(userLanguage, "Auto Refresh Lapsed Recurring Reminders")</label>
-        </div>
-        <div class="form-check form-switch form-check-inline">
-            <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="enableAutoOdometerInsert" checked="@Model.UserConfig.EnableAutoOdometerInsert">
-            <label class="form-check-label" for="enableAutoOdometerInsert">@translator.Translate(userLanguage, "Auto Insert Odometer Records") <small class="text-muted">(Legacy)</small><span class="ms-2 settingsToolTip" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="@translator.Translate(userLanguage, "Only when Adding Service/Repair/Upgrade/Fuel Record or Completing a Plan")"><i class="bi bi-question-circle"></i></span></label>
-        </div>
-        <div class="form-check form-switch form-check-inline">
-            <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="enableAutoFillOdometer" checked="@Model.UserConfig.EnableAutoFillOdometer">
-            <label class="form-check-label" for="enableAutoFillOdometer">@translator.Translate(userLanguage, "Auto Fill Odometer Input") <small class="text-muted">(Legacy)</small><span class="ms-2 settingsToolTip" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="@translator.Translate(userLanguage, "Only when Adding Service/Repair/Upgrade/Fuel Record or Completing a Plan")"><i class="bi bi-question-circle"></i></span></label>
-        </div>
-        <hr />
+        
+        @* Pet Management Settings *@
+        <h6 class="text-muted mb-2"><i class="bi bi-heart me-2"></i>@translator.Translate(userLanguage, "Pet Management")</h6>
         <div>
             <div class="form-check form-switch form-check-inline">
                 <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="hideSoldVehicles" checked="@Model.UserConfig.HideSoldVehicles">
@@ -111,9 +93,80 @@
                 <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="enableShopSupplies" checked="@Model.UserConfig.EnableShopSupplies">
                 <label class="form-check-label" for="enableShopSupplies">@translator.Translate(userLanguage, "Shop Supplies")</label>
             </div>
-            <div class="form-check form-switch form-check-inline">
-                <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="showCalendar" checked="@Model.UserConfig.ShowCalendar">
-                <label class="form-check-label" for="showCalendar">@translator.Translate(userLanguage, "Show Calendar")</label>
+        </div>
+        
+        <hr />
+        
+        @* Measurements Settings *@
+        <h6 class="text-muted mb-2"><i class="bi bi-rulers me-2"></i>@translator.Translate(userLanguage, "Measurements")</h6>
+        <div>
+            <label for="preferredWeightUnit" class="form-label">@translator.Translate(userLanguage, "Preferred Weight Unit")</label>
+            <select class="form-select" id="preferredWeightUnit" onchange="updateSettings()" style="max-width:200px;">
+                @if (Model.UserConfig.PreferredWeightUnit == "lbs" || string.IsNullOrWhiteSpace(Model.UserConfig.PreferredWeightUnit))
+                {
+                    <option value="lbs" selected>@translator.Translate(userLanguage, "Imperial (lbs, oz)")</option>
+                    <option value="kg">@translator.Translate(userLanguage, "Metric (kg, g)")</option>
+                }
+                else
+                {
+                    <option value="lbs">@translator.Translate(userLanguage, "Imperial (lbs, oz)")</option>
+                    <option value="kg" selected>@translator.Translate(userLanguage, "Metric (kg, g)")</option>
+                }
+            </select>
+            <small class="text-muted">@translator.Translate(userLanguage, "Default unit for weight tracking and entry")</small>
+        </div>
+        
+        <hr />
+        
+        @* Reminder Settings *@
+        <h6 class="text-muted mb-2"><i class="bi bi-bell me-2"></i>@translator.Translate(userLanguage, "Reminders")</h6>
+        <div class="form-check form-switch form-check-inline">
+            <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="enableAutoReminderRefresh" checked="@Model.UserConfig.EnableAutoReminderRefresh">
+            <label class="form-check-label" for="enableAutoReminderRefresh">@translator.Translate(userLanguage, "Auto Refresh Lapsed Recurring Reminders")</label>
+        </div>
+        
+        <hr />
+        
+        @* Legacy / Compatibility Settings *@
+        <div class="mb-2">
+            <a class="text-muted" data-bs-toggle="collapse" href="#legacySettings" role="button" aria-expanded="false" aria-controls="legacySettings">
+                <i class="bi bi-archive me-2"></i>@translator.Translate(userLanguage, "Legacy / Compatibility Settings") <i class="bi bi-chevron-down"></i>
+            </a>
+        </div>
+        <div class="collapse" id="legacySettings">
+            <div class="card card-body bg-light">
+                <small class="text-muted mb-2">@translator.Translate(userLanguage, "These settings are retained for compatibility with legacy data but may not be relevant for pet health tracking.")</small>
+                
+                <div class="form-check form-switch">
+                    <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="useMPG" checked="@Model.UserConfig.UseMPG">
+                    <label class="form-check-label" for="useMPG">@translator.Translate(userLanguage, "Use Imperial Calculation for Fuel Economy Calculations(MPG)") <small class="text-muted">(Legacy)</small><span class="ms-2 settingsToolTip" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="@translator.Translate(userLanguage, "This Will Also Change Units to Miles and Gallons")"><i class="bi bi-question-circle"></i></span></label>
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="useUKMPG" checked="@Model.UserConfig.UseUKMPG">
+                    <label class="form-check-label" for="useUKMPG">@translator.Translate(userLanguage, "Use UK MPG Calculation") <small class="text-muted">(Legacy)</small><span class="ms-2 settingsToolTip" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="@translator.Translate(userLanguage, "Input Gas Consumption in Liters, it will be converted to UK Gals for MPG Calculation")"><i class="bi bi-question-circle"></i></span></label>
+                </div>
+                <div>
+                    <div class="form-check form-switch form-check-inline">
+                        <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="useThreeDecimal" checked="@Model.UserConfig.UseThreeDecimalGasCost">
+                        <label class="form-check-label" for="useThreeDecimal">@translator.Translate(userLanguage, "Use Three Decimals For Fuel Cost") <small class="text-muted">(Legacy)</small></label>
+                    </div>
+                    <div class="form-check form-switch form-check-inline">
+                        <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="useUnitForFuelCost" checked="@Model.UserConfig.UseUnitForFuelCost">
+                        <label class="form-check-label" for="useUnitForFuelCost">@translator.Translate(userLanguage, "Default to Fuel Unit Cost") <small class="text-muted">(Legacy)</small></label>
+                    </div>
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="useThreeDecimalGasConsumption" checked="@Model.UserConfig.UseThreeDecimalGasConsumption">
+                    <label class="form-check-label" for="useThreeDecimalGasConsumption">@translator.Translate(userLanguage, "Use Three Decimals For Fuel Consumption") <small class="text-muted">(Legacy)</small></label>
+                </div>
+                <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="enableAutoOdometerInsert" checked="@Model.UserConfig.EnableAutoOdometerInsert">
+                    <label class="form-check-label" for="enableAutoOdometerInsert">@translator.Translate(userLanguage, "Auto Insert Odometer Records") <small class="text-muted">(Legacy)</small><span class="ms-2 settingsToolTip" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="@translator.Translate(userLanguage, "Only when Adding Service/Repair/Upgrade/Fuel Record or Completing a Plan")"><i class="bi bi-question-circle"></i></span></label>
+                </div>
+                <div class="form-check form-switch form-check-inline">
+                    <input class="form-check-input" onChange="updateSettings()" type="checkbox" role="switch" id="enableAutoFillOdometer" checked="@Model.UserConfig.EnableAutoFillOdometer">
+                    <label class="form-check-label" for="enableAutoFillOdometer">@translator.Translate(userLanguage, "Auto Fill Odometer Input") <small class="text-muted">(Legacy)</small><span class="ms-2 settingsToolTip" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="@translator.Translate(userLanguage, "Only when Adding Service/Repair/Upgrade/Fuel Record or Completing a Plan")"><i class="bi bi-question-circle"></i></span></label>
+                </div>
             </div>
         </div>
         @if (User.IsInRole(nameof(UserData.IsRootUser)))
@@ -126,96 +179,61 @@
         }
     </div>
     <div class="col-12 col-md-6">
-        <div class="row" id="visibleTabs">
-            <div class="col-12">
-                <div class="row">
-                    <div class="col-11">
-                        <span class="lead">@translator.Translate(userLanguage, "Visible Tabs")</span>
-                    </div>
-                    <div class="col-1">
-                        <button onclick="showTabReorderModal()" class="btn text-secondary btn-sm"><i class="bi bi-arrow-down-up"></i></button>
-                    </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-6">
+                <span class="lead"><i class="bi bi-currency-exchange me-2"></i>@translator.Translate(userLanguage, "Currency & Locale")</span>
+                <div>
+                    <label for="preferredLocale" class="form-label">@translator.Translate(userLanguage, "Preferred Currency / Locale")</label>
+                    <select class="form-select" id="preferredLocale" onchange="updateSettings()" style="max-width:300px;">
+                        @{
+                            var serverDefault = System.Globalization.CultureInfo.CurrentCulture.Name.Replace("-", "_");
+                            var userPreferredLocale = Model.UserConfig.PreferredLocale;
+                            var commonLocales = new Dictionary<string, string>
+                            {
+                                { "", $"Server Default ({System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol})" },
+                                { "en_US", "English (United States) - USD $" },
+                                { "en_GB", "English (United Kingdom) - GBP £" },
+                                { "en_CA", "English (Canada) - CAD $" },
+                                { "en_AU", "English (Australia) - AUD $" },
+                                { "en_NZ", "English (New Zealand) - NZD $" },
+                                { "fr_FR", "Français (France) - EUR €" },
+                                { "fr_CA", "Français (Canada) - CAD $" },
+                                { "de_DE", "Deutsch (Deutschland) - EUR €" },
+                                { "de_CH", "Deutsch (Schweiz) - CHF" },
+                                { "es_ES", "Español (España) - EUR €" },
+                                { "es_MX", "Español (México) - MXN $" },
+                                { "it_IT", "Italiano (Italia) - EUR €" },
+                                { "nl_NL", "Nederlands (Nederland) - EUR €" },
+                                { "pt_BR", "Português (Brasil) - BRL R$" },
+                                { "pt_PT", "Português (Portugal) - EUR €" },
+                                { "pl_PL", "Polski (Polska) - PLN zł" },
+                                { "ja_JP", "日本語 (日本) - JPY ¥" },
+                                { "zh_CN", "中文 (中国) - CNY ¥" },
+                                { "ko_KR", "한국어 (대한민국) - KRW ₩" },
+                                { "ru_RU", "Русский (Россия) - RUB ₽" },
+                                { "sv_SE", "Svenska (Sverige) - SEK kr" },
+                                { "no_NO", "Norsk (Norge) - NOK kr" },
+                                { "da_DK", "Dansk (Danmark) - DKK kr" },
+                                { "fi_FI", "Suomi (Suomi) - EUR €" },
+                                { "tr_TR", "Türkçe (Türkiye) - TRY ₺" },
+                                { "ar_SA", "العربية (السعودية) - SAR ﷼" },
+                                { "he_IL", "עברית (ישראל) - ILS ₪" }
+                            };
+                        }
+                        @foreach (var locale in commonLocales)
+                        {
+                            @if (locale.Key == userPreferredLocale || (string.IsNullOrWhiteSpace(userPreferredLocale) && locale.Key == ""))
+                            {
+                                <option value="@locale.Key" selected>@locale.Value</option>
+                            }
+                            else
+                            {
+                                <option value="@locale.Key">@locale.Value</option>
+                            }
+                        }
+                    </select>
+                    <small class="text-muted">@translator.Translate(userLanguage, "Controls currency symbol and number formatting in reports and costs")</small>
                 </div>
-            </div>
-            <div class="col-12 col-md-6">
-                <ul class="list-group">
-                    <li class="list-group-item">
-                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="ServiceRecord" id="serviceRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.ServiceRecord) ? "checked" : "")>
-                        <label class="form-check-label stretched-link" for="serviceRecordTab">@translator.Translate(userLanguage, "Service Records")</label>
-                    </li>
-                    <li class="list-group-item d-none">
-                        <input onChange="updateSettings()" disabled class="form-check-input me-1" type="checkbox" value="Dashboard" id="dashboardTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.Dashboard) ? "checked" : "")>
-                        <label class="form-check-label stretched-link" for="dashboardTab">@translator.Translate(userLanguage, "Dashboard")</label>
-                    </li>
-                    <li class="list-group-item">
-                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="RepairRecord" id="repairRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.RepairRecord) ? "checked" : "")>
-                        <label class="form-check-label stretched-link" for="repairRecordTab">@translator.Translate(userLanguage, "Repairs")</label>
-                    </li>
-                    <li class="list-group-item">
-                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="UpgradeRecord" id="upgradeRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.UpgradeRecord) ? "checked" : "")>
-                        <label class="form-check-label stretched-link" for="upgradeRecordTab">@translator.Translate(userLanguage, "Upgrades") <small class="text-muted">(Legacy)</small></label>
-                    </li>
-                    <li class="list-group-item">
-                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="GasRecord" id="gasRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.GasRecord) ? "checked" : "")>
-                        <label class="form-check-label stretched-link" for="gasRecordTab">@translator.Translate(userLanguage, "Fuel") <small class="text-muted">(Legacy)</small></label>
-                    </li>
-                    <li class="list-group-item">
-                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="OdometerRecord" id="odometerRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.OdometerRecord) ? "checked" : "")>
-                        <label class="form-check-label stretched-link" for="odometerRecordTab">@translator.Translate(userLanguage, "Odometer") <small class="text-muted">(Legacy)</small></label>
-                    </li>
-                    <li class="list-group-item">
-                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="EquipmentRecord" id="equipmentRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.EquipmentRecord) ? "checked" : "")>
-                        <label class="form-check-label stretched-link" for="equipmentRecordTab">@translator.Translate(userLanguage, "Equipment")</label>
-                    </li>
-                </ul>
-            </div>
-            <div class="col-12 col-md-6">
-                <ul class="list-group">
-                    <li class="list-group-item">
-                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="TaxRecord" id="taxRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.TaxRecord) ? "checked" : "")>
-                        <label class="form-check-label stretched-link" for="taxRecordTab">@translator.Translate(userLanguage, "Taxes")</label>
-                    </li>
-                    <li class="list-group-item">
-                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="NoteRecord" id="noteRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.NoteRecord) ? "checked" : "")>
-                        <label class="form-check-label stretched-link" for="noteRecordTab">@translator.Translate(userLanguage, "Notes")</label>
-                    </li>
-                    <li class="list-group-item">
-                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="ReminderRecord" id="reminderRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.ReminderRecord) ? "checked" : "")>
-                        <label class="form-check-label stretched-link" for="reminderRecordTab">@translator.Translate(userLanguage, "Reminder")</label>
-                    </li>
-                    <li class="list-group-item">
-                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="SupplyRecord" id="supplyRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.SupplyRecord) ? "checked" : "")>
-                        <label class="form-check-label stretched-link" for="supplyRecordTab">@translator.Translate(userLanguage, "Supplies")</label>
-                    </li>
-                    <li class="list-group-item">
-                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="PlanRecord" id="planRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.PlanRecord) ? "checked" : "")>
-                        <label class="form-check-label stretched-link" for="planRecordTab">@translator.Translate(userLanguage, "Planner")</label>
-                    </li>
-                    <li class="list-group-item">
-                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="InspectionRecord" id="inspectionRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.InspectionRecord) ? "checked" : "")>
-                        <label class="form-check-label stretched-link" for="inspectionRecordTab">@translator.Translate(userLanguage, "Inspections")</label>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12 col-md-6">
-                <span class="lead">@translator.Translate(userLanguage, "Default Tab")</span>
-                <select class="form-select" onchange="updateSettings()" id="defaultTab">
-                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.Dashboard)) value="Dashboard">@translator.Translate(userLanguage, "Dashboard")</!option>
-                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.ServiceRecord)) value="ServiceRecord">@translator.Translate(userLanguage, "Service Record")</!option>
-                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.RepairRecord)) value="RepairRecord">@translator.Translate(userLanguage, "Repairs")</!option>
-                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.UpgradeRecord)) value="UpgradeRecord">@translator.Translate(userLanguage, "Upgrades (Legacy)")</!option>
-                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.GasRecord)) value="GasRecord">@translator.Translate(userLanguage, "Fuel (Legacy)")</!option>
-                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.TaxRecord)) value="TaxRecord">@translator.Translate(userLanguage, "Tax")</!option>
-                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.NoteRecord)) value="NoteRecord">@translator.Translate(userLanguage, "Notes")</!option>
-                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.ReminderRecord)) value="ReminderRecord">@translator.Translate(userLanguage, "Reminders")</!option>
-                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.SupplyRecord)) value="SupplyRecord">@translator.Translate(userLanguage, "Supplies")</!option>
-                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.PlanRecord)) value="PlanRecord">@translator.Translate(userLanguage, "Planner")</!option>
-                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.OdometerRecord)) value="OdometerRecord">@translator.Translate(userLanguage, "Odometer (Legacy)")</!option>
-                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.InspectionRecord)) value="InspectionRecord">@translator.Translate(userLanguage, "Inspections")</!option>
-                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.EquipmentRecord)) value="EquipmentRecord">@translator.Translate(userLanguage, "Equipment")</!option>
-                </select>
             </div>
             <div class="col-12 col-md-6">
                 <span class="lead">@translator.Translate(userLanguage, "Language")</span>
@@ -241,6 +259,116 @@
                         }
                     </select>
                 }
+            </div>
+        </div>
+        
+        <hr />
+        
+        <div class="row" id="visibleTabs">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-11">
+                        <span class="lead">@translator.Translate(userLanguage, "Profile Tabs")</span>
+                        <br /><small class="text-muted">@translator.Translate(userLanguage, "Choose which sections appear in each pet profile")</small>
+                    </div>
+                    <div class="col-1">
+                        <button onclick="showTabReorderModal()" class="btn text-secondary btn-sm" title="@translator.Translate(userLanguage, "Reorder Tabs")"><i class="bi bi-arrow-down-up"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <small class="text-muted fw-semibold">@translator.Translate(userLanguage, "Primary Pet Care")</small>
+                <ul class="list-group">
+                    <li class="list-group-item d-none">
+                        <input onChange="updateSettings()" disabled class="form-check-input me-1" type="checkbox" value="Dashboard" id="dashboardTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.Dashboard) ? "checked" : "")>
+                        <label class="form-check-label stretched-link" for="dashboardTab">@translator.Translate(userLanguage, "Dashboard")</label>
+                    </li>
+                    <li class="list-group-item">
+                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="ServiceRecord" id="serviceRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.ServiceRecord) ? "checked" : "")>
+                        <label class="form-check-label stretched-link" for="serviceRecordTab">@translator.Translate(userLanguage, "Care Records")</label>
+                    </li>
+                    <li class="list-group-item">
+                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="RepairRecord" id="repairRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.RepairRecord) ? "checked" : "")>
+                        <label class="form-check-label stretched-link" for="repairRecordTab">@translator.Translate(userLanguage, "Treatments")</label>
+                    </li>
+                    <li class="list-group-item">
+                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="ReminderRecord" id="reminderRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.ReminderRecord) ? "checked" : "")>
+                        <label class="form-check-label stretched-link" for="reminderRecordTab">@translator.Translate(userLanguage, "Reminders")</label>
+                    </li>
+                    <li class="list-group-item">
+                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="NoteRecord" id="noteRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.NoteRecord) ? "checked" : "")>
+                        <label class="form-check-label stretched-link" for="noteRecordTab">@translator.Translate(userLanguage, "Notes")</label>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-12 col-md-6">
+                <small class="text-muted fw-semibold">@translator.Translate(userLanguage, "Planning & Household")</small>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="EquipmentRecord" id="equipmentRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.EquipmentRecord) ? "checked" : "")>
+                        <label class="form-check-label stretched-link" for="equipmentRecordTab">@translator.Translate(userLanguage, "Supplies & Equipment")</label>
+                    </li>
+                    <li class="list-group-item">
+                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="TaxRecord" id="taxRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.TaxRecord) ? "checked" : "")>
+                        <label class="form-check-label stretched-link" for="taxRecordTab">@translator.Translate(userLanguage, "Fees & Taxes")</label>
+                    </li>
+                    <li class="list-group-item">
+                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="SupplyRecord" id="supplyRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.SupplyRecord) ? "checked" : "")>
+                        <label class="form-check-label stretched-link" for="supplyRecordTab">@translator.Translate(userLanguage, "Supplies")</label>
+                    </li>
+                    <li class="list-group-item">
+                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="PlanRecord" id="planRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.PlanRecord) ? "checked" : "")>
+                        <label class="form-check-label stretched-link" for="planRecordTab">@translator.Translate(userLanguage, "Planner")</label>
+                    </li>
+                    <li class="list-group-item">
+                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="InspectionRecord" id="inspectionRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.InspectionRecord) ? "checked" : "")>
+                        <label class="form-check-label stretched-link" for="inspectionRecordTab">@translator.Translate(userLanguage, "Checklists")</label>
+                    </li>
+                </ul>
+                <div class="mt-2 mb-1">
+                    <a class="text-muted small" data-bs-toggle="collapse" href="#legacyTabSettings" role="button" aria-expanded="false" aria-controls="legacyTabSettings">
+                        <i class="bi bi-archive me-1"></i>@translator.Translate(userLanguage, "Legacy Vehicle Tabs (Compatibility)") <i class="bi bi-chevron-down"></i>
+                    </a>
+                </div>
+                <div class="collapse" id="legacyTabSettings">
+                    <div class="card card-body bg-light py-2">
+                        <small class="text-muted mb-2">@translator.Translate(userLanguage, "Only enable these if you still manage migrated vehicle-era data.")</small>
+                        <ul class="list-group">
+                    <li class="list-group-item">
+                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="UpgradeRecord" id="upgradeRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.UpgradeRecord) ? "checked" : "")>
+                        <label class="form-check-label stretched-link" for="upgradeRecordTab">@translator.Translate(userLanguage, "Upgrades") <small class="text-muted">(Legacy)</small></label>
+                    </li>
+                    <li class="list-group-item">
+                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="GasRecord" id="gasRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.GasRecord) ? "checked" : "")>
+                        <label class="form-check-label stretched-link" for="gasRecordTab">@translator.Translate(userLanguage, "Fuel") <small class="text-muted">(Legacy)</small></label>
+                    </li>
+                    <li class="list-group-item">
+                        <input onChange="updateSettings()" class="form-check-input me-1" type="checkbox" value="OdometerRecord" id="odometerRecordTab" @(Model.UserConfig.VisibleTabs.Contains(ImportMode.OdometerRecord) ? "checked" : "")>
+                        <label class="form-check-label stretched-link" for="odometerRecordTab">@translator.Translate(userLanguage, "Odometer") <small class="text-muted">(Legacy)</small></label>
+                    </li>
+                </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-6">
+                <span class="lead">@translator.Translate(userLanguage, "Default Tab")</span>
+                <select class="form-select" onchange="updateSettings()" id="defaultTab">
+                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.Dashboard)) value="Dashboard">@translator.Translate(userLanguage, "Dashboard")</!option>
+                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.ServiceRecord)) value="ServiceRecord">@translator.Translate(userLanguage, "Service Record")</!option>
+                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.RepairRecord)) value="RepairRecord">@translator.Translate(userLanguage, "Repairs")</!option>
+                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.UpgradeRecord)) value="UpgradeRecord">@translator.Translate(userLanguage, "Upgrades (Legacy)")</!option>
+                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.GasRecord)) value="GasRecord">@translator.Translate(userLanguage, "Fuel (Legacy)")</!option>
+                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.TaxRecord)) value="TaxRecord">@translator.Translate(userLanguage, "Tax")</!option>
+                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.NoteRecord)) value="NoteRecord">@translator.Translate(userLanguage, "Notes")</!option>
+                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.ReminderRecord)) value="ReminderRecord">@translator.Translate(userLanguage, "Reminders")</!option>
+                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.SupplyRecord)) value="SupplyRecord">@translator.Translate(userLanguage, "Supplies")</!option>
+                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.PlanRecord)) value="PlanRecord">@translator.Translate(userLanguage, "Planner")</!option>
+                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.OdometerRecord)) value="OdometerRecord">@translator.Translate(userLanguage, "Odometer (Legacy)")</!option>
+                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.InspectionRecord)) value="InspectionRecord">@translator.Translate(userLanguage, "Inspections")</!option>
+                    <!option @(StaticHelper.DefaultTabSelected(Model.UserConfig, ImportMode.EquipmentRecord)) value="EquipmentRecord">@translator.Translate(userLanguage, "Equipment")</!option>
+                </select>
             </div>
         </div>
         @if (User.IsInRole(nameof(UserData.IsRootUser)))
@@ -302,40 +430,28 @@
 </div>
 <div class="row">
     <div class="d-flex justify-content-center">
-        <h6 class="display-6 mt-2">@translator.Translate(userLanguage, "About")</h6>
+        <h6 class="display-6 mt-2">@translator.Translate(userLanguage, "About PawLogger")</h6>
     </div>
     <hr />
     <div class="col-12 col-md-6">
         <div class="d-flex justify-content-center">
-            <img src="/defaults/lubelogger_logo.png" />
+            <h2 class="text-primary"><i class="bi bi-hearts"></i> PawLogger</h2>
         </div>
         <div class="d-flex justify-content-center">
             <small class="text-body-secondary">@($"{translator.Translate(userLanguage, "Version")} {StaticHelper.VersionNumber}")</small>
         </div>
-        <p class="lead">
-            Proudly developed in the rural town of Price, Utah by Hargata Softworks.
+        <p class="lead mt-3">
+            @translator.Translate(userLanguage, "PawLogger helps you track pet health, care history, reminders, and expenses in one place.")
         </p>
-        <p class="lead">
-            If you enjoyed using this app, please consider spreading the good word.<br />
-            If you want to support the development of this project, consider subscribing to <a class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="https://www.patreon.com/LubeLogger" target="_blank">our Patreon</a> or make a <a class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="https://buy.stripe.com/aEU9Egc8DdMc9bO144" target="_blank">donation</a>
-        </p>
-        <div class="d-flex justify-content-center">
-            <h6 class="display-7 mt-2">Hometown Shoutout</h6>
-        </div>
-        <p class="lead">
-            Do you work remotely and are looking for a new place to call home? Consider looking into the rural Eastern Utah town of Price. Price and Carbon County
-            has experienced pronounced decline in both population and economic activity within the past decade whereas the rest of the state experienced exponential growth.
-            It is conveniently located in between Salt Lake City and Moab Utah. Amenities are relatively complete in terms of big box stores and high speed fiber Internet.
-            Price and its surrounding towns as a whole could really benefit from in-migration. Thank you!
+        <p class="text-muted small">
+            @translator.Translate(userLanguage, "Built on the open-source Lubelogger foundation and adapted for pet care workflows.")
         </p>
     </div>
     <div class="col-12 col-md-6">
         <div class="d-flex justify-content-center">
-            <h6 class="display-7 mt-2">Open Source Dependencies</h6>
+            <h6 class="display-7 mt-2">@translator.Translate(userLanguage, "Open Source Components")</h6>
         </div>
-        <p class="lead">
-            LubeLogger utilizes open-source dependencies to serve you the best possible user experience, those dependencies are:
-        </p>
+        <p class="text-muted">@translator.Translate(userLanguage, "PawLogger includes the following open-source libraries:")</p>
         <ul class="list-group">
             <li class="list-group-item">Bootstrap</li>
             <li class="list-group-item">Bootstrap-DatePicker</li>
@@ -351,7 +467,6 @@
         </ul>
     </div>
 </div>
-<div class="row" id="sponsorsContainer"></div>
 <div class="modal fade" data-bs-focus="false" id="extraFieldModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" id="extraFieldModalContent">
@@ -459,6 +574,5 @@
             });
         }
     }
-    loadSponsors();
     loadTooltips();
 </script>

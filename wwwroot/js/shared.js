@@ -95,7 +95,10 @@ function saveVehicle(isEdit) {
     var isSpayedNeutered = $("#inputSpayedNeutered").is(":checked");
     var dateOfBirth      = $("#inputDateOfBirth").val();
     var isEstimatedAge   = $("#inputEstimatedAge").is(":checked");
-    var currentWeight    = $("#inputCurrentWeight").val();
+    // Combine structured weight fields (value + unit)
+    var currentWeightValue = $("#inputCurrentWeightValue").val().trim();
+    var currentWeightUnit = $("#inputCurrentWeightUnit").val();
+    var currentWeight = currentWeightValue != '' ? `${currentWeightValue} ${currentWeightUnit}` : '';
     var petStatus        = parseInt($("#inputPetStatus").val());
     // Optional profile fields
     var adoptionDate     = $("#inputAdoptionDate").val();

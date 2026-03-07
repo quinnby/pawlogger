@@ -27,6 +27,13 @@
         public bool ShowVehicleThumbnail { get; set; }
         public bool ShowSearch { get; set; }
         public bool DisableAutoZoom { get; set; }
+        // Phase 7 - Pet measurement preferences
+        public string PreferredWeightUnit { get; set; } = "lbs";
+        /// <summary>
+        /// User's preferred locale for currency and number formatting (e.g., "en_US", "en_GB", "fr_FR").
+        /// Falls back to server default if empty.
+        /// </summary>
+        public string PreferredLocale { get; set; } = string.Empty;
         public List<UserColumnPreference> UserColumnPreferences { get; set; } = new List<UserColumnPreference>();
         public string UserNameHash { get; set; } = string.Empty;
         public string UserPasswordHash { get; set; } = string.Empty;

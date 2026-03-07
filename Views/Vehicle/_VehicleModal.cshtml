@@ -69,8 +69,26 @@
                         <label class="form-check-label" for="inputEstimatedAge">@translator.Translate(userLanguage, "Age is Estimated")</label>
                     </div>
 
-                    <label for="inputCurrentWeight" class="mt-1">@translator.Translate(userLanguage, "Current Weight") <small class="text-muted">(@translator.Translate(userLanguage, "auto-updated from latest Weight Check; can be overridden manually"))</small></label>
-                    <input type="text" id="inputCurrentWeight" class="form-control" placeholder="@translator.Translate(userLanguage, "e.g. 12.5 lbs or 5.7 kg (optional)")" value="@Model.CurrentWeight">
+                    <label class="mt-1">@translator.Translate(userLanguage, "Current Weight") <small class="text-muted">(@translator.Translate(userLanguage, "auto-updated from latest Weight Check; can be overridden manually"))</small></label>
+                    <div class="input-group" style="max-width:250px;">
+                        <input type="text" id="inputCurrentWeightValue" class="form-control" placeholder="@translator.Translate(userLanguage, "e.g. 12.5")" value="" onkeydown="interceptDecimalKeys(event)" onkeyup="fixDecimalInput(this, 2)">
+                        <select class="form-select" id="inputCurrentWeightUnit" style="max-width:80px;">
+                            @if (userConfig.PreferredWeightUnit == "kg" || userConfig.PreferredWeightUnit == "g")
+                            {
+                                <option value="kg" selected>kg</option>
+                                <option value="g">g</option>
+                                <option value="lbs">lbs</option>
+                                <option value="oz">oz</option>
+                            }
+                            else
+                            {
+                                <option value="lbs" selected>lbs</option>
+                                <option value="oz">oz</option>
+                                <option value="kg">kg</option>
+                                <option value="g">g</option>
+                            }
+                        </select>
+                    </div>
 
                     <label for="inputPetStatus" class="mt-1">@translator.Translate(userLanguage, "Status")</label>
                     <select class="form-select" id="inputPetStatus">
@@ -162,6 +180,30 @@
 <script>
     var uploadedFile = "@Model.ImageLocation";
     var uploadedMap = "@Model.MapLocation";
+    
+        // Parse CurrentWeight string (e.g., "12.5 lbs") into value and unit
+        (function() {
+            var currentWeight = "@Model.CurrentWeight";
+            if (currentWeight && currentWeight.trim() != '') {
+                // Match number (with optional decimal) followed by unit
+                var match = currentWeight.match(/^([\d.,]+)\s*(\w+)$/);
+                if (match) {
+                    $("#inputCurrentWeightValue").val(match[1].trim());
+                    var unit = match[2].toLowerCase();
+                    // Set unit if it matches one of our options
+                    if (["lbs", "oz", "kg", "g"].includes(unit)) {
+                        $("#inputCurrentWeightUnit").val(unit);
+                    }
+                } else {
+                    // If it doesn't match pattern, try to extract just a number
+                    var numMatch = currentWeight.match(/[\d.,]+/);
+                    if (numMatch) {
+                        $("#inputCurrentWeightValue").val(numMatch[0]);
+                    }
+                }
+            }
+        })();
+    
     function getVehicleModelData() {
         return { id: @Model.Id }
     }

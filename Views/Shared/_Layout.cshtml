@@ -12,9 +12,22 @@
     var useMarkDown = userConfig.UseMarkDownOnSavedNotes;
     var useThreeDecimals = userConfig.UseThreeDecimalGasCost;
     var automaticDecimalFormat = userConfig.AutomaticDecimalFormat;
-    var shortDatePattern = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
-    var firstDayOfWeek = (int)CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
-    var numberFormat = CultureInfo.CurrentCulture.NumberFormat;
+    // Use user's preferred locale if set, otherwise fall back to server default
+    var userCulture = CultureInfo.CurrentCulture;
+    if (!string.IsNullOrWhiteSpace(userConfig.PreferredLocale))
+    {
+        try
+        {
+            userCulture = new CultureInfo(userConfig.PreferredLocale.Replace('_', '-'));
+        }
+        catch
+        {
+            // Fall back to CurrentCulture if preferred locale is invalid
+        }
+    }
+    var shortDatePattern = userCulture.DateTimeFormat.ShortDatePattern;
+    var firstDayOfWeek = (int)userCulture.DateTimeFormat.FirstDayOfWeek;
+    var numberFormat = userCulture.NumberFormat;
     var userLanguage = userConfig.UserLanguage;
     shortDatePattern = shortDatePattern.ToLower();
     if (!shortDatePattern.Contains("dd"))
@@ -70,7 +83,8 @@
                 currencySymbol: decodeHTMLEntities("@numberFormat.CurrencySymbol"),
                 useThreeDecimals: "@useThreeDecimals" == "True",
                 useMPG: "@useMPG" == "True",
-                firstDayOfWeek: @firstDayOfWeek
+                firstDayOfWeek: @firstDayOfWeek,
+                preferredWeightUnit: "@userConfig.PreferredWeightUnit" || "lbs"
             }
         }
         function getShortDatePattern() {

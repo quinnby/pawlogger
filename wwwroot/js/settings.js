@@ -67,6 +67,8 @@ function updateSettings() {
         hideSoldVehicles: $("#hideSoldVehicles").is(":checked"),
         preferredGasUnit: $("#preferredGasUnit").val(),
         preferredGasMileageUnit: $("#preferredFuelMileageUnit").val(),
+        preferredWeightUnit: $("#preferredWeightUnit").val() || "lbs",
+            preferredLocale: $("#preferredLocale").val() || "",
         userLanguage: $("#defaultLanguage").val(),
         useUnitForFuelCost: $("#useUnitForFuelCost").is(":checked"),
         visibleTabs: visibleTabs,
@@ -122,7 +124,7 @@ function uploadLanguage(event) {
 function restoreBackup(event) {
     let formData = new FormData();
     formData.append("file", event.files[0]);
-    console.log('LubeLogger - DB Restoration Started');
+    console.log('PawLogger - DB Restoration Started');
     sloader.show();
     $.ajax({
         url: "/Files/HandleFileUpload",
@@ -136,21 +138,21 @@ function restoreBackup(event) {
                 $.post('/Files/RestoreBackup', { fileName: response }, function (data) {
                     sloader.hide();
                     if (data) {
-                        console.log('LubeLogger - DB Restoration Completed');
+                        console.log('PawLogger - DB Restoration Completed');
                         successToast("Backup Restored");
                         setTimeout(function () { window.location.href = '/Home/Index' }, 500);
                     } else {
                         errorToast(genericErrorMessage());
-                        console.log('LubeLogger - DB Restoration Failed - Failed to process backup file.');
+                        console.log('PawLogger - DB Restoration Failed - Failed to process backup file.');
                     }
                 });
             } else {
-                console.log('LubeLogger - DB Restoration Failed - Failed to upload backup file.');
+                console.log('PawLogger - DB Restoration Failed - Failed to upload backup file.');
             }
         },
         error: function () {
             sloader.hide();
-            console.log('LubeLogger - DB Restoration Failed - Request failed to reach backend, please check file size.');
+            console.log('PawLogger - DB Restoration Failed - Request failed to reach backend, please check file size.');
             errorToast("An error has occurred, please check the file size and try again later.");
         }
     });
@@ -447,7 +449,7 @@ function showCustomWidgets() {
         html: `
                <span>
                You are about to use the Custom Widgets Editor, this is a developer-focused feature that can lead to security vulnerabilities if you don't understand what you're doing.
-               <br />Zero support will be provided from the developer(s) of LubeLogger regarding Custom Widgets, Read the Documentation.
+               <br />Zero support will be provided regarding Custom Widgets. Read the documentation carefully.
                <br />By proceeding, you acknowledge that you are solely responsible for all consequences from utilizing the Custom Widgets Editor.
                <br />To proceed, enter 'acknowledge' into the text field below.
                </span>
