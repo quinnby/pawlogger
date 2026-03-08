@@ -7,6 +7,10 @@ namespace CarCareTracker.Helper
         List<EquipmentRecordViewModel> GetEquipmentRecordViewModels(List<EquipmentRecord>  equipmentRecords, List<OdometerRecord> odometerRecords);
         EquipmentRecordStickerViewModel GetEquipmentRecordStickerViewModel(EquipmentRecord equipmentRecord, List<OdometerRecord> odometerRecords);
     }
+    // Additive alias for phased domain migration.
+    public interface IInventoryHelper : IEquipmentHelper
+    {
+    }
     public class EquipmentHelper : IEquipmentHelper
     {
         public List<EquipmentRecordViewModel> GetEquipmentRecordViewModels(List<EquipmentRecord> equipmentRecords, List<OdometerRecord> odometerRecords)
@@ -42,5 +46,9 @@ namespace CarCareTracker.Helper
                 OdometerRecords = linkedOdometerRecords
             };
         }
+    }
+    // Additive alias for phased domain migration.
+    public class InventoryHelper : EquipmentHelper, IInventoryHelper
+    {
     }
 }

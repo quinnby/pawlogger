@@ -7,6 +7,10 @@ namespace CarCareTracker.Helper
         List<GasRecordViewModel> GetGasRecordViewModels(List<GasRecord> result, bool useMPG, bool useUKMPG);
         string GetAverageGasMileage(List<GasRecordViewModel> results, bool useMPG);
     }
+    // Additive alias for phased domain migration.
+    public interface IFuelConsumptionHelper : IGasHelper
+    {
+    }
     public class GasHelper : IGasHelper
     {
         public string GetAverageGasMileage(List<GasRecordViewModel> results, bool useMPG)
@@ -142,5 +146,9 @@ namespace CarCareTracker.Helper
             }
             return computedResults;
         }
+    }
+    // Additive alias for phased domain migration.
+    public class FuelConsumptionHelper : GasHelper, IFuelConsumptionHelper
+    {
     }
 }

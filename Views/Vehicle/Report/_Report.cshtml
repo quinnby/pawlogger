@@ -55,7 +55,7 @@
                             <li class="dropdown-item @(Model.AvailableMetrics.Contains(ImportMode.OdometerRecord) ? "" : "d-none")">
                                 <div class="list-group-item">
                                     <input class="form-check-input reportCheckBox" onChange="updateCheck()" type="checkbox" id="odometerExpenseCheck" value="6" checked>
-                                    <label class="form-check-label stretched-link" for="odometerExpenseCheck">@translator.Translate(userLanguage, "Odometer")</label>
+                                    <label class="form-check-label stretched-link text-muted" for="odometerExpenseCheck">@translator.Translate(userLanguage, "Odometer") <small>(Legacy)</small></label>
                                 </div>
                             </li>
                             <li class="dropdown-item @(Model.AvailableMetrics.Contains(ImportMode.ServiceRecord) ? "" : "d-none")">
@@ -73,13 +73,13 @@
                             <li class="dropdown-item @(Model.AvailableMetrics.Contains(ImportMode.UpgradeRecord) ? "" : "d-none")">
                                 <div class="list-group-item">
                                     <input class="form-check-input reportCheckBox" onChange="updateCheck()" type="checkbox" id="upgradeExpenseCheck" value="3" checked>
-                                    <label class="form-check-label stretched-link" for="upgradeExpenseCheck">@translator.Translate(userLanguage, "Upgrades")</label>
+                                    <label class="form-check-label stretched-link text-muted" for="upgradeExpenseCheck">@translator.Translate(userLanguage, "Upgrades") <small>(Legacy)</small></label>
                                 </div>
                             </li>
                             <li class="dropdown-item @(Model.AvailableMetrics.Contains(ImportMode.GasRecord) ? "" : "d-none")">
                                 <div class="list-group-item">
                                     <input class="form-check-input reportCheckBox" onChange="updateCheck()" type="checkbox" id="gasExpenseCheck" value="4" checked>
-                                    <label class="form-check-label stretched-link" for="gasExpenseCheck">@translator.Translate(userLanguage, "Fuel")</label>
+                                    <label class="form-check-label stretched-link text-muted" for="gasExpenseCheck">@translator.Translate(userLanguage, "Fuel") <small>(Legacy)</small></label>
                                 </div>
                             </li>
                             <li class="dropdown-item @(Model.AvailableMetrics.Contains(ImportMode.TaxRecord) ? "" : "d-none")">

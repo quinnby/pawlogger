@@ -42,8 +42,6 @@
             ImportMode.Dashboard,
             ImportMode.ServiceRecord, 
             ImportMode.RepairRecord, 
-            ImportMode.GasRecord, 
-            ImportMode.UpgradeRecord, 
             ImportMode.TaxRecord, 
             ImportMode.ReminderRecord, 
             ImportMode.NoteRecord
@@ -52,17 +50,18 @@
         public List<ImportMode> TabOrder { get; set; } = new List<ImportMode>() {
             ImportMode.Dashboard,
             ImportMode.PlanRecord,
-            ImportMode.OdometerRecord,
             ImportMode.ServiceRecord,
             ImportMode.RepairRecord,
-            ImportMode.UpgradeRecord,
-            ImportMode.GasRecord,
             ImportMode.SupplyRecord,
             ImportMode.TaxRecord,
             ImportMode.NoteRecord,
             ImportMode.InspectionRecord,
             ImportMode.EquipmentRecord,
-            ImportMode.ReminderRecord
+            ImportMode.ReminderRecord,
+            // Keep legacy tabs in ordering for compatibility with existing saved settings.
+            ImportMode.OdometerRecord,
+            ImportMode.UpgradeRecord,
+            ImportMode.GasRecord
         };
     }
 }

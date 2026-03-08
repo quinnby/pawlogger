@@ -13,24 +13,12 @@
             <label class="form-check-label stretched-link" for="exportPlanRecord">@translator.Translate(userLanguage, "Planner")</label>
         </li>
         <li class="list-group-item text-start">
-            <input class="form-check-input" type="checkbox" value="OdometerRecord" id="exportOdometerRecord">
-            <label class="form-check-label stretched-link" for="exportOdometerRecord">@translator.Translate(userLanguage, "Odometer")</label>
-        </li>
-        <li class="list-group-item text-start">
             <input class="form-check-input" type="checkbox" value="ServiceRecord" id="exportServiceRecord">
             <label class="form-check-label stretched-link" for="exportServiceRecord">@translator.Translate(userLanguage, "Service Records")</label>
         </li>
         <li class="list-group-item text-start">
             <input class="form-check-input" type="checkbox" value="RepairRecord" id="exportRepairRecord">
             <label class="form-check-label stretched-link" for="exportRepairRecord">@translator.Translate(userLanguage, "Repairs")</label>
-        </li>
-        <li class="list-group-item text-start">
-            <input class="form-check-input" type="checkbox" value="UpgradeRecord" id="exportUpgradeRecord">
-            <label class="form-check-label stretched-link" for="exportUpgradeRecord">@translator.Translate(userLanguage, "Upgrades")</label>
-        </li>
-        <li class="list-group-item text-start">
-            <input class="form-check-input" type="checkbox" value="GasRecord" id="exportGasRecord">
-            <label class="form-check-label stretched-link" for="exportGasRecord">@translator.Translate(userLanguage, "Fuel")</label>
         </li>
         <li class="list-group-item text-start">
             <input class="form-check-input" type="checkbox" value="SupplyRecord" id="exportSupplyRecord">
@@ -53,4 +41,25 @@
             <label class="form-check-label stretched-link" for="exportEquipmentRecord">@translator.Translate(userLanguage, "Equipment")</label>
         </li>
     </ul>
+    <div class="mt-2">
+        <a class="text-muted small" data-bs-toggle="collapse" href="#legacyExportOptions" role="button" aria-expanded="false">
+            <i class="bi bi-archive me-1"></i>@translator.Translate(userLanguage, "Legacy Vehicle Records") <i class="bi bi-chevron-down"></i>
+        </a>
+    </div>
+    <div class="collapse" id="legacyExportOptions">
+        <ul class="list-group mt-1">
+            <li class="list-group-item text-start bg-light">
+                <input class="form-check-input" type="checkbox" value="OdometerRecord" id="exportOdometerRecord">
+                <label class="form-check-label stretched-link text-muted" for="exportOdometerRecord">@translator.Translate(userLanguage, "Odometer") <small>(Legacy)</small></label>
+            </li>
+            <li class="list-group-item text-start bg-light">
+                <input class="form-check-input" type="checkbox" value="UpgradeRecord" id="exportUpgradeRecord">
+                <label class="form-check-label stretched-link text-muted" for="exportUpgradeRecord">@translator.Translate(userLanguage, "Upgrades") <small>(Legacy)</small></label>
+            </li>
+            <li class="list-group-item text-start bg-light">
+                <input class="form-check-input" type="checkbox" value="GasRecord" id="exportGasRecord">
+                <label class="form-check-label stretched-link text-muted" for="exportGasRecord">@translator.Translate(userLanguage, "Fuel") <small>(Legacy)</small></label>
+            </li>
+        </ul>
+    </div>
 </div>

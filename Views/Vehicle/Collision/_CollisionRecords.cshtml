@@ -199,15 +199,17 @@
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="#" onclick="duplicateRecords(selectedRow, 'RepairRecord')"><div class="d-flex justify-content-between"><span class="me-5">@translator.Translate(userLanguage, "Duplicate")</span><i class="bi bi-copy"></i></div></a></li>
     <li><a class="dropdown-item" href="#" onclick="duplicateRecordsToOtherVehicles(selectedRow, 'RepairRecord')"><div class="d-flex justify-content-between"><span class="me-5">@translator.Translate(userLanguage, "Duplicate To Pet")</span><i class="bi bi-copy"></i></div></a></li>
-    <li><a class="dropdown-item" href="#" onclick="insertOdometer(selectedRow, 'RepairRecord')"><div class="d-flex justify-content-between"><span class="me-5">@translator.Translate(userLanguage, "Create Odometer")</span><i class="bi bi-speedometer"></i></div></a></li>
+    @* Phase 9: Hide legacy vehicle odometer actions from pet repair/treatment record views *@
+    @* <li><a class="dropdown-item" href="#" onclick="insertOdometer(selectedRow, 'RepairRecord')"><div class="d-flex justify-content-between"><span class="me-5">@translator.Translate(userLanguage, "Create Odometer")</span><i class="bi bi-speedometer"></i></div></a></li> *@
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="#" onclick="printTabStickers(selectedRow, 'RepairRecord')"><div class="d-flex justify-content-between"><span class="me-5">@translator.Translate(userLanguage, "Print")</span><i class="bi bi-printer"></i></div></a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item text-danger" href="#" onclick="deleteRecords(selectedRow, 'RepairRecord')"><div class="d-flex justify-content-between"><span class="me-5">@translator.Translate(userLanguage, "Delete")</span><i class="bi bi-trash"></i></div></a></li>
     <li><hr class="context-menu-active-multiple dropdown-divider"></li>
     <li><a class="context-menu-active-multiple dropdown-item" href="#" onclick="getRecordsDeltaStats(selectedRow)"><div class="d-flex justify-content-between"><span class="me-5">@translator.Translate(userLanguage, "Statistics")</span><i class="bi bi-graph-up"></i></div></a></li>
-    <li><hr class="context-menu-odometer-adjustment dropdown-divider"></li>
-    <li><a class="context-menu-odometer-adjustment dropdown-item" href="#" onclick="adjustRecordsOdometer(selectedRow, 'RepairRecord')"><div class="d-flex justify-content-between"><span class="me-5">@translator.Translate(userLanguage, "Adjust Odometer")</span><i class="bi bi-speedometer"></i></div></a></li>
+    @* Phase 9: Hide legacy vehicle odometer adjustment from pet repair/treatment record views *@
+    @* <li><hr class="context-menu-odometer-adjustment dropdown-divider"></li>
+    <li><a class="context-menu-odometer-adjustment dropdown-item" href="#" onclick="adjustRecordsOdometer(selectedRow, 'RepairRecord')"><div class="d-flex justify-content-between"><span class="me-5">@translator.Translate(userLanguage, "Adjust Odometer")</span><i class="bi bi-speedometer"></i></div></a></li> *@
 </ul>
 @if (userColumnPreferences.Any())
 {

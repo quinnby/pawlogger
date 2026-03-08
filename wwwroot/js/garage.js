@@ -35,6 +35,9 @@ function getVehicleSupplyRecords() {
 function GetVehicleId() {
     return { vehicleId: 0, hasOdometerAdjustment: false };
 }
+function GetProfileContext() {
+    return GetVehicleId();
+}
 function bindTabEvent() {
     $('button[data-bs-toggle="tab"]').on('show.bs.tab', function (e) {
         switch (e.target.id) {

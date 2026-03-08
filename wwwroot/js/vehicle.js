@@ -1,67 +1,67 @@
 ﻿$(function () {
     //bind functions on page load
-    var vehicleId = GetVehicleId().vehicleId;
+    var profileId = GetProfileContext().vehicleId;
     //bind tabs
     $('button[data-bs-toggle="tab"]').on('show.bs.tab', function (e) {
         switch (e.target.id) {
             case "servicerecord-tab":
-                getVehicleServiceRecords(vehicleId);
+                getVehicleServiceRecords(profileId);
                 break;
             case "healthrecord-tab":
-                getVehicleHealthRecords(vehicleId);
+                getPetHealthRecords(profileId);
                 break;
             // Phase 4 – specialized pet-health record types
             case "vaccination-tab":
-                getVehicleVaccinationRecords(vehicleId);
+                getVehicleVaccinationRecords(profileId);
                 break;
             case "medication-tab":
-                getVehicleMedicationRecords(vehicleId);
+                getVehicleMedicationRecords(profileId);
                 break;
             case "vetvisit-tab":
-                getVehicleVetVisitRecords(vehicleId);
+                getVehicleVetVisitRecords(profileId);
                 break;
             case "licensing-tab":
-                getVehicleLicensingRecords(vehicleId);
+                getVehicleLicensingRecords(profileId);
                 break;
             // Phase 6 – centralized pet expense tracking
             case "expense-tab":
-                getVehiclePetExpenseRecords(vehicleId);
+                getVehiclePetExpenseRecords(profileId);
                 break;
             case "notes-tab":
-                getVehicleNotes(vehicleId);
+                getVehicleNotes(profileId);
                 break;
             case "gas-tab":
-                getVehicleGasRecords(vehicleId);
+                getVehicleGasRecords(profileId);
                 break;
             case "accident-tab":
-                getVehicleCollisionRecords(vehicleId);
+                getVehicleCollisionRecords(profileId);
                 break;
             case "tax-tab":
-                getVehicleTaxRecords(vehicleId);
+                getVehicleTaxRecords(profileId);
                 break;
             case "report-tab":
-                getVehicleReport(vehicleId);
+                getVehicleReport(profileId);
                 break;
             case "reminder-tab":
-                getVehicleReminders(vehicleId);
+                getVehicleReminders(profileId);
                 break;
             case "upgrade-tab":
-                getVehicleUpgradeRecords(vehicleId);
+                getVehicleUpgradeRecords(profileId);
                 break;
             case "supply-tab":
-                getVehicleSupplyRecords(vehicleId);
+                getVehicleSupplyRecords(profileId);
                 break;
             case "plan-tab":
-                getVehiclePlanRecords(vehicleId);
+                getVehiclePlanRecords(profileId);
                 break;
             case "odometer-tab":
-                getVehicleOdometerRecords(vehicleId);
+                getVehicleOdometerRecords(profileId);
                 break;
             case "inspection-tab":
-                getVehicleInspectionRecords(vehicleId);
+                getVehicleInspectionRecords(profileId);
                 break;
             case "equipment-tab":
-                getVehicleEquipmentRecords(vehicleId);
+                getVehicleEquipmentRecords(profileId);
                 break;
         }
         $(`.lubelogger-tab #${e.target.id}`).addClass('active');
@@ -158,7 +158,7 @@ function getVehicleServiceRecords(vehicleId) {
         }
     });
 }
-function getVehicleHealthRecords(vehicleId) {
+function getPetHealthRecords(vehicleId) {
     // Phase 3: HealthRecords are loaded on-demand here via their own dedicated endpoint,
     // NOT bundled into the VehicleRecords aggregate model. This is intentional for now:
     // the aggregate model is vehicle-centric and should not be burdened with pet-health
@@ -169,6 +169,10 @@ function getVehicleHealthRecords(vehicleId) {
             restoreScrollPosition();
         }
     });
+}
+// Legacy wrapper kept for compatibility with existing scripts.
+function getVehicleHealthRecords(vehicleId) {
+    getPetHealthRecords(vehicleId);
 }
 // Phase 4 – specialized pet-health record type loaders
 function getVehicleVaccinationRecords(vehicleId) {
@@ -928,7 +932,15 @@ function loadDefaultTab() {
     //check if tab param exists
     let userDefaultTab = getDefaultTabName();
     let tabFromURL = getTabNameFromURL(userDefaultTab);
-    waitForElement(`#${tabFromURL}`, () => { $(`#${tabFromURL}`).tab('show'); }, '');
+    waitForElement(`#${tabFromURL}`, () => {
+        const targetTab = $(`#${tabFromURL}`);
+        // Hidden tabs can still exist in DOM; fall back to Dashboard to avoid loading legacy tabs by default.
+        if (targetTab.hasClass('d-none')) {
+            $('#report-tab').tab('show');
+            return;
+        }
+        targetTab.tab('show');
+    }, '');
 }
 function getDefaultTabName() {
     var defaultTab = GetDefaultTab().tab;

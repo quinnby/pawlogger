@@ -163,7 +163,7 @@ namespace CarCareTracker.Helper
             }
             return "";
         }
-        public static List<CostForVehicleByMonth> GetBaseLineCosts()
+        public static List<CostForVehicleByMonth> GetBaselineMonthlyCosts()
         {
             return new List<CostForVehicleByMonth>()
             {
@@ -181,7 +181,7 @@ namespace CarCareTracker.Helper
                 new CostForVehicleByMonth {MonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(12), MonthId = 12, Cost = 0M}
             };
         }
-        public static List<CostForVehicleByMonth> GetBaseLineCostsNoMonthName()
+        public static List<CostForVehicleByMonth> GetBaselineMonthlyCostsNoMonthName()
         {
             return new List<CostForVehicleByMonth>()
             {
@@ -198,6 +198,15 @@ namespace CarCareTracker.Helper
                 new CostForVehicleByMonth { MonthId = 11, Cost = 0M},
                 new CostForVehicleByMonth { MonthId = 12, Cost = 0M}
             };
+        }
+        // Legacy wrappers kept for compatibility with existing call sites during phased migration.
+        public static List<CostForVehicleByMonth> GetBaseLineCosts()
+        {
+            return GetBaselineMonthlyCosts();
+        }
+        public static List<CostForVehicleByMonth> GetBaseLineCostsNoMonthName()
+        {
+            return GetBaselineMonthlyCostsNoMonthName();
         }
         public static List<string> GetBarChartColors()
         {

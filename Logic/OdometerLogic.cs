@@ -9,6 +9,10 @@ namespace CarCareTracker.Logic
         bool AutoInsertOdometerRecord(OdometerRecord odometer);
         List<OdometerRecord> AutoConvertOdometerRecord(List<OdometerRecord> odometerRecords);
     }
+    // Additive alias for phased domain migration.
+    public interface IMileageLogic : IOdometerLogic
+    {
+    }
     public class OdometerLogic: IOdometerLogic
     {
         private readonly IOdometerRecordDataAccess _odometerRecordDataAccess;
@@ -74,6 +78,14 @@ namespace CarCareTracker.Logic
                 previousMileage = currentObject.Mileage;
             }
             return odometerRecords;
+        }
+    }
+    // Additive alias for phased domain migration.
+    public class MileageLogic : OdometerLogic, IMileageLogic
+    {
+        public MileageLogic(IOdometerRecordDataAccess odometerRecordDataAccess, IEquipmentRecordDataAccess equipmentRecordDataAccess, ILogger<IOdometerLogic> logger)
+            : base(odometerRecordDataAccess, equipmentRecordDataAccess, logger)
+        {
         }
     }
 }

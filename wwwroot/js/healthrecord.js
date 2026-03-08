@@ -68,8 +68,8 @@ function deleteHealthRecord(healthRecordId) {
                 if (data.success) {
                     hideAddHealthRecordModal();
                     successToast("Health Record Deleted");
-                    var vehicleId = GetVehicleId().vehicleId;
-                    getVehicleHealthRecords(vehicleId);
+                    var vehicleId = GetProfileContext().vehicleId;
+                    getPetHealthRecords(vehicleId);
                 } else {
                     errorToast(data.message);
                     $("#workAroundInput").hide();
@@ -92,7 +92,7 @@ function saveHealthRecordToVehicle(isEdit) {
             successToast(isEdit ? "Health Record Updated" : "Health Record Added");
             hideAddHealthRecordModal();
             saveScrollPosition();
-            getVehicleHealthRecords(formValues.vehicleId);
+            getPetHealthRecords(formValues.vehicleId);
         } else {
             errorToast(data.message);
         }
@@ -111,7 +111,7 @@ function getAndValidateHealthRecordValues() {
     var healthFollowUp    = $("#healthRecordFollowUpRequired").is(":checked");
     var healthFollowUpDate = healthFollowUp ? $("#healthRecordFollowUpDate").val() : "";
     var healthTags        = $("#healthRecordTag").val();
-    var vehicleId         = GetVehicleId().vehicleId;
+    var vehicleId         = GetProfileContext().vehicleId;
     var recordId          = getHealthRecordModelData().id;
     var extraFields       = getAndValidateExtraFields();
 
@@ -174,7 +174,7 @@ function getAndValidateHealthRecordValues() {
 // Phase 7 – Weight Trend Chart
 // ============================================================
 function showWeightTrendChart() {
-    var vehicleId = GetVehicleId().vehicleId;
+    var vehicleId = GetProfileContext().vehicleId;
     $.get('/Vehicle/GetWeightTrendChartPartialView?vehicleId=' + vehicleId, function (data) {
         if (data) {
             // Phase 3: weightTrendModal is registered at page level in Index.cshtml.
@@ -189,7 +189,7 @@ function showWeightTrendChart() {
 // Phase 7 – Quick Health Observation
 // ============================================================
 function showAddQuickHealthNoteModal() {
-    var vehicleId = GetVehicleId().vehicleId;
+    var vehicleId = GetProfileContext().vehicleId;
     $.get('/Vehicle/GetAddQuickHealthNotePartialView?vehicleId=' + vehicleId, function (data) {
         if (data) {
             $('#quickHealthNoteModalContent').html(data);
@@ -203,7 +203,7 @@ function hideQuickHealthNoteModal() {
 }
 
 function saveQuickHealthNote() {
-    var vehicleId = GetVehicleId().vehicleId;
+    var vehicleId = GetProfileContext().vehicleId;
     var date      = $('#quickNoteDate').val();
     var category  = parseInt($('#quickNoteCategory').val());
     var title     = $('#quickNoteTitle').val().trim();
@@ -244,7 +244,7 @@ function saveQuickHealthNote() {
         if (data.success) {
             successToast('Observation saved');
             hideQuickHealthNoteModal();
-            getVehicleHealthRecords(vehicleId);
+            getPetHealthRecords(vehicleId);
         } else {
             errorToast(data.message);
         }
@@ -255,7 +255,7 @@ function saveQuickHealthNote() {
 // Phase 7 – Pet Health Summary
 // ============================================================
 function showPetSummaryModal() {
-    var vehicleId = GetVehicleId().vehicleId;
+    var vehicleId = GetProfileContext().vehicleId;
     $.get('/Vehicle/GetPetSummaryData?vehicleId=' + vehicleId, function (data) {
         if (data) {
             $('#petSummaryModalContent').html(data);
@@ -268,7 +268,7 @@ function showPetSummaryModal() {
 // Phase 7 – PDF Export
 // ============================================================
 function exportPetSummaryPdf() {
-    var vehicleId = GetVehicleId().vehicleId;
+    var vehicleId = GetProfileContext().vehicleId;
     window.location.href = '/Vehicle/ExportPetSummaryPdf?vehicleId=' + vehicleId;
 }
 

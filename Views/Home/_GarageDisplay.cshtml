@@ -89,17 +89,21 @@
                         } else if (vehicle.DashboardMetrics.Any())
                         {
                             <div class="vehicle-sold-banner d-flex gap-2 flex-wrap">
+                            @* Phase 9: Hide odometer badge for pet profiles (vehicle-specific metric).
+                               Only show if odometer/mileage data exists (legacy vehicle workflows). *@
                             @if (vehicle.DashboardMetrics.Contains(DashboardMetric.Default) && vehicle.LastReportedMileage != default)
                             {
-                                    <span class="badge garage-metric-badge"><i class="bi bi-speedometer me-2"></i>@vehicle.LastReportedMileage.ToString("N0")</span>
-                                    @if (vehicle.HasReminders)
-                                    {
-                                        <span class="badge garage-metric-badge" style="order: 1;"><i class="bi bi bi-bell-fill text-warning"></i></span>
-                                    }
+                                    <span class="badge garage-metric-badge text-muted" title="Legacy vehicle metric"><i class="bi bi-speedometer me-2"></i>@vehicle.LastReportedMileage.ToString("N0")</span>
                             }
+                            @if (vehicle.HasReminders)
+                            {
+                                    <span class="badge garage-metric-badge" style="order: 1;"><i class="bi bi bi-bell-fill text-warning"></i></span>
+                            }
+                            @* Phase 9: CostPerMile (cost per distance unit) is vehicle-specific.
+                               Only meaningful when odometer/mileage tracking is used (legacy). *@
                             @if (vehicle.DashboardMetrics.Contains(DashboardMetric.CostPerMile) && vehicle.CostPerMile != default)
                             {
-                                    <span class="badge garage-metric-badge"><i class="bi bi-cash-coin me-2"></i>@($"{vehicle.CostPerMile.ToString("C2")}/{vehicle.DistanceUnit}")</span>
+                                    <span class="badge garage-metric-badge text-muted" title="Legacy vehicle metric"><i class="bi bi-cash-coin me-2"></i>@($"{vehicle.CostPerMile.ToString("C2")}/{vehicle.DistanceUnit}")</span>
                             }
                             @if (vehicle.DashboardMetrics.Contains(DashboardMetric.TotalCost) && vehicle.TotalCost != default)
                             {
