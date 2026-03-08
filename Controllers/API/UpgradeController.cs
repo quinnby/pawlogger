@@ -11,6 +11,7 @@ namespace CarCareTracker.Controllers
         [Route("/api/vehicle/upgraderecords/all")]
         public IActionResult AllUpgradeRecords(MethodParameter parameters)
         {
+            MarkContractUsage("/api/vehicle/upgraderecords/all");
             List<int> vehicleIds = new List<int>();
             var vehicles = _dataAccess.GetVehicles();
             if (!User.IsInRole(nameof(UserData.IsRootUser)))
@@ -50,18 +51,31 @@ namespace CarCareTracker.Controllers
                 return Json(result);
             }
         }
+
+        [HttpGet]
+        [Route("/api/v2/profiles/upgraderecords/all")]
+        public IActionResult AllUpgradeRecordsV2(MethodParameter parameters) => AllUpgradeRecords(parameters);
+
         [TypeFilter(typeof(CollaboratorFilter))]
         [HttpGet]
         [Route("/api/vehicle/upgraderecords")]
-        public IActionResult UpgradeRecords(int vehicleId, MethodParameter parameters)
+        public IActionResult UpgradeRecords(int vehicleId = default, MethodParameter? parameters = null, int petProfileId = default)
         {
-            if (vehicleId == default)
+            MarkContractUsage("/api/vehicle/upgraderecords");
+            parameters ??= new MethodParameter();
+            var resolvedVehicleId = ResolveVehicleIdAlias(vehicleId, petProfileId, "/api/vehicle/upgraderecords");
+            if (resolvedVehicleId == -1)
+            {
+                Response.StatusCode = 400;
+                return Json(OperationResponse.Failed("Input object invalid, vehicleId and petProfileId do not match."));
+            }
+            if (resolvedVehicleId == default)
             {
                 var response = OperationResponse.Failed("Must provide a valid vehicle id");
                 Response.StatusCode = 400;
                 return Json(response);
             }
-            var vehicleRecords = _upgradeRecordDataAccess.GetUpgradeRecordsByVehicleId(vehicleId);
+            var vehicleRecords = _upgradeRecordDataAccess.GetUpgradeRecordsByVehicleId(resolvedVehicleId);
             if (parameters.Id != default)
             {
                 vehicleRecords.RemoveAll(x => x.Id != parameters.Id);
@@ -89,6 +103,13 @@ namespace CarCareTracker.Controllers
                 return Json(result);
             }
         }
+
+        [TypeFilter(typeof(CollaboratorFilter))]
+        [HttpGet]
+        [Route("/api/v2/profiles/upgraderecords")]
+        public IActionResult UpgradeRecordsV2(int petProfileId = default, MethodParameter? parameters = null, int vehicleId = default)
+            => UpgradeRecords(vehicleId, parameters, petProfileId);
+
         [TypeFilter(typeof(QueryParamFilter), Arguments = new object[] { new string[] { "vehicleId" } })]
         [TypeFilter(typeof(APIKeyFilter), Arguments = new object[] { HouseholdPermission.Edit })]
         [TypeFilter(typeof(CollaboratorFilter), Arguments = new object[] { false, true, HouseholdPermission.Edit })]

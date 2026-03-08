@@ -11,6 +11,7 @@ namespace CarCareTracker.Controllers
         [Route("/api/vehicle/taxrecords/all")]
         public IActionResult AllTaxRecords(MethodParameter parameters)
         {
+            MarkContractUsage("/api/vehicle/taxrecords/all");
             List<int> vehicleIds = new List<int>();
             var vehicles = _dataAccess.GetVehicles();
             if (!User.IsInRole(nameof(UserData.IsRootUser)))
@@ -50,18 +51,31 @@ namespace CarCareTracker.Controllers
                 return Json(result);
             }
         }
+
+        [HttpGet]
+        [Route("/api/v2/profiles/taxrecords/all")]
+        public IActionResult AllTaxRecordsV2(MethodParameter parameters) => AllTaxRecords(parameters);
+
         [TypeFilter(typeof(CollaboratorFilter))]
         [HttpGet]
         [Route("/api/vehicle/taxrecords")]
-        public IActionResult TaxRecords(int vehicleId, MethodParameter parameters)
+        public IActionResult TaxRecords(int vehicleId = default, MethodParameter? parameters = null, int petProfileId = default)
         {
-            if (vehicleId == default)
+            MarkContractUsage("/api/vehicle/taxrecords");
+            parameters ??= new MethodParameter();
+            var resolvedVehicleId = ResolveVehicleIdAlias(vehicleId, petProfileId, "/api/vehicle/taxrecords");
+            if (resolvedVehicleId == -1)
+            {
+                Response.StatusCode = 400;
+                return Json(OperationResponse.Failed("Input object invalid, vehicleId and petProfileId do not match."));
+            }
+            if (resolvedVehicleId == default)
             {
                 var response = OperationResponse.Failed("Must provide a valid vehicle id");
                 Response.StatusCode = 400;
                 return Json(response);
             }
-            var vehicleRecords = _taxRecordDataAccess.GetTaxRecordsByVehicleId(vehicleId);
+            var vehicleRecords = _taxRecordDataAccess.GetTaxRecordsByVehicleId(resolvedVehicleId);
             if (parameters.Id != default)
             {
                 vehicleRecords.RemoveAll(x => x.Id != parameters.Id);
@@ -89,6 +103,13 @@ namespace CarCareTracker.Controllers
                 return Json(result);
             }
         }
+
+        [TypeFilter(typeof(CollaboratorFilter))]
+        [HttpGet]
+        [Route("/api/v2/profiles/taxrecords")]
+        public IActionResult TaxRecordsV2(int petProfileId = default, MethodParameter? parameters = null, int vehicleId = default)
+            => TaxRecords(vehicleId, parameters, petProfileId);
+
         [HttpGet]
         [Route("/api/vehicle/taxrecords/check")]
         public IActionResult CheckRecurringTaxRecords()

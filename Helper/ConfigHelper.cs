@@ -45,6 +45,7 @@ namespace CarCareTracker.Helper
         private readonly IUserConfigDataAccess _userConfig;
         private readonly ILogger<IConfigHelper> _logger;
         private IMemoryCache _cache;
+        private readonly HashSet<string> _loggedConfigAliasUsage = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         public ConfigHelper(IConfiguration serverConfig, 
             IUserConfigDataAccess userConfig,
             IMemoryCache memoryCache,
@@ -407,13 +408,58 @@ namespace CarCareTracker.Helper
         {
             try
             {
+                var aliasConfigName = GetCanonicalAlias(configName);
+                if (!string.IsNullOrWhiteSpace(aliasConfigName))
+                {
+                    var canonicalValue = _config[aliasConfigName];
+                    if (!string.IsNullOrWhiteSpace(canonicalValue))
+                    {
+                        LogConfigAliasUsageOnce($"canonical:{aliasConfigName}->{configName}",
+                            $"Phase7 config alias: using canonical key {aliasConfigName} for legacy accessor {configName}.");
+                        return canonicalValue;
+                    }
+                    var legacyValue = _config[configName];
+                    if (!string.IsNullOrWhiteSpace(legacyValue))
+                    {
+                        LogConfigAliasUsageOnce($"legacy:{configName}",
+                            $"Phase7 config alias: using legacy key {configName}; canonical key {aliasConfigName} not set.");
+                        return legacyValue;
+                    }
+                    return defaultValue;
+                }
+
                 var configValue = _config[configName] ?? defaultValue;
                 return configValue;
-            } catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 _logger.LogWarning($"ConfigHelper Warning: You might be missing keys in appsettings.json, Message: ${ex.Message}");
                 return defaultValue;
             }
+        }
+        private static string GetCanonicalAlias(string configName)
+        {
+            if (configName.StartsWith("LUBELOGGER_", StringComparison.OrdinalIgnoreCase))
+            {
+                return $"PAWLOGGER_{configName.Substring("LUBELOGGER_".Length)}";
+            }
+            if (configName.Equals("POSTGRES_CONNECTION", StringComparison.OrdinalIgnoreCase))
+            {
+                return "PAWLOGGER_POSTGRES_CONNECTION";
+            }
+            return string.Empty;
+        }
+        private void LogConfigAliasUsageOnce(string key, string message)
+        {
+            lock (_loggedConfigAliasUsage)
+            {
+                if (_loggedConfigAliasUsage.Contains(key))
+                {
+                    return;
+                }
+                _loggedConfigAliasUsage.Add(key);
+            }
+            _logger.LogInformation(message);
         }
         public UserConfig GetUserConfig(ClaimsPrincipal user)
         {

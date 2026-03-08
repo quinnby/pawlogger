@@ -11,6 +11,7 @@ namespace CarCareTracker.Controllers
         [Route("/api/vehicle/supplyrecords/all")]
         public IActionResult AllSupplyRecords(MethodParameter parameters)
         {
+            MarkContractUsage("/api/vehicle/supplyrecords/all");
             List<int> vehicleIds = new List<int>();
             var vehicles = _dataAccess.GetVehicles();
             if (!User.IsInRole(nameof(UserData.IsRootUser)))
@@ -69,18 +70,31 @@ namespace CarCareTracker.Controllers
                 return Json(result);
             }
         }
+
+        [HttpGet]
+        [Route("/api/v2/profiles/supplyrecords/all")]
+        public IActionResult AllSupplyRecordsV2(MethodParameter parameters) => AllSupplyRecords(parameters);
+
         [TypeFilter(typeof(CollaboratorFilter))]
         [HttpGet]
         [Route("/api/vehicle/supplyrecords")]
-        public IActionResult SupplyRecords(int vehicleId, MethodParameter parameters)
+        public IActionResult SupplyRecords(int vehicleId = default, MethodParameter? parameters = null, int petProfileId = default)
         {
-            if (vehicleId == default && !_config.GetServerEnableShopSupplies())
+            MarkContractUsage("/api/vehicle/supplyrecords");
+            parameters ??= new MethodParameter();
+            var resolvedVehicleId = ResolveVehicleIdAlias(vehicleId, petProfileId, "/api/vehicle/supplyrecords");
+            if (resolvedVehicleId == -1)
+            {
+                Response.StatusCode = 400;
+                return Json(OperationResponse.Failed("Input object invalid, vehicleId and petProfileId do not match."));
+            }
+            if (resolvedVehicleId == default && !_config.GetServerEnableShopSupplies())
             {
                 var response = OperationResponse.Failed("Must provide a valid vehicle id");
                 Response.StatusCode = 400;
                 return Json(response);
             }
-            var vehicleRecords = _supplyRecordDataAccess.GetSupplyRecordsByVehicleId(vehicleId);
+            var vehicleRecords = _supplyRecordDataAccess.GetSupplyRecordsByVehicleId(resolvedVehicleId);
             if (parameters.Id != default)
             {
                 vehicleRecords.RemoveAll(x => x.Id != parameters.Id);
@@ -123,6 +137,13 @@ namespace CarCareTracker.Controllers
                 return Json(result);
             }
         }
+
+        [TypeFilter(typeof(CollaboratorFilter))]
+        [HttpGet]
+        [Route("/api/v2/profiles/supplyrecords")]
+        public IActionResult SupplyRecordsV2(int petProfileId = default, MethodParameter? parameters = null, int vehicleId = default)
+            => SupplyRecords(vehicleId, parameters, petProfileId);
+
         [TypeFilter(typeof(QueryParamFilter), Arguments = new object[] { new string[] { "vehicleId" } })]
         [TypeFilter(typeof(APIKeyFilter), Arguments = new object[] { HouseholdPermission.Edit })]
         [TypeFilter(typeof(CollaboratorFilter), Arguments = new object[] { false, true, HouseholdPermission.Edit })]

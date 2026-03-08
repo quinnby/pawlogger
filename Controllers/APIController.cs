@@ -28,6 +28,12 @@ namespace CarCareTracker.Controllers
         private readonly IInspectionRecordDataAccess _inspectionRecordDataAccess;
         private readonly IInspectionRecordTemplateDataAccess _inspectionRecordTemplateDataAccess;
         private readonly IEquipmentRecordDataAccess _equipmentRecordDataAccess;
+        private readonly IHealthRecordDataAccess _healthRecordDataAccess;
+        private readonly IVetVisitRecordDataAccess _vetVisitRecordDataAccess;
+        private readonly IVaccinationRecordDataAccess _vaccinationRecordDataAccess;
+        private readonly IMedicationRecordDataAccess _medicationRecordDataAccess;
+        private readonly ILicensingRecordDataAccess _licensingRecordDataAccess;
+        private readonly IPetExpenseRecordDataAccess _petExpenseRecordDataAccess;
         private readonly IUserAccessDataAccess _userAccessDataAccess;
         private readonly IUserRecordDataAccess _userRecordDataAccess;
         private readonly IExtraFieldDataAccess _extraFieldDataAccess;
@@ -43,6 +49,7 @@ namespace CarCareTracker.Controllers
         private readonly IWebHostEnvironment _webEnv;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IEventLogic _eventLogic;
+        private readonly ILogger<APIController> _logger;
         public APIController(IVehicleDataAccess dataAccess,
             IGasHelper gasHelper,
             IEquipmentHelper equipmentHelper,
@@ -61,6 +68,12 @@ namespace CarCareTracker.Controllers
             IInspectionRecordDataAccess inspectionRecordDataAccess,
             IInspectionRecordTemplateDataAccess inspectionRecordTemplateDataAccess,
             IEquipmentRecordDataAccess equipmentRecordDataAccess,
+            IHealthRecordDataAccess healthRecordDataAccess,
+            IVetVisitRecordDataAccess vetVisitRecordDataAccess,
+            IVaccinationRecordDataAccess vaccinationRecordDataAccess,
+            IMedicationRecordDataAccess medicationRecordDataAccess,
+            ILicensingRecordDataAccess licensingRecordDataAccess,
+            IPetExpenseRecordDataAccess petExpenseRecordDataAccess,
             IUserAccessDataAccess userAccessDataAccess,
             IUserRecordDataAccess userRecordDataAccess,
             IExtraFieldDataAccess extraFieldDataAccess,
@@ -72,7 +85,8 @@ namespace CarCareTracker.Controllers
             IOdometerLogic odometerLogic,
             IEventLogic eventLogic,
             IWebHostEnvironment webEnv,
-            IHttpClientFactory httpClientFactory)
+            IHttpClientFactory httpClientFactory,
+            ILogger<APIController> logger)
         {
             _dataAccess = dataAccess;
             _noteDataAccess = noteDataAccess;
@@ -89,6 +103,12 @@ namespace CarCareTracker.Controllers
             _inspectionRecordDataAccess = inspectionRecordDataAccess;
             _inspectionRecordTemplateDataAccess = inspectionRecordTemplateDataAccess;
             _equipmentRecordDataAccess = equipmentRecordDataAccess;
+            _healthRecordDataAccess = healthRecordDataAccess;
+            _vetVisitRecordDataAccess = vetVisitRecordDataAccess;
+            _vaccinationRecordDataAccess = vaccinationRecordDataAccess;
+            _medicationRecordDataAccess = medicationRecordDataAccess;
+            _licensingRecordDataAccess = licensingRecordDataAccess;
+            _petExpenseRecordDataAccess = petExpenseRecordDataAccess;
             _userAccessDataAccess = userAccessDataAccess;
             _userRecordDataAccess = userRecordDataAccess;
             _extraFieldDataAccess = extraFieldDataAccess;
@@ -104,6 +124,7 @@ namespace CarCareTracker.Controllers
             _config = config;
             _webEnv = webEnv;
             _httpClientFactory = httpClientFactory;
+            _logger = logger;
         }
         public IActionResult Index()
         {
@@ -197,21 +218,38 @@ namespace CarCareTracker.Controllers
         }
 
         [HttpGet]
-        [Route("/api/vehicle/info")]
-        public IActionResult VehicleInfo(int vehicleId)
+        [Route("/api/v2/profiles")]
+        public IActionResult ProfilesV2()
         {
+            MarkContractUsage("/api/vehicles");
+            return Vehicles();
+        }
+
+        [HttpGet]
+        [Route("/api/vehicle/info")]
+        public IActionResult VehicleInfo(int vehicleId = default, int petProfileId = default)
+        {
+            MarkContractUsage("/api/vehicle/info");
+            var resolvedVehicleId = ResolveVehicleIdAlias(vehicleId, petProfileId, "/api/vehicle/info");
+            if (resolvedVehicleId == -1)
+            {
+                Response.StatusCode = 400;
+                return Json(OperationResponse.Failed("Input object invalid, vehicleId and petProfileId do not match."));
+            }
             //stats for a specific or all vehicles
             List<Vehicle> vehicles = new List<Vehicle>();
-            if (vehicleId != default)
+            if (resolvedVehicleId != default)
             {
-                if (_userLogic.UserCanEditVehicle(GetUserID(), vehicleId, HouseholdPermission.View))
+                if (_userLogic.UserCanEditVehicle(GetUserID(), resolvedVehicleId, HouseholdPermission.View))
                 {
-                    vehicles.Add(_dataAccess.GetVehicleById(vehicleId));
-                } else
+                    vehicles.Add(_dataAccess.GetVehicleById(resolvedVehicleId));
+                }
+                else
                 {
                     return new RedirectResult("/Error/Unauthorized");
                 }
-            } else
+            }
+            else
             {
                 var result = _dataAccess.GetVehicles();
                 if (!User.IsInRole(nameof(UserData.IsRootUser)))
@@ -231,20 +269,47 @@ namespace CarCareTracker.Controllers
                 return Json(apiResult);
             }
         }
+
+        [HttpGet]
+        [Route("/api/v2/profiles/info")]
+        public IActionResult ProfileInfoV2(int petProfileId = default, int vehicleId = default)
+        {
+            MarkContractUsage("/api/v2/profiles/info");
+            return VehicleInfo(vehicleId, petProfileId);
+        }
+
         [TypeFilter(typeof(CollaboratorFilter))]
         [HttpGet]
         [Route("/api/vehicle/adjustedodometer")]
-        public IActionResult AdjustedOdometer(int vehicleId, int odometer)
+        public IActionResult AdjustedOdometer(int vehicleId, int odometer, int petProfileId = default)
         {
-            var vehicle = _dataAccess.GetVehicleById(vehicleId);
+            MarkContractUsage("/api/vehicle/adjustedodometer");
+            var resolvedVehicleId = ResolveVehicleIdAlias(vehicleId, petProfileId, "/api/vehicle/adjustedodometer");
+            if (resolvedVehicleId == -1)
+            {
+                Response.StatusCode = 400;
+                return Json(OperationResponse.Failed("Input object invalid, vehicleId and petProfileId do not match."));
+            }
+
+            var vehicle = _dataAccess.GetVehicleById(resolvedVehicleId);
             if (vehicle == null || !vehicle.HasOdometerAdjustment)
             {
                 return Json(odometer);
-            } else
+            }
+            else
             {
                 var convertedOdometer = (odometer + int.Parse(vehicle.OdometerDifference)) * decimal.Parse(vehicle.OdometerMultiplier);
                 return Json(convertedOdometer);
             }
+        }
+
+        [TypeFilter(typeof(CollaboratorFilter))]
+        [HttpGet]
+        [Route("/api/v2/profiles/adjustedodometer")]
+        public IActionResult ProfileAdjustedOdometerV2(int petProfileId, int odometer, int vehicleId = default)
+        {
+            MarkContractUsage("/api/v2/profiles/adjustedodometer");
+            return AdjustedOdometer(vehicleId, odometer, petProfileId);
         }
         [HttpPost]
         [Route("/api/vehicles/add")]
@@ -318,6 +383,45 @@ namespace CarCareTracker.Controllers
             {
                 Response.StatusCode = 500;
                 return Json(OperationResponse.Failed(ex.Message));
+            }
+        }
+        private int ResolveVehicleIdAlias(int vehicleId, int petProfileId, string endpoint)
+        {
+            if (!ProfileIdResolver.TryResolveVehicleIdAlias(vehicleId, petProfileId, out var resolvedVehicleId, out var source))
+            {
+                _logger.LogWarning("Phase8 id alias mismatch at {Endpoint}: vehicleId={VehicleId} petProfileId={PetProfileId}",
+                    endpoint, vehicleId, petProfileId);
+                return -1;
+            }
+
+            if (Request.Path.StartsWithSegments("/api/v2", StringComparison.OrdinalIgnoreCase) &&
+                source == ProfileIdResolutionSource.VehicleId)
+            {
+                Response.Headers["X-PawLogger-Legacy-Id"] = "vehicleId";
+                _logger.LogInformation("Phase8 legacy id parameter used on v2 route at {Endpoint}: vehicleId", endpoint);
+            }
+
+            if (source == ProfileIdResolutionSource.PetProfileId)
+            {
+                _logger.LogInformation("Phase8 compatibility alias used at {Endpoint}: petProfileId -> vehicleId", endpoint);
+                Response.Headers["X-PawLogger-Alias-Id"] = "petProfileId";
+            }
+
+            return resolvedVehicleId;
+        }
+
+        private void MarkContractUsage(string legacyEndpoint)
+        {
+            if (Request.Path.StartsWithSegments("/api/v2", StringComparison.OrdinalIgnoreCase))
+            {
+                Response.Headers["X-PawLogger-Api-Contract"] = "v2-profiles-shadow";
+                _logger.LogInformation("Phase8 v2 route used: {Route}", Request.Path.Value ?? legacyEndpoint);
+            }
+            else
+            {
+                Response.Headers["X-PawLogger-Legacy-Route"] = "true";
+                Response.Headers["X-PawLogger-Api-Contract"] = "legacy-vehicle-v1";
+                _logger.LogInformation("Phase8 legacy route used: {Route}", legacyEndpoint);
             }
         }
         [TypeFilter(typeof(APIKeyFilter), Arguments = new object[] { HouseholdPermission.Edit })]

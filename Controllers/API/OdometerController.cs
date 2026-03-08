@@ -10,17 +10,31 @@ namespace CarCareTracker.Controllers
         [TypeFilter(typeof(CollaboratorFilter))]
         [HttpGet]
         [Route("/api/vehicle/odometerrecords/latest")]
-        public IActionResult LastOdometer(int vehicleId)
+        public IActionResult LastOdometer(int vehicleId = default, int petProfileId = default)
         {
-            if (vehicleId == default)
+            MarkContractUsage("/api/vehicle/odometerrecords/latest");
+            var resolvedVehicleId = ResolveVehicleIdAlias(vehicleId, petProfileId, "/api/vehicle/odometerrecords/latest");
+            if (resolvedVehicleId == -1)
+            {
+                Response.StatusCode = 400;
+                return Json(OperationResponse.Failed("Input object invalid, vehicleId and petProfileId do not match."));
+            }
+            if (resolvedVehicleId == default)
             {
                 var response = OperationResponse.Failed("Must provide a valid vehicle id");
                 Response.StatusCode = 400;
                 return Json(response);
             }
-            var result = _vehicleLogic.GetMaxMileage(vehicleId);
+            var result = _vehicleLogic.GetMaxMileage(resolvedVehicleId);
             return Json(result);
         }
+
+        [TypeFilter(typeof(CollaboratorFilter))]
+        [HttpGet]
+        [Route("/api/v2/profiles/odometerrecords/latest")]
+        public IActionResult LastOdometerV2(int petProfileId = default, int vehicleId = default)
+            => LastOdometer(vehicleId, petProfileId);
+
         [TypeFilter(typeof(APIKeyFilter), Arguments = new object[] { HouseholdPermission.Edit })]
         [TypeFilter(typeof(CollaboratorFilter), Arguments = new object[] { false, true, HouseholdPermission.Edit })]
         [HttpPut]
@@ -41,6 +55,7 @@ namespace CarCareTracker.Controllers
         [Route("/api/vehicle/odometerrecords/all")]
         public IActionResult AllOdometerRecords(MethodParameter parameters)
         {
+            MarkContractUsage("/api/vehicle/odometerrecords/all");
             List<int> vehicleIds = new List<int>();
             var vehicles = _dataAccess.GetVehicles();
             if (!User.IsInRole(nameof(UserData.IsRootUser)))
@@ -80,18 +95,31 @@ namespace CarCareTracker.Controllers
                 return Json(result);
             }
         }
+
+        [HttpGet]
+        [Route("/api/v2/profiles/odometerrecords/all")]
+        public IActionResult AllOdometerRecordsV2(MethodParameter parameters) => AllOdometerRecords(parameters);
+
         [TypeFilter(typeof(CollaboratorFilter))]
         [HttpGet]
         [Route("/api/vehicle/odometerrecords")]
-        public IActionResult OdometerRecords(int vehicleId, MethodParameter parameters)
+        public IActionResult OdometerRecords(int vehicleId = default, MethodParameter? parameters = null, int petProfileId = default)
         {
-            if (vehicleId == default)
+            MarkContractUsage("/api/vehicle/odometerrecords");
+            parameters ??= new MethodParameter();
+            var resolvedVehicleId = ResolveVehicleIdAlias(vehicleId, petProfileId, "/api/vehicle/odometerrecords");
+            if (resolvedVehicleId == -1)
+            {
+                Response.StatusCode = 400;
+                return Json(OperationResponse.Failed("Input object invalid, vehicleId and petProfileId do not match."));
+            }
+            if (resolvedVehicleId == default)
             {
                 var response = OperationResponse.Failed("Must provide a valid vehicle id");
                 Response.StatusCode = 400;
                 return Json(response);
             }
-            var vehicleRecords = _odometerRecordDataAccess.GetOdometerRecordsByVehicleId(vehicleId);
+            var vehicleRecords = _odometerRecordDataAccess.GetOdometerRecordsByVehicleId(resolvedVehicleId);
             //determine if conversion is needed.
             if (vehicleRecords.All(x => x.InitialMileage == default))
             {
@@ -124,6 +152,13 @@ namespace CarCareTracker.Controllers
                 return Json(result);
             }
         }
+
+        [TypeFilter(typeof(CollaboratorFilter))]
+        [HttpGet]
+        [Route("/api/v2/profiles/odometerrecords")]
+        public IActionResult OdometerRecordsV2(int petProfileId = default, MethodParameter? parameters = null, int vehicleId = default)
+            => OdometerRecords(vehicleId, parameters, petProfileId);
+
         [TypeFilter(typeof(QueryParamFilter), Arguments = new object[] { new string[] { "vehicleId", "autoIncludeEquipment" } })]
         [TypeFilter(typeof(APIKeyFilter), Arguments = new object[] { HouseholdPermission.Edit })]
         [TypeFilter(typeof(CollaboratorFilter), Arguments = new object[] { false, true, HouseholdPermission.Edit })]

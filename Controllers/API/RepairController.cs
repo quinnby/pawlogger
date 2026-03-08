@@ -11,6 +11,7 @@ namespace CarCareTracker.Controllers
         [Route("/api/vehicle/repairrecords/all")]
         public IActionResult AllRepairRecords(MethodParameter parameters)
         {
+            MarkContractUsage("/api/vehicle/repairrecords/all");
             List<int> vehicleIds = new List<int>();
             var vehicles = _dataAccess.GetVehicles();
             if (!User.IsInRole(nameof(UserData.IsRootUser)))
@@ -50,18 +51,31 @@ namespace CarCareTracker.Controllers
                 return Json(result);
             }
         }
+
+        [HttpGet]
+        [Route("/api/v2/profiles/repairrecords/all")]
+        public IActionResult AllRepairRecordsV2(MethodParameter parameters) => AllRepairRecords(parameters);
+
         [TypeFilter(typeof(CollaboratorFilter))]
         [HttpGet]
         [Route("/api/vehicle/repairrecords")]
-        public IActionResult RepairRecords(int vehicleId, MethodParameter parameters)
+        public IActionResult RepairRecords(int vehicleId = default, MethodParameter? parameters = null, int petProfileId = default)
         {
-            if (vehicleId == default)
+            MarkContractUsage("/api/vehicle/repairrecords");
+            parameters ??= new MethodParameter();
+            var resolvedVehicleId = ResolveVehicleIdAlias(vehicleId, petProfileId, "/api/vehicle/repairrecords");
+            if (resolvedVehicleId == -1)
+            {
+                Response.StatusCode = 400;
+                return Json(OperationResponse.Failed("Input object invalid, vehicleId and petProfileId do not match."));
+            }
+            if (resolvedVehicleId == default)
             {
                 var response = OperationResponse.Failed("Must provide a valid vehicle id");
                 Response.StatusCode = 400;
                 return Json(response);
             }
-            var vehicleRecords = _collisionRecordDataAccess.GetCollisionRecordsByVehicleId(vehicleId);
+            var vehicleRecords = _collisionRecordDataAccess.GetCollisionRecordsByVehicleId(resolvedVehicleId);
             if (parameters.Id != default)
             {
                 vehicleRecords.RemoveAll(x => x.Id != parameters.Id);
@@ -89,6 +103,13 @@ namespace CarCareTracker.Controllers
                 return Json(result);
             }
         }
+
+        [TypeFilter(typeof(CollaboratorFilter))]
+        [HttpGet]
+        [Route("/api/v2/profiles/repairrecords")]
+        public IActionResult RepairRecordsV2(int petProfileId = default, MethodParameter? parameters = null, int vehicleId = default)
+            => RepairRecords(vehicleId, parameters, petProfileId);
+
         [TypeFilter(typeof(QueryParamFilter), Arguments = new object[] { new string[] { "vehicleId" } })]
         [TypeFilter(typeof(APIKeyFilter), Arguments = new object[] { HouseholdPermission.Edit })]
         [TypeFilter(typeof(CollaboratorFilter), Arguments = new object[] { false, true, HouseholdPermission.Edit })]

@@ -17,12 +17,26 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile(StaticHelper.UserConfigPath, optional: true, reloadOnChange: true);
 builder.Configuration.AddJsonFile(StaticHelper.ServerConfigPath, optional: true, reloadOnChange: true);
 
-if (!string.IsNullOrWhiteSpace(builder.Configuration["LUBELOGGER_LOCALE_OVERRIDE"]))
+string ReadConfigWithAlias(IConfiguration configuration, string key)
 {
-    var overrideCulture = new CultureInfo(builder.Configuration["LUBELOGGER_LOCALE_OVERRIDE"] ?? string.Empty);
-    if (!string.IsNullOrWhiteSpace(builder.Configuration["LUBELOGGER_LOCALE_DT_OVERRIDE"]))
+    if (key.StartsWith("LUBELOGGER_", StringComparison.OrdinalIgnoreCase))
     {
-        var overrideDTFormat = new CultureInfo(builder.Configuration["LUBELOGGER_LOCALE_DT_OVERRIDE"] ?? string.Empty);
+        var canonicalKey = $"PAWLOGGER_{key.Substring("LUBELOGGER_".Length)}";
+        return configuration[canonicalKey] ?? configuration[key] ?? string.Empty;
+    }
+    if (key.Equals("POSTGRES_CONNECTION", StringComparison.OrdinalIgnoreCase))
+    {
+        return configuration["PAWLOGGER_POSTGRES_CONNECTION"] ?? configuration[key] ?? string.Empty;
+    }
+    return configuration[key] ?? string.Empty;
+}
+
+if (!string.IsNullOrWhiteSpace(ReadConfigWithAlias(builder.Configuration, "LUBELOGGER_LOCALE_OVERRIDE")))
+{
+    var overrideCulture = new CultureInfo(ReadConfigWithAlias(builder.Configuration, "LUBELOGGER_LOCALE_OVERRIDE"));
+    if (!string.IsNullOrWhiteSpace(ReadConfigWithAlias(builder.Configuration, "LUBELOGGER_LOCALE_DT_OVERRIDE")))
+    {
+        var overrideDTFormat = new CultureInfo(ReadConfigWithAlias(builder.Configuration, "LUBELOGGER_LOCALE_DT_OVERRIDE"));
         overrideCulture.DateTimeFormat = overrideDTFormat.DateTimeFormat;
     }
     CultureInfo.DefaultThreadCurrentCulture = overrideCulture;
@@ -44,7 +58,7 @@ builder.Services.AddControllersWithViews(options =>
 builder.Services.AddSingleton<ILiteDBHelper, LiteDBHelper>();
 
 //data access method
-if (!string.IsNullOrWhiteSpace(builder.Configuration["POSTGRES_CONNECTION"])){
+if (!string.IsNullOrWhiteSpace(ReadConfigWithAlias(builder.Configuration, "POSTGRES_CONNECTION"))){
     builder.Services.AddSingleton<IVehicleDataAccess, PGVehicleDataAccess>();
     builder.Services.AddSingleton<INoteDataAccess, PGNoteDataAccess>();
     builder.Services.AddSingleton<IServiceRecordDataAccess, PGServiceRecordDataAccess>();
@@ -246,3 +260,5 @@ app.MapControllerRoute(
 app.MapHub<EventHubLogic>("/api/ws");
 
 app.Run();
+
+public partial class Program { }

@@ -15,4 +15,9 @@
     <PackageReference Include="QuestPDF" Version="2024.12.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="CarCareTracker.Tests/**/*.cs" />
+    <None Include="CarCareTracker.Tests/**/*.cs" />
+  </ItemGroup>
+
 </Project>

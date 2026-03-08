@@ -11,6 +11,7 @@ namespace CarCareTracker.Controllers
         [Route("/api/vehicle/gasrecords/all")]
         public IActionResult AllGasRecords(MethodParameter parameters)
         {
+            MarkContractUsage("/api/vehicle/gasrecords/all");
             List<int> vehicleIds = new List<int>();
             var vehicles = _dataAccess.GetVehicles();
             if (!User.IsInRole(nameof(UserData.IsRootUser)))
@@ -67,18 +68,31 @@ namespace CarCareTracker.Controllers
                 return Json(result);
             }
         }
+
+        [HttpGet]
+        [Route("/api/v2/profiles/gasrecords/all")]
+        public IActionResult AllGasRecordsV2(MethodParameter parameters) => AllGasRecords(parameters);
+
         [TypeFilter(typeof(CollaboratorFilter))]
         [HttpGet]
         [Route("/api/vehicle/gasrecords")]
-        public IActionResult GasRecords(int vehicleId, MethodParameter parameters)
+        public IActionResult GasRecords(int vehicleId = default, MethodParameter? parameters = null, int petProfileId = default)
         {
-            if (vehicleId == default)
+            MarkContractUsage("/api/vehicle/gasrecords");
+            parameters ??= new MethodParameter();
+            var resolvedVehicleId = ResolveVehicleIdAlias(vehicleId, petProfileId, "/api/vehicle/gasrecords");
+            if (resolvedVehicleId == -1)
+            {
+                Response.StatusCode = 400;
+                return Json(OperationResponse.Failed("Input object invalid, vehicleId and petProfileId do not match."));
+            }
+            if (resolvedVehicleId == default)
             {
                 var response = OperationResponse.Failed("Must provide a valid vehicle id");
                 Response.StatusCode = 400;
                 return Json(response);
             }
-            var rawVehicleRecords = _gasRecordDataAccess.GetGasRecordsByVehicleId(vehicleId);
+            var rawVehicleRecords = _gasRecordDataAccess.GetGasRecordsByVehicleId(resolvedVehicleId);
             var vehicleRecords = _gasHelper.GetGasRecordViewModels(rawVehicleRecords, parameters.UseMPG, parameters.UseUKMPG);
             if (parameters.Id != default)
             {
@@ -123,6 +137,13 @@ namespace CarCareTracker.Controllers
                 return Json(result);
             }
         }
+
+        [TypeFilter(typeof(CollaboratorFilter))]
+        [HttpGet]
+        [Route("/api/v2/profiles/gasrecords")]
+        public IActionResult GasRecordsV2(int petProfileId = default, MethodParameter? parameters = null, int vehicleId = default)
+            => GasRecords(vehicleId, parameters, petProfileId);
+
         [TypeFilter(typeof(QueryParamFilter), Arguments = new object[] { new string[] { "vehicleId" } })]
         [TypeFilter(typeof(APIKeyFilter), Arguments = new object[] { HouseholdPermission.Edit })]
         [TypeFilter(typeof(CollaboratorFilter), Arguments = new object[] { false, true, HouseholdPermission.Edit })]

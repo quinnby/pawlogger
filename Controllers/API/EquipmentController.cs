@@ -11,6 +11,7 @@ namespace CarCareTracker.Controllers
         [Route("/api/vehicle/equipmentrecords/all")]
         public IActionResult AllEquipmentRecords(MethodParameter parameters)
         {
+            MarkContractUsage("/api/vehicle/equipmentrecords/all");
             List<int> vehicleIds = new List<int>();
             var vehicles = _dataAccess.GetVehicles();
             if (!User.IsInRole(nameof(UserData.IsRootUser)))
@@ -45,18 +46,31 @@ namespace CarCareTracker.Controllers
                 return Json(result);
             }
         }
+
+        [HttpGet]
+        [Route("/api/v2/profiles/equipmentrecords/all")]
+        public IActionResult AllEquipmentRecordsV2(MethodParameter parameters) => AllEquipmentRecords(parameters);
+
         [TypeFilter(typeof(CollaboratorFilter))]
         [HttpGet]
         [Route("/api/vehicle/equipmentrecords")]
-        public IActionResult EquipmentRecords(int vehicleId, MethodParameter parameters)
+        public IActionResult EquipmentRecords(int vehicleId = default, MethodParameter? parameters = null, int petProfileId = default)
         {
-            if (vehicleId == default)
+            MarkContractUsage("/api/vehicle/equipmentrecords");
+            parameters ??= new MethodParameter();
+            var resolvedVehicleId = ResolveVehicleIdAlias(vehicleId, petProfileId, "/api/vehicle/equipmentrecords");
+            if (resolvedVehicleId == -1)
+            {
+                Response.StatusCode = 400;
+                return Json(OperationResponse.Failed("Input object invalid, vehicleId and petProfileId do not match."));
+            }
+            if (resolvedVehicleId == default)
             {
                 var response = OperationResponse.Failed("Must provide a valid vehicle id");
                 Response.StatusCode = 400;
                 return Json(response);
             }
-            var vehicleRecords = _equipmentRecordDataAccess.GetEquipmentRecordsByVehicleId(vehicleId);
+            var vehicleRecords = _equipmentRecordDataAccess.GetEquipmentRecordsByVehicleId(resolvedVehicleId);
             if (parameters.Id != default)
             {
                 vehicleRecords.RemoveAll(x => x.Id != parameters.Id);
@@ -66,7 +80,7 @@ namespace CarCareTracker.Controllers
                 var tagsFilter = parameters.Tags.Split(' ').Distinct();
                 vehicleRecords.RemoveAll(x => !x.Tags.Any(y => tagsFilter.Contains(y)));
             }
-            var odometerRecords = _odometerRecordDataAccess.GetOdometerRecordsByVehicleId(vehicleId);
+            var odometerRecords = _odometerRecordDataAccess.GetOdometerRecordsByVehicleId(resolvedVehicleId);
             var convertedRecords = _equipmentHelper.GetEquipmentRecordViewModels(vehicleRecords, odometerRecords);
             var result = convertedRecords.Select(x => new EquipmentRecordAPIExportModel { VehicleId = x.VehicleId.ToString(), Id = x.Id.ToString(), Description = x.Description, IsEquipped = x.IsEquipped.ToString(), DistanceTraveled = x.DistanceTraveled.ToString(), Notes = x.Notes, ExtraFields = x.ExtraFields, Files = x.Files, Tags = string.Join(' ', x.Tags) });
             if (_config.GetInvariantApi() || Request.Headers.ContainsKey("culture-invariant"))
@@ -78,6 +92,12 @@ namespace CarCareTracker.Controllers
                 return Json(result);
             }
         }
+
+        [TypeFilter(typeof(CollaboratorFilter))]
+        [HttpGet]
+        [Route("/api/v2/profiles/equipmentrecords")]
+        public IActionResult EquipmentRecordsV2(int petProfileId = default, MethodParameter? parameters = null, int vehicleId = default)
+            => EquipmentRecords(vehicleId, parameters, petProfileId);
         [TypeFilter(typeof(QueryParamFilter), Arguments = new object[] { new string[] { "vehicleId" } })]
         [TypeFilter(typeof(APIKeyFilter), Arguments = new object[] { HouseholdPermission.Edit })]
         [TypeFilter(typeof(CollaboratorFilter), Arguments = new object[] { false, true, HouseholdPermission.Edit })]

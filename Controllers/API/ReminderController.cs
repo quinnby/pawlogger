@@ -11,6 +11,7 @@ namespace CarCareTracker.Controllers
         [Route("/api/vehicle/reminders/all")]
         public IActionResult AllReminders(ReminderMethodParameter parameters)
         {
+            MarkContractUsage("/api/vehicle/reminders/all");
             List<int> vehicleIds = new List<int>();
             var vehicles = _dataAccess.GetVehicles();
             if (!User.IsInRole(nameof(UserData.IsRootUser)))
@@ -50,12 +51,25 @@ namespace CarCareTracker.Controllers
                 return Json(results);
             }
         }
+
+        [HttpGet]
+        [Route("/api/v2/profiles/reminders/all")]
+        public IActionResult AllRemindersV2(ReminderMethodParameter parameters) => AllReminders(parameters);
+
         [TypeFilter(typeof(CollaboratorFilter))]
         [HttpGet]
         [Route("/api/vehicle/reminders")]
-        public IActionResult Reminders(int vehicleId, ReminderMethodParameter parameters)
+        public IActionResult Reminders(int vehicleId = default, ReminderMethodParameter? parameters = null, int petProfileId = default)
         {
-            if (vehicleId == default)
+            MarkContractUsage("/api/vehicle/reminders");
+            parameters ??= new ReminderMethodParameter();
+            var resolvedVehicleId = ResolveVehicleIdAlias(vehicleId, petProfileId, "/api/vehicle/reminders");
+            if (resolvedVehicleId == -1)
+            {
+                Response.StatusCode = 400;
+                return Json(OperationResponse.Failed("Input object invalid, vehicleId and petProfileId do not match."));
+            }
+            if (resolvedVehicleId == default)
             {
                 Response.StatusCode = 400;
                 return Json(OperationResponse.Failed("Must provide a valid vehicle id"));
@@ -65,8 +79,8 @@ namespace CarCareTracker.Controllers
                 //if no urgencies parameter, we will default to all urgencies.
                 parameters.Urgencies = new List<ReminderUrgency> { ReminderUrgency.NotUrgent, ReminderUrgency.Urgent, ReminderUrgency.VeryUrgent, ReminderUrgency.PastDue };
             }
-            var currentMileage = _vehicleLogic.GetMaxMileage(vehicleId);
-            var reminders = _reminderRecordDataAccess.GetReminderRecordsByVehicleId(vehicleId);
+            var currentMileage = _vehicleLogic.GetMaxMileage(resolvedVehicleId);
+            var reminders = _reminderRecordDataAccess.GetReminderRecordsByVehicleId(resolvedVehicleId);
             var reminderResults = _reminderHelper.GetReminderRecordViewModels(reminders, currentMileage, DateTime.Now);
             if (parameters.Id != default)
             {
@@ -88,6 +102,13 @@ namespace CarCareTracker.Controllers
                 return Json(results);
             }
         }
+
+        [TypeFilter(typeof(CollaboratorFilter))]
+        [HttpGet]
+        [Route("/api/v2/profiles/reminders")]
+        public IActionResult RemindersV2(int petProfileId = default, ReminderMethodParameter? parameters = null, int vehicleId = default)
+            => Reminders(vehicleId, parameters, petProfileId);
+
         [TypeFilter(typeof(QueryParamFilter), Arguments = new object[] { new string[] { "vehicleId" } })]
         [TypeFilter(typeof(APIKeyFilter), Arguments = new object[] { HouseholdPermission.Edit })]
         [TypeFilter(typeof(CollaboratorFilter), Arguments = new object[] { false, true, HouseholdPermission.Edit })]

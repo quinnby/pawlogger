@@ -28,16 +28,32 @@ namespace CarCareTracker.Filter
                 List<int> vehicleIds = new List<int>();
                 if (!_multiple && filterContext.ActionArguments.ContainsKey("vehicleId"))
                 {
-                    var vehicleId = int.Parse(filterContext.ActionArguments["vehicleId"].ToString());
+                    var vehicleId = ParseInt(filterContext.ActionArguments["vehicleId"]);
+                    var petProfileId = filterContext.ActionArguments.ContainsKey("petProfileId")
+                        ? ParseInt(filterContext.ActionArguments["petProfileId"])
+                        : default;
+                    if (vehicleId != default && petProfileId != default && vehicleId != petProfileId)
+                    {
+                        filterContext.Result = new BadRequestObjectResult(OperationResponse.Failed("Input object invalid, vehicleId and petProfileId do not match."));
+                        return;
+                    }
+                    if (vehicleId == default && petProfileId != default)
+                    {
+                        vehicleId = petProfileId;
+                    }
                     if (vehicleId == default && filterContext.ActionArguments.ContainsKey("animalId") && filterContext.ActionArguments["animalId"] != null)
                     {
-                        vehicleId = int.Parse(filterContext.ActionArguments["animalId"].ToString());
+                        vehicleId = ParseInt(filterContext.ActionArguments["animalId"]);
                     }
                     vehicleIds.Add(vehicleId);
                 }
+                else if (!_multiple && !filterContext.ActionArguments.ContainsKey("vehicleId") && filterContext.ActionArguments.ContainsKey("petProfileId"))
+                {
+                    vehicleIds.Add(ParseInt(filterContext.ActionArguments["petProfileId"]));
+                }
                 else if (!_multiple && !filterContext.ActionArguments.ContainsKey("vehicleId") && filterContext.ActionArguments.ContainsKey("animalId") && filterContext.ActionArguments["animalId"] != null)
                 {
-                    vehicleIds.Add(int.Parse(filterContext.ActionArguments["animalId"].ToString()));
+                    vehicleIds.Add(ParseInt(filterContext.ActionArguments["animalId"]));
                 }
                 else if (_multiple && filterContext.ActionArguments.ContainsKey("vehicleIds"))
                 {
@@ -74,6 +90,15 @@ namespace CarCareTracker.Filter
                     filterContext.Result = _jsonResponse ? new JsonResult(OperationResponse.Failed("Access Denied")) : new RedirectResult("/Error/Unauthorized");
                 }
             }
+        }
+
+        private static int ParseInt(object? value)
+        {
+            if (value == null)
+            {
+                return default;
+            }
+            return int.TryParse(value.ToString(), out var parsedValue) ? parsedValue : default;
         }
     }
 }
