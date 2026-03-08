@@ -1,55 +1,50 @@
-## Garage
-<img width="1429" height="750" alt="image" src="https://github.com/user-attachments/assets/70e6bab7-0ede-42e1-9bdb-945087b97fbc" />
+## Pet Profiles
+<img width="1429" height="750" alt="PawLogger pet profile overview" src="https://github.com/user-attachments/assets/70e6bab7-0ede-42e1-9bdb-945087b97fbc" />
 
-## Planner(Kanban Board)
-<img width="1438" height="834" alt="image" src="https://github.com/user-attachments/assets/8c1e5279-b79b-4338-960a-a93e112554f2" />
+## Planner (Kanban Board)
+<img width="1438" height="834" alt="PawLogger planner board" src="https://github.com/user-attachments/assets/8c1e5279-b79b-4338-960a-a93e112554f2" />
 
 ## Dashboard
-<img width="1355" height="896" alt="image" src="https://github.com/user-attachments/assets/8bd43b28-68a7-4ef4-b737-3a6c355cbf27" />
+<img width="1355" height="896" alt="PawLogger dashboard with care metrics and reminders" src="https://github.com/user-attachments/assets/8bd43b28-68a7-4ef4-b737-3a6c355cbf27" />
 
-## Track Service Records / Repairs / Upgrades
+## Care Records
 ![servicerecord](https://github.com/user-attachments/assets/4f429f13-7b46-4cac-9ce5-b4455de527ee)
 
-## Attach Files to Records (i.e.: Receipts, Invoices, etc)
+## Attach Files to Records (Receipts, Invoices, and Documents)
 ![image](https://github.com/user-attachments/assets/6fc94b2b-761e-492e-927c-1c4ee52cc397)
 
-## Import/Export from/to CSV (Supports Imports from Fuelly)
+## Import/Export CSV
 ![image](https://github.com/user-attachments/assets/816120e9-72da-436b-862b-1478c91bd299)
 
-## Track Gas Records(Supports MPG, L/100KM)
+## Legacy Compatibility Tabs
+This project still includes optional legacy compatibility tabs for migrated data.
 
-Supports
-- MPG
-- L/100KM and KM/L
-- British use-case: Purchase gas in liters and calculate fuel economy in miles per UK Gallon(imp gal)
-  
 ![fuelmileage](https://github.com/user-attachments/assets/c4b5c474-7c29-4f95-b125-b9d6f81a0064)
 
 ## Reminders
 ![reminder](https://github.com/user-attachments/assets/01302d5a-93a7-4f3f-bc4e-12b387f65a8e)
 
-## Set Reminders based on Odometer, Date, or whichever comes first
+## Reminder Scheduling
 ![image](https://github.com/user-attachments/assets/0dd9e668-f445-403f-80f4-9a89aefe8295)
 
 ## Settings
 ![image](https://github.com/user-attachments/assets/8c1d5da0-6a34-4286-a9b5-26b9cf179896)
 
-## Admin Panel (Generate Tokens for new users to sign up)
+## Admin Panel
 ![image](https://github.com/user-attachments/assets/0d7049f0-f121-4d98-a3b1-44ea9c2b3569)
-
 ![image](https://github.com/user-attachments/assets/4b9998cf-731c-4860-8a0d-7878f0453110)
 
-## Token Based Registration for New Users
+## Registration Flow
 ![image](https://github.com/hargata/lubelog/assets/155338622/261a143f-cac0-4961-bcd0-bdb61be6990a)
 
-## Track Supplies and Parts purchased for your vehicle
+## Supplies
 ![image](https://github.com/user-attachments/assets/ddc835e5-9b5f-4589-9d54-1b304f6ba74c)
 
-## Supports Custom Fields
+## Custom Fields
 ![image](https://github.com/user-attachments/assets/6e160eca-441e-42d7-a3b5-83ebd9cab860)
 
-## Add Collaborators (Multiple People can Add/Edit Records for same Vehicle)
+## Collaborators
 ![image](https://github.com/hargata/lubelog/assets/155338622/0ec57dc4-c552-48b9-9a8e-4d89b691aade)
 
-## Consolidated Vehicle Maintenance Report
+## Consolidated Report
 ![image](https://github.com/hargata/lubelog/assets/155338622/d9081c57-0d29-4d44-b793-c46ce08539fc)

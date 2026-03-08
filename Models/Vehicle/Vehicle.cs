@@ -63,5 +63,9 @@ namespace CarCareTracker.Models
         public string PrimaryVet { get; set; } = string.Empty;
         public string EmergencyContact { get; set; } = string.Empty;
         public string LicenseNumber { get; set; } = string.Empty;
+
+        // Internal alias only; persistence contract remains unchanged.
+        [JsonIgnore]
+        public string ProfileName => !string.IsNullOrWhiteSpace(PetName) ? PetName : $"{Year} {Make} {Model}".Trim();
     }
 }

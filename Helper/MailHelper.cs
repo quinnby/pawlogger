@@ -44,7 +44,7 @@ namespace CarCareTracker.Helper
             if (string.IsNullOrWhiteSpace(emailAddress) || string.IsNullOrWhiteSpace(token)) {
                 return OperationResponse.Failed("Email Address or Token is invalid");
             }
-            string emailSubject = _translator.Translate(serverLanguage, "Your Registration Token for LubeLogger");
+            string emailSubject = _translator.Translate(serverLanguage, "Your Registration Token for PawLogger");
             string tokenHtml = token;
             if (!string.IsNullOrWhiteSpace(serverDomain))
             {
@@ -52,7 +52,7 @@ namespace CarCareTracker.Helper
                 //construct registration URL.
                 tokenHtml = $"<a href='{cleanedURL}/Login/Registration?email={emailAddress}&token={token}' target='_blank'>{token}</a>";
             }
-            string emailBody = $"<span>{_translator.Translate(serverLanguage, "A token has been generated on your behalf, please complete your registration for LubeLogger using the token")}: {tokenHtml}</span>";
+            string emailBody = $"<span>{_translator.Translate(serverLanguage, "A token has been generated on your behalf, please complete your registration for PawLogger using the token")}: {tokenHtml}</span>";
             var result = SendEmail(new List<string> { emailAddress }, emailSubject, emailBody);
             if (result)
             {
@@ -72,7 +72,7 @@ namespace CarCareTracker.Helper
             {
                 return OperationResponse.Failed("Email Address or Token is invalid");
             }
-            string emailSubject = _translator.Translate(serverLanguage, "Your Password Reset Token for LubeLogger");
+            string emailSubject = _translator.Translate(serverLanguage, "Your Password Reset Token for PawLogger");
             string tokenHtml = token;
             if (!string.IsNullOrWhiteSpace(serverDomain))
             {
@@ -80,7 +80,7 @@ namespace CarCareTracker.Helper
                 //construct registration URL.
                 tokenHtml = $"<a href='{cleanedURL}/Login/ResetPassword?email={emailAddress}&token={token}' target='_blank'>{token}</a>";
             }
-            string emailBody = $"<span>{_translator.Translate(serverLanguage, "A token has been generated on your behalf, please reset your password for LubeLogger using the token")}: {tokenHtml}</span>";
+            string emailBody = $"<span>{_translator.Translate(serverLanguage, "A token has been generated on your behalf, please reset your password for PawLogger using the token")}: {tokenHtml}</span>";
             var result = SendEmail(new List<string> { emailAddress }, emailSubject, emailBody);
             if (result)
             {
@@ -101,7 +101,7 @@ namespace CarCareTracker.Helper
             {
                 return OperationResponse.Failed("Email Address or Token is invalid");
             }
-            string emailSubject = _translator.Translate(serverLanguage, "Test Email from LubeLogger");
+            string emailSubject = _translator.Translate(serverLanguage, "Test Email from PawLogger");
             string emailBody = _translator.Translate(serverLanguage, "If you are seeing this email it means your SMTP configuration is functioning correctly");
             var result = SendEmail(testMailConfig, new List<string> { emailAddress }, emailSubject, emailBody);
             if (result)
@@ -123,8 +123,8 @@ namespace CarCareTracker.Helper
             {
                 return OperationResponse.Failed("Email Address or Token is invalid");
             }
-            string emailSubject = _translator.Translate(serverLanguage, "Your User Account Update Token for LubeLogger");
-            string emailBody = $"{_translator.Translate(serverLanguage, "A token has been generated on your behalf, please update your account for LubeLogger using the token")}: {token}";
+            string emailSubject = _translator.Translate(serverLanguage, "Your User Account Update Token for PawLogger");
+            string emailBody = $"{_translator.Translate(serverLanguage, "A token has been generated on your behalf, please update your account for PawLogger using the token")}: {token}";
             var result = SendEmail(new List<string> { emailAddress}, emailSubject, emailBody);
             if (result)
             {
@@ -151,10 +151,10 @@ namespace CarCareTracker.Helper
             }
             //get email template, this file has to exist since it's a static file.
             var emailTemplatePath = _fileHelper.GetFullFilePath(StaticHelper.ReminderEmailTemplate);
-            string emailSubject = $"{_translator.Translate(serverLanguage, "Vehicle Reminders From LubeLogger")} - {DateTime.Now.ToShortDateString()}";
+            string emailSubject = $"{_translator.Translate(serverLanguage, "Pet Care Reminders From PawLogger")} - {DateTime.Now.ToShortDateString()}";
             //construct html table.
             string emailBody = File.ReadAllText(emailTemplatePath);
-            emailBody = emailBody.Replace("{VehicleInformation}", $"{vehicle.Year} {vehicle.Make} {vehicle.Model} #{StaticHelper.GetVehicleIdentifier(vehicle)}");
+            emailBody = emailBody.Replace("{VehicleInformation}", $"{vehicle.ProfileName} #{StaticHelper.GetPetProfileIdentifier(vehicle)}");
             string tableHeader = $"<th>{_translator.Translate(serverLanguage, "Urgency")}</th><th>{_translator.Translate(serverLanguage, "Description")}</th><th>{_translator.Translate(serverLanguage, "Due")}</th>";
             string tableBody = "";
             foreach(ReminderRecordViewModel reminder in reminders)

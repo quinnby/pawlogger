@@ -4,6 +4,19 @@ using CarCareTracker.Models;
 
 namespace CarCareTracker.Logic
 {
+    // Additive domain alias to reduce vehicle naming leakage in service/UI layers.
+    public interface IProfileAccessLogic
+    {
+        List<UserCollaborator> GetCollaboratorsForPetProfile(int petProfileId);
+        bool AddUserAccessToPetProfile(int userId, int petProfileId);
+        bool DeleteCollaboratorFromPetProfile(int userId, int petProfileId);
+        OperationResponse DeleteCollaboratorFromPetProfile(int petProfileId, string username);
+        OperationResponse AddCollaboratorToPetProfile(int petProfileId, string username);
+        List<Vehicle> FilterUserPetProfiles(List<Vehicle> results, int userId);
+        bool UserCanEditPetProfile(int userId, int petProfileId, HouseholdPermission permission);
+        bool UserCanDirectlyEditPetProfile(int userId, int petProfileId);
+        bool DeleteAllAccessToPetProfile(int petProfileId);
+    }
     public interface IUserLogic
     {
         List<UserCollaborator> GetCollaboratorsForVehicle(int vehicleId);
@@ -29,7 +42,7 @@ namespace CarCareTracker.Logic
         bool DeleteAPIKeyByKeyIdAndUserId(int keyId, int userId);
         bool DeleteAllAPIKeysByUserId(int userId);
     }
-    public class UserLogic: IUserLogic
+    public class UserLogic: IUserLogic, IProfileAccessLogic
     {
         private readonly IUserAccessDataAccess _userAccess;
         private readonly IUserRecordDataAccess _userData;
@@ -195,6 +208,15 @@ namespace CarCareTracker.Logic
             var result = _userAccess.DeleteAllAccessRecordsByVehicleId(vehicleId);
             return result;
         }
+        public List<UserCollaborator> GetCollaboratorsForPetProfile(int petProfileId) => GetCollaboratorsForVehicle(petProfileId);
+        public bool AddUserAccessToPetProfile(int userId, int petProfileId) => AddUserAccessToVehicle(userId, petProfileId);
+        public bool DeleteCollaboratorFromPetProfile(int userId, int petProfileId) => DeleteCollaboratorFromVehicle(userId, petProfileId);
+        public OperationResponse DeleteCollaboratorFromPetProfile(int petProfileId, string username) => DeleteCollaboratorFromVehicle(petProfileId, username);
+        public OperationResponse AddCollaboratorToPetProfile(int petProfileId, string username) => AddCollaboratorToVehicle(petProfileId, username);
+        public List<Vehicle> FilterUserPetProfiles(List<Vehicle> results, int userId) => FilterUserVehicles(results, userId);
+        public bool UserCanEditPetProfile(int userId, int petProfileId, HouseholdPermission permission) => UserCanEditVehicle(userId, petProfileId, permission);
+        public bool UserCanDirectlyEditPetProfile(int userId, int petProfileId) => UserCanDirectlyEditVehicle(userId, petProfileId);
+        public bool DeleteAllAccessToPetProfile(int petProfileId) => DeleteAllAccessToVehicle(petProfileId);
         public bool DeleteAllAccessToUser(int userId)
         {
             var result = _userAccess.DeleteAllAccessRecordsByUserId(userId);

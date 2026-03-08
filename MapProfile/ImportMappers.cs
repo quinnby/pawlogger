@@ -13,9 +13,9 @@ namespace CarCareTracker.MapProfile
             Map(m => m.Year).Name(["year"]);
             Map(m => m.DateCreated).Name(["datecreated"]);
             Map(m => m.DateModified).Name(["datemodified"]);
-            Map(m => m.InitialOdometer).Name(["initialodometer"]);
-            Map(m => m.Odometer).Name(["odometer", "odo"]);
-            Map(m => m.FuelConsumed).Name(["gallons", "liters", "litres", "consumption", "quantity", "fuelconsumed", "qty"]);
+            Map(m => m.InitialOdometer).Name(["initialodometer", "initialdistance", "initial_distance", "initialmileage"]);
+            Map(m => m.Odometer).Name(["odometer", "odo", "distance", "mileage", "reading"]);
+            Map(m => m.FuelConsumed).Name(["gallons", "liters", "litres", "consumption", "quantity", "fuelconsumed", "qty", "amountconsumed", "amount_used", "consumed"]);
             Map(m => m.Cost).Name(["cost", "total cost", "totalcost", "total price"]);
             Map(m => m.Notes).Name("notes", "note");
             Map(m => m.Price).Name(["price"]);

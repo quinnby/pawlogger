@@ -112,9 +112,9 @@
                             </div>
                         }
                         <div class="card-body">
-                            <h5 class="garage-item-attribute card-title text-truncate">@(!string.IsNullOrWhiteSpace(vehicle.PetName) ? vehicle.PetName : $"{vehicle.Year} {vehicle.Make} {vehicle.Model}")</h5>
+                            <h5 class="garage-item-attribute card-title text-truncate">@vehicle.ProfileName</h5>
                             <small class="garage-item-attribute card-text text-truncate">@vehicle.Species@(!string.IsNullOrWhiteSpace(vehicle.Breed) ? $" · {vehicle.Breed}" : "")</small>
-                            <small class="garage-item-attribute card-text text-truncate">@StaticHelper.GetVehicleIdentifier(vehicle)</small>
+                            <small class="garage-item-attribute card-text text-truncate">@StaticHelper.GetPetProfileIdentifier(vehicle)</small>
                         </div>
                     </div>
                 </div>

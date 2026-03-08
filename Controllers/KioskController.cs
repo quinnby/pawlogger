@@ -14,19 +14,19 @@ namespace CarCareTracker.Controllers
     {
         private readonly ILogger<KioskController> _logger;
         private readonly IVehicleDataAccess _dataAccess;
-        private readonly IVehicleLogic _vehicleLogic;
-        private readonly IUserLogic _userLogic;
+        private readonly IPetProfileLogic _petProfileLogic;
+        private readonly IProfileAccessLogic _profileAccessLogic;
         private readonly IConfigHelper _config;
         public KioskController(ILogger<KioskController> logger, 
             IVehicleDataAccess dataAccess, 
-            IVehicleLogic vehicleLogic, 
-            IUserLogic userLogic, 
+            IPetProfileLogic petProfileLogic, 
+            IProfileAccessLogic profileAccessLogic, 
             IConfigHelper config)
         {
             _logger = logger;
             _dataAccess = dataAccess;
-            _vehicleLogic = vehicleLogic;
-            _userLogic = userLogic;
+            _petProfileLogic = petProfileLogic;
+            _profileAccessLogic = profileAccessLogic;
             _config = config;
         }
         private int GetUserID()
@@ -56,7 +56,7 @@ namespace CarCareTracker.Controllers
             var vehiclesStored = _dataAccess.GetVehicles();
             if (!User.IsInRole(nameof(UserData.IsRootUser)))
             {
-                vehiclesStored = _userLogic.FilterUserVehicles(vehiclesStored, GetUserID());
+                vehiclesStored = _profileAccessLogic.FilterUserPetProfiles(vehiclesStored, GetUserID());
             }
             vehiclesStored.RemoveAll(x => kioskParameters.Exclusions.Contains(x.Id));
             var userConfig = _config.GetUserConfig(User);
@@ -68,27 +68,27 @@ namespace CarCareTracker.Controllers
             {
                 case KioskMode.Vehicle:
                     {
-                        var kioskResult = _vehicleLogic.GetVehicleInfo(vehiclesStored);
+                        var kioskResult = _petProfileLogic.GetPetProfileInfo(vehiclesStored);
                         return PartialView("_Kiosk", kioskResult);
                     }
                 case KioskMode.Plan:
                     {
-                        var kioskResult = _vehicleLogic.GetPlansForKiosk(vehiclesStored, false);
+                        var kioskResult = _petProfileLogic.GetProfilePlansForKiosk(vehiclesStored, false);
                         return PartialView("_KioskPlan", kioskResult);
                     }
                 case KioskMode.Reminder:
                     {
-                        var kioskResult = _vehicleLogic.GetRemindersForKiosk(vehiclesStored);
+                        var kioskResult = _petProfileLogic.GetProfileRemindersForKiosk(vehiclesStored);
                         return PartialView("_KioskReminder", kioskResult);
                     }
             }
-            var result = _vehicleLogic.GetVehicleInfo(vehiclesStored);
+            var result = _petProfileLogic.GetPetProfileInfo(vehiclesStored);
             return PartialView("_Kiosk", result);
         }
         [TypeFilter(typeof(CollaboratorFilter))]
         public IActionResult GetKioskVehicleInfo(int vehicleId)
         {
-            var result = _vehicleLogic.GetKioskVehicleInfo(vehicleId);
+            var result = _petProfileLogic.GetKioskPetProfileInfo(vehicleId);
             return PartialView("_KioskVehicleInfo", result);
         }
     }

@@ -328,10 +328,10 @@ namespace CarCareTracker.Helper
         }
         public static void InitMessage(IConfiguration config)
         {
-            Console.WriteLine($"LubeLogger {VersionNumber}");
-            Console.WriteLine("Website: https://lubelogger.com");
-            Console.WriteLine("Documentation: https://docs.lubelogger.com");
-            Console.WriteLine("GitHub: https://github.com/hargata/lubelog");
+            Console.WriteLine($"PawLogger {VersionNumber}");
+            Console.WriteLine("Website: See README");
+            Console.WriteLine("Documentation: See README");
+            Console.WriteLine("GitHub: See repository origin");
             var mailConfig = config.GetSection("MailConfig").Get<MailConfig>();
             if (mailConfig != null && !string.IsNullOrWhiteSpace(mailConfig.EmailServer))
             {
@@ -345,7 +345,7 @@ namespace CarCareTracker.Helper
             Console.WriteLine($"Message Of The Day: {motd}");
             if (string.IsNullOrWhiteSpace(CultureInfo.CurrentCulture.Name))
             {
-                Console.WriteLine("WARNING: No Locale or Culture Configured for LubeLogger, Check Environment Variables");
+                Console.WriteLine("WARNING: No Locale or Culture Configured for PawLogger, Check Environment Variables");
             }
             //Create folders if they don't exist.
             if (!Directory.Exists("data"))
@@ -491,6 +491,8 @@ namespace CarCareTracker.Helper
                 }
             }
         }
+        // Additive alias for pet/profile-facing layers.
+        public static string GetPetProfileIdentifier(Vehicle vehicle) => GetVehicleIdentifier(vehicle);
         public static string GetVehicleIdentifier(VehicleViewModel vehicle)
         {
             // Phase 2 - prefer pet identifiers
@@ -515,6 +517,8 @@ namespace CarCareTracker.Helper
                 }
             }
         }
+        // Additive alias for pet/profile-facing layers.
+        public static string GetPetProfileIdentifier(VehicleViewModel vehicle) => GetVehicleIdentifier(vehicle);
         //Translations
         public static string GetTranslationDownloadPath(string continent, string name)
         {

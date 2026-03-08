@@ -122,6 +122,11 @@ namespace CarCareTracker.Helper
             }
             try
             {
+                static string GetFirstExistingPath(IEnumerable<string> candidates)
+                {
+                    return candidates.FirstOrDefault(File.Exists) ?? string.Empty;
+                }
+
                 var tempPath = Path.Combine(_webEnv.ContentRootPath, "data", $"temp/{Guid.NewGuid()}");
                 if (!Directory.Exists(tempPath))
                     Directory.CreateDirectory(tempPath);
@@ -131,10 +136,26 @@ namespace CarCareTracker.Helper
                 var imagePath = Path.Combine(tempPath, "images");
                 var documentPath = Path.Combine(tempPath, "documents");
                 var translationPath = Path.Combine(tempPath, "translations");
-                var dataPath = Path.Combine(tempPath, StaticHelper.DbName);
-                var widgetPath = Path.Combine(tempPath, StaticHelper.AdditionalWidgetsPath);
-                var configPath = Path.Combine(tempPath, StaticHelper.LegacyUserConfigPath);
-                var serverConfigPath = Path.Combine(tempPath, StaticHelper.LegacyServerConfigPath);
+                var dataPath = GetFirstExistingPath(new[]
+                {
+                    Path.Combine(tempPath, StaticHelper.DbName),
+                    Path.Combine(tempPath, Path.GetFileName(StaticHelper.DbName))
+                });
+                var widgetPath = GetFirstExistingPath(new[]
+                {
+                    Path.Combine(tempPath, StaticHelper.AdditionalWidgetsPath),
+                    Path.Combine(tempPath, Path.GetFileName(StaticHelper.AdditionalWidgetsPath))
+                });
+                var configPath = GetFirstExistingPath(new[]
+                {
+                    Path.Combine(tempPath, StaticHelper.LegacyUserConfigPath),
+                    Path.Combine(tempPath, StaticHelper.UserConfigPath)
+                });
+                var serverConfigPath = GetFirstExistingPath(new[]
+                {
+                    Path.Combine(tempPath, StaticHelper.LegacyServerConfigPath),
+                    Path.Combine(tempPath, StaticHelper.ServerConfigPath)
+                });
                 if (Directory.Exists(imagePath))
                 {
                     var existingPath = Path.Combine(_webEnv.ContentRootPath, "data", "images");

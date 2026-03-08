@@ -263,7 +263,7 @@ namespace CarCareTracker.Controllers
                                 }
                                 else
                                 {
-                                    _logger.LogInformation($"User {userEmailAddress} tried to login via OpenID but is not a registered user in LubeLogger.");
+                                    _logger.LogInformation($"User {userEmailAddress} tried to login via OpenID but is not a registered user in PawLogger.");
                                     return View("OpenIDRegistration", model: userEmailAddress);
                                 }
                             }

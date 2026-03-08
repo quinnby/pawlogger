@@ -137,7 +137,16 @@ namespace CarCareTracker.Controllers
             {
                 vehicleId = animalId.Value;
             }
+            if (vehicleId == default)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             var data = _dataAccess.GetVehicleById(vehicleId);
+            if (data == null)
+            {
+                _logger.LogWarning("Vehicle profile requested for missing vehicleId {VehicleId}", vehicleId);
+                return RedirectToAction("Index", "Home");
+            }
             return View(data);
         }
         [HttpGet]

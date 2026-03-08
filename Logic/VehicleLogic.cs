@@ -4,6 +4,20 @@ using CarCareTracker.Models;
 
 namespace CarCareTracker.Logic
 {
+    // Additive domain alias to reduce vehicle naming leakage in service/UI layers.
+    public interface IPetProfileLogic
+    {
+        VehicleRecords GetPetProfileRecords(int petProfileId);
+        decimal GetPetProfileTotalCost(VehicleRecords petProfileRecords);
+        int GetMaxProfileDistance(VehicleRecords petProfileRecords);
+        int GetMinProfileDistance(VehicleRecords petProfileRecords);
+        bool GetPetProfileHasUrgentOrPastDueReminders(int petProfileId, int currentDistance);
+        List<VehicleInfo> GetPetProfileInfo(List<Vehicle> petProfiles);
+        List<ReminderRecordViewModel> GetProfileReminders(List<Vehicle> petProfiles, bool isCalendar);
+        List<KioskReminderViewModel> GetProfileRemindersForKiosk(List<Vehicle> petProfiles);
+        List<KioskPlanViewModel> GetProfilePlansForKiosk(List<Vehicle> petProfiles, bool excludeDone);
+        KioskPetProfileViewModel GetKioskPetProfileInfo(int petProfileId);
+    }
     public interface IVehicleLogic
     {
         VehicleRecords GetVehicleRecords(int vehicleId);
@@ -22,7 +36,7 @@ namespace CarCareTracker.Logic
         void RestoreSupplyRecordsByUsage(List<SupplyUsageHistory> supplyUsage, string usageDescription);
         KioskVehicleViewModel GetKioskVehicleInfo(int vehicleId);
     }
-    public class VehicleLogic: IVehicleLogic
+    public class VehicleLogic: IVehicleLogic, IPetProfileLogic
     {
         private readonly IServiceRecordDataAccess _serviceRecordDataAccess;
         private readonly IGasRecordDataAccess _gasRecordDataAccess;
@@ -561,6 +575,54 @@ namespace CarCareTracker.Logic
                 viewModel.MostExpensiveUpgradeRecordDate = _mostExpensiveUpgradeRecord.Date;
             }
             return viewModel;
+        }
+
+        // Additive aliases for pet/profile-first service layer calls.
+        public VehicleRecords GetPetProfileRecords(int petProfileId) => GetVehicleRecords(petProfileId);
+        public decimal GetPetProfileTotalCost(VehicleRecords petProfileRecords) => GetVehicleTotalCost(petProfileRecords);
+        public int GetMaxProfileDistance(VehicleRecords petProfileRecords) => GetMaxMileage(petProfileRecords);
+        public int GetMinProfileDistance(VehicleRecords petProfileRecords) => GetMinMileage(petProfileRecords);
+        public bool GetPetProfileHasUrgentOrPastDueReminders(int petProfileId, int currentDistance) => GetVehicleHasUrgentOrPastDueReminders(petProfileId, currentDistance);
+        public List<VehicleInfo> GetPetProfileInfo(List<Vehicle> petProfiles) => GetVehicleInfo(petProfiles);
+        public List<ReminderRecordViewModel> GetProfileReminders(List<Vehicle> petProfiles, bool isCalendar) => GetReminders(petProfiles, isCalendar);
+        public List<KioskReminderViewModel> GetProfileRemindersForKiosk(List<Vehicle> petProfiles) => GetRemindersForKiosk(petProfiles);
+        public List<KioskPlanViewModel> GetProfilePlansForKiosk(List<Vehicle> petProfiles, bool excludeDone) => GetPlansForKiosk(petProfiles, excludeDone);
+        public KioskPetProfileViewModel GetKioskPetProfileInfo(int petProfileId)
+        {
+            var vehicleViewModel = GetKioskVehicleInfo(petProfileId);
+            return new KioskPetProfileViewModel
+            {
+                ServiceRecordCount = vehicleViewModel.ServiceRecordCount,
+                ServiceRecordCost = vehicleViewModel.ServiceRecordCost,
+                MostCommonServiceRecord = vehicleViewModel.MostCommonServiceRecord,
+                MostCommonServiceRecordOccurrence = vehicleViewModel.MostCommonServiceRecordOccurrence,
+                MostCommonServiceRecordAverageCost = vehicleViewModel.MostCommonServiceRecordAverageCost,
+                MostCommonServiceRecordLastOccurred = vehicleViewModel.MostCommonServiceRecordLastOccurred,
+                MostExpensiveServiceRecord = vehicleViewModel.MostExpensiveServiceRecord,
+                MostExpensiveServiceRecordCost = vehicleViewModel.MostExpensiveServiceRecordCost,
+                MostExpensiveServiceRecordDate = vehicleViewModel.MostExpensiveServiceRecordDate,
+                MostExpensiveServiceRecordOdometer = vehicleViewModel.MostExpensiveServiceRecordOdometer,
+                RepairRecordCount = vehicleViewModel.RepairRecordCount,
+                RepairRecordCost = vehicleViewModel.RepairRecordCost,
+                MostCommonRepairRecord = vehicleViewModel.MostCommonRepairRecord,
+                MostCommonRepairRecordOccurrence = vehicleViewModel.MostCommonRepairRecordOccurrence,
+                MostCommonRepairRecordAverageCost = vehicleViewModel.MostCommonRepairRecordAverageCost,
+                MostCommonRepairRecordLastOccurred = vehicleViewModel.MostCommonRepairRecordLastOccurred,
+                MostExpensiveRepairRecord = vehicleViewModel.MostExpensiveRepairRecord,
+                MostExpensiveRepairRecordCost = vehicleViewModel.MostExpensiveRepairRecordCost,
+                MostExpensiveRepairRecordDate = vehicleViewModel.MostExpensiveRepairRecordDate,
+                MostExpensiveRepairRecordOdometer = vehicleViewModel.MostExpensiveRepairRecordOdometer,
+                UpgradeRecordCount = vehicleViewModel.UpgradeRecordCount,
+                UpgradeRecordCost = vehicleViewModel.UpgradeRecordCost,
+                MostCommonUpgradeRecord = vehicleViewModel.MostCommonUpgradeRecord,
+                MostCommonUpgradeRecordOccurrence = vehicleViewModel.MostCommonUpgradeRecordOccurrence,
+                MostCommonUpgradeRecordAverageCost = vehicleViewModel.MostCommonUpgradeRecordAverageCost,
+                MostCommonUpgradeRecordLastOccurred = vehicleViewModel.MostCommonUpgradeRecordLastOccurred,
+                MostExpensiveUpgradeRecord = vehicleViewModel.MostExpensiveUpgradeRecord,
+                MostExpensiveUpgradeRecordCost = vehicleViewModel.MostExpensiveUpgradeRecordCost,
+                MostExpensiveUpgradeRecordDate = vehicleViewModel.MostExpensiveUpgradeRecordDate,
+                MostExpensiveUpgradeRecordOdometer = vehicleViewModel.MostExpensiveUpgradeRecordOdometer
+            };
         }
     }
 }

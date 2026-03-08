@@ -17,8 +17,9 @@ namespace CarCareTracker.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IVehicleDataAccess _dataAccess;
         private readonly IUserLogic _userLogic;
+        private readonly IProfileAccessLogic _profileAccessLogic;
         private readonly ILoginLogic _loginLogic;
-        private readonly IVehicleLogic _vehicleLogic;
+        private readonly IPetProfileLogic _petProfileLogic;
         private readonly IFileHelper _fileHelper;
         private readonly IConfigHelper _config;
         private readonly IExtraFieldDataAccess _extraFieldDataAccess;
@@ -30,8 +31,9 @@ namespace CarCareTracker.Controllers
         public HomeController(ILogger<HomeController> logger,
             IVehicleDataAccess dataAccess,
             IUserLogic userLogic,
+            IProfileAccessLogic profileAccessLogic,
             ILoginLogic loginLogic,
-            IVehicleLogic vehicleLogic,
+            IPetProfileLogic petProfileLogic,
             IConfigHelper configuration,
             IFileHelper fileHelper,
             IExtraFieldDataAccess extraFieldDataAccess,
@@ -45,12 +47,13 @@ namespace CarCareTracker.Controllers
             _dataAccess = dataAccess;
             _config = configuration;
             _userLogic = userLogic;
+            _profileAccessLogic = profileAccessLogic;
             _fileHelper = fileHelper;
             _extraFieldDataAccess = extraFieldDataAccess;
             _reminderRecordDataAccess = reminderRecordDataAccess;
             _reminderHelper = reminderHelper;
             _loginLogic = loginLogic;
-            _vehicleLogic = vehicleLogic;
+            _petProfileLogic = petProfileLogic;
             _translationHelper = translationHelper;
             _mailHelper = mailHelper;
             _httpClientFactory = httpClientFactory;
@@ -68,7 +71,7 @@ namespace CarCareTracker.Controllers
             var vehiclesStored = _dataAccess.GetVehicles();
             if (!User.IsInRole(nameof(UserData.IsRootUser)))
             {
-                vehiclesStored = _userLogic.FilterUserVehicles(vehiclesStored, GetUserID());
+                vehiclesStored = _profileAccessLogic.FilterUserPetProfiles(vehiclesStored, GetUserID());
             }
             var vehicleViewModels = vehiclesStored.Select(x =>
             {
@@ -100,26 +103,26 @@ namespace CarCareTracker.Controllers
                 //dashboard metrics
                 if (x.DashboardMetrics.Any())
                 {
-                    var vehicleRecords = _vehicleLogic.GetVehicleRecords(x.Id);
+                    var vehicleRecords = _petProfileLogic.GetPetProfileRecords(x.Id);
                     var userConfig = _config.GetUserConfig(User);
                     var distanceUnit = x.UseHours ? "h" : userConfig.UseMPG ? "mi." : "km";
                     if (vehicleVM.DashboardMetrics.Contains(DashboardMetric.Default))
                     {
-                        vehicleVM.LastReportedMileage = _vehicleLogic.GetMaxMileage(vehicleRecords);
-                        vehicleVM.HasReminders = _vehicleLogic.GetVehicleHasUrgentOrPastDueReminders(x.Id, vehicleVM.LastReportedMileage);
+                        vehicleVM.LastReportedMileage = _petProfileLogic.GetMaxProfileDistance(vehicleRecords);
+                        vehicleVM.HasReminders = _petProfileLogic.GetPetProfileHasUrgentOrPastDueReminders(x.Id, vehicleVM.LastReportedMileage);
                     }
                     if (vehicleVM.DashboardMetrics.Contains(DashboardMetric.CostPerMile))
                     {
-                        var vehicleTotalCost = _vehicleLogic.GetVehicleTotalCost(vehicleRecords);
-                        var maxMileage = _vehicleLogic.GetMaxMileage(vehicleRecords);
-                        var minMileage = _vehicleLogic.GetMinMileage(vehicleRecords);
+                        var vehicleTotalCost = _petProfileLogic.GetPetProfileTotalCost(vehicleRecords);
+                        var maxMileage = _petProfileLogic.GetMaxProfileDistance(vehicleRecords);
+                        var minMileage = _petProfileLogic.GetMinProfileDistance(vehicleRecords);
                         var totalDistance = maxMileage - minMileage;
                         vehicleVM.CostPerMile = totalDistance != default ? vehicleTotalCost / totalDistance : 0.00M;
                         vehicleVM.DistanceUnit = distanceUnit;
                     }
                     if (vehicleVM.DashboardMetrics.Contains(DashboardMetric.TotalCost))
                     {
-                        vehicleVM.TotalCost = _vehicleLogic.GetVehicleTotalCost(vehicleRecords);
+                        vehicleVM.TotalCost = _petProfileLogic.GetPetProfileTotalCost(vehicleRecords);
                     }
                 }
                 return vehicleVM;
@@ -131,9 +134,9 @@ namespace CarCareTracker.Controllers
             var vehiclesStored = _dataAccess.GetVehicles();
             if (!User.IsInRole(nameof(UserData.IsRootUser)))
             {
-                vehiclesStored = _userLogic.FilterUserVehicles(vehiclesStored, GetUserID());
+                vehiclesStored = _profileAccessLogic.FilterUserPetProfiles(vehiclesStored, GetUserID());
             }
-            var reminders = _vehicleLogic.GetReminders(vehiclesStored, true);
+            var reminders = _petProfileLogic.GetProfileReminders(vehiclesStored, true);
             return PartialView("_Calendar", reminders);
         }
         public IActionResult ViewCalendarReminder(int reminderId)

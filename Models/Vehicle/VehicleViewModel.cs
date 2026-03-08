@@ -1,4 +1,6 @@
-﻿namespace CarCareTracker.Models
+﻿using System.Text.Json.Serialization;
+
+namespace CarCareTracker.Models
 {
     public class VehicleViewModel
     {
@@ -31,5 +33,9 @@
         public string MicrochipNumber { get; set; } = string.Empty;
         public string LicenseNumber { get; set; } = string.Empty;
         public PetStatus PetStatus { get; set; } = PetStatus.Active;
+
+        // Internal alias only; external contracts remain unchanged.
+        [JsonIgnore]
+        public string ProfileName => !string.IsNullOrWhiteSpace(PetName) ? PetName : $"{Year} {Make} {Model}".Trim();
     }
 }

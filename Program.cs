@@ -123,8 +123,10 @@ builder.Services.AddSingleton<IMailHelper, MailHelper>();
 //configure logic
 builder.Services.AddSingleton<ILoginLogic, LoginLogic>();
 builder.Services.AddSingleton<IUserLogic, UserLogic>();
+builder.Services.AddSingleton<IProfileAccessLogic>(x => (IProfileAccessLogic)x.GetRequiredService<IUserLogic>());
 builder.Services.AddSingleton<IOdometerLogic, OdometerLogic>();
 builder.Services.AddSingleton<IVehicleLogic, VehicleLogic>();
+builder.Services.AddSingleton<IPetProfileLogic>(x => (IPetProfileLogic)x.GetRequiredService<IVehicleLogic>());
 builder.Services.AddSingleton<IEventLogic, EventLogic>();
 
 //configure signalr

@@ -1914,6 +1914,15 @@ function setBrowserHistory(param, val) {
     } else {
         currentParams.set(param, val);
     }
+    // Keep both route/query identifiers in sync for compatibility.
+    if (param == 'animalId' || param == 'vehicleId') {
+        var aliasParam = param == 'animalId' ? 'vehicleId' : 'animalId';
+        if (val == '') {
+            currentParams.delete(aliasParam);
+        } else {
+            currentParams.set(aliasParam, val);
+        }
+    }
     let updatedURL = `${window.location.origin}${window.location.pathname}?${currentParams.toString()}`;
     window.history.pushState({}, '', updatedURL);
 }
