@@ -38,6 +38,10 @@ namespace CarCareTracker.Helper
         bool GetServerOpenRegistration();
         string GetDefaultReminderEmail();
         int GetAuthCookieLifeSpan();
+        bool GetWriteV2RoutesEnabled();
+        bool GetWriteV2AliasParsingEnabled();
+        bool GetWriteV2StrictIdConflictReject();
+        bool GetWriteV2FamilyNotesEnabled();
     }
     public class ConfigHelper : IConfigHelper
     {
@@ -122,6 +126,22 @@ namespace CarCareTracker.Helper
             {
                 return int.Parse(StaticHelper.DefaultCookieLifeSpan); //default is 30 days for when remember me is selected.
             }
+        }
+        public bool GetWriteV2RoutesEnabled()
+        {
+            return CheckBool(CheckString("LUBELOGGER_WRITE_V2_ROUTES"));
+        }
+        public bool GetWriteV2AliasParsingEnabled()
+        {
+            return CheckBool(CheckString("LUBELOGGER_WRITE_V2_ALIAS_PARSING"));
+        }
+        public bool GetWriteV2StrictIdConflictReject()
+        {
+            return CheckBool(CheckString("LUBELOGGER_WRITE_V2_STRICT_ID_CONFLICT_REJECT"), true);
+        }
+        public bool GetWriteV2FamilyNotesEnabled()
+        {
+            return CheckBool(CheckString("LUBELOGGER_WRITE_V2_FAMILY_NOTES"));
         }
         public bool GetServerAuthEnabled()
         {
